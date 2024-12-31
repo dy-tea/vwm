@@ -188,7 +188,7 @@ pub struct C.wl_protocol_logger_message {
 	message_opcode  int
 	message         &C.wl_message
 	arguments_count int
-	arguments       &C.wl_argument
+	arguments       &Wl_argument
 }
 
 pub type Wl_protocol_logger_func_t = fn (data voidptr, direction Wl_protocol_logger_type, message &C.wl_protocol_logger_message)

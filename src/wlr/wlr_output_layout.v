@@ -44,7 +44,7 @@ pub struct C.wlr_output_layout_output {
 	}
 
 	wlr_private struct {
-		addon  C.wlr_addong
+		addon  C.wlr_addon
 		commit C.wl_listener
 	}
 }
