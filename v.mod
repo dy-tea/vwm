@@ -1,7 +1,7 @@
 Module {
 	name: 'vompositor'
-	description: 'GPL-3.0'
+	description: 'wip'
 	version: '0.0.0'
-	license: 'MIT'
+	license: 'GPL-3.0'
 	dependencies: []
 }
