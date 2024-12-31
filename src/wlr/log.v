@@ -18,11 +18,11 @@ pub enum Wlr_log_importance {
 	last
 }
 
-type Wlr_log_func_t = fn (importance Wlr_log_importance, fmt string, args ...)
+type Wlr_log_func_t = fn (importance Wlr_log_importance, fmt ...string)
 
 pub fn C.wlr_log_init(verbosity Wlr_log_importance, callback Wlr_log_func_t)
 
 pub fn C.wlr_log_get_verbosity() Wlr_log_importance
 
-pub fn C._wlr_log(verbosity Wlr_log_importance, fmt string, args ...)
-pub fn C._wlr_vlog(verbosity Wlr_log_importance, fmt string, args ...)
+pub fn C._wlr_log(verbosity Wlr_log_importance, fmt string, ...)
+pub fn C._wlr_vlog(verbosity Wlr_log_importance, fmt string, ...)

@@ -11,26 +11,26 @@ module wlr
 #include "wlr/xcursor.h"
 
 pub struct C.wlr_xcursor_image {
-	width u32
-	height u32
+	width     u32
+	height    u32
 	hotspot_x u32
 	hotspot_y u32
-	delay u32
-	buffer []u8
+	delay     u32
+	buffer    []u8
 }
 
 pub struct C.wlr_xcursor {
 	image_count u32
-	images &C.wlr_xcursor_image
-	name string
+	images      &C.wlr_xcursor_image
+	name        string
 	total_delay u32
 }
 
 pub struct C.wlr_xcursor_theme {
 	cursor_count u32
-	cursors &C.wlr_xcursor
-	name string
-	size int
+	cursors      &C.wlr_xcursor
+	name         string
+	size         int
 }
 
 pub fn C.wlr_xcursor_theme_load(name string, size int) &C.wlr_xcursor_theme

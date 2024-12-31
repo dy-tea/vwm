@@ -13,12 +13,12 @@ module wlr
 pub struct C.wlr_xcursor_manager_theme {
 	scale f32
 	theme &C.wlr_xcursor_theme
-	link C.wl_list
+	link  C.wl_list
 }
 
 pub struct C.wlr_xcursor_manager {
-	name string
-	size u32
+	name          string
+	size          u32
 	scaled_themes C.wl_list
 }
 

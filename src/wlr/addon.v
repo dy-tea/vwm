@@ -17,7 +17,7 @@ pub struct C.wlr_addon_set {
 }
 
 pub struct C.wlr_addon_iterface {
-	name string
+	name    string
 	destroy fn (addon &C.wlr_addon)
 }
 
@@ -26,7 +26,7 @@ pub struct C.wlr_addon {
 
 	wlr_private struct {
 		owner voidptr
-		link C.wl_list
+		link  C.wl_list
 	}
 }
 

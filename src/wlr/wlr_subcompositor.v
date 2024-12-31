@@ -11,8 +11,8 @@ module wlr
 #include "wlr/types/wlr_subcompositor.h"
 
 pub struct C.wlr_subsurface_parent_state {
-	x u32
-	y u32
+	x    u32
+	y    u32
 	link C.wl_list
 
 	wlr_private struct {
@@ -22,17 +22,17 @@ pub struct C.wlr_subsurface_parent_state {
 
 pub struct C.wlr_subsurface {
 	resource &C.wl_resource
-	surface &C.wlr_surface
-	parent &C.wlr_surface
+	surface  &C.wlr_surface
+	parent   &C.wlr_surface
 
 	current &C.wlr_subsurface_parent_state
 	pending &C.wlr_subsurface_parent_state
 
 	chached_seq u32
-	has_cache bool
+	has_cache   bool
 
 	synchronized bool
-	added bool
+	added        bool
 
 	events struct {
 		destroy &C.wl_signal
@@ -44,7 +44,7 @@ pub struct C.wlr_subsurface {
 		parent_synced C.wl_listener
 
 		surface_client_commit C.wl_listener
-		parent_destroy C.wl_listener
+		parent_destroy        C.wl_listener
 	}
 }
 

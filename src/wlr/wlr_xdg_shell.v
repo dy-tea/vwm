@@ -11,17 +11,17 @@ module wlr
 #include "wlr/types/wlr_xdg_shell.h"
 
 pub struct C.wlr_xdg_shell {
-	global &C.wl_global
-	version u32
-	clients C.wl_list
-	popup_grabs C.wl_list
+	global       &C.wl_global
+	version      u32
+	clients      C.wl_list
+	popup_grabs  C.wl_list
 	ping_timeout u32
 
 	events struct {
-		new_surface C.wl_signal
+		new_surface  C.wl_signal
 		new_toplevel C.wl_signal
-		new_popup C.wl_signal
-		destroy C.wl_signal
+		new_popup    C.wl_signal
+		destroy      C.wl_signal
 	}
 
 	data voidptr
@@ -32,34 +32,34 @@ pub struct C.wlr_xdg_shell {
 }
 
 pub struct C.wlr_xdg_client {
-	shell &C.wlr_xdg_shell
+	shell    &C.wlr_xdg_shell
 	resource &C.wl_resource
-	client &C.wl_client
+	client   &C.wl_client
 	surfaces C.wl_list
 
 	link C.wl_list
 
 	ping_serial u32
-	ping_timer &C.wl_event_source
+	ping_timer  &C.wl_event_source
 }
 
 pub struct C.wlr_positioner_rules {
-	anchor_rect C.wlr_box
-	anchor C.xdg_positioner_anchor
-	gravity C.xdg_positioner_gravity
+	anchor_rect           C.wlr_box
+	anchor                C.xdg_positioner_anchor
+	gravity               C.xdg_positioner_gravity
 	constraint_adjustment C.xdg_positioner_constraint_adjustment
 
 	reactive bool
 
 	has_parent_configure_serial bool
-	parent_configure_serial u32
+	parent_configure_serial     u32
 
-	size struct {
-		width int
+	size        struct {
+		width  int
 		height int
 	}
 	parent_size struct {
-		width int
+		width  int
 		height int
 	}
 
@@ -71,7 +71,7 @@ pub struct C.wlr_positioner_rules {
 
 pub struct C.wlr_xdg_positioner {
 	resource &C.wl_resource
-	rules C.wlr_positioner_rules
+	rules    C.wlr_positioner_rules
 }
 
 pub struct C.wlr_xdg_popup_state {
@@ -84,9 +84,9 @@ pub enum Wlr_xdg_popup_configure_field {
 }
 
 pub struct C.wlr_xdg_popup_configure {
-	fields u32
-	geometry C.wlr_box
-	rules C.wlr_positioner_rules
+	fields           u32
+	geometry         C.wlr_box
+	rules            C.wlr_positioner_rules
 	reposition_token u32
 }
 
@@ -95,8 +95,8 @@ pub struct C.wlr_xdg_popup {
 	link C.wl_list
 
 	resource &C.wl_resource
-	parent &C.wlr_surface
-	seat &C.wlr_seat
+	parent   &C.wlr_surface
+	seat     &C.wlr_seat
 
 	scheduled C.wlr_xdg_popup_configure
 
@@ -104,7 +104,7 @@ pub struct C.wlr_xdg_popup {
 	pending C.wlr_xdg_popup_state
 
 	events struct {
-		destroy C.wl_signal
+		destroy    C.wl_signal
 		reposition C.wl_signal
 	}
 
@@ -116,13 +116,13 @@ pub struct C.wlr_xdg_popup {
 }
 
 pub struct C.wlr_xdg_popup_grab {
-	client &C.wl_client
-	pointer_grab C.wlr_seat_pointer_grab
+	client        &C.wl_client
+	pointer_grab  C.wlr_seat_pointer_grab
 	keyboard_grab C.wlr_seat_keyboard_grab
-	touch_grab C.wlr_seat_touch_grab
-	seat &C.wlr_seat
-	popups C.wl_list
-	link C.wl_list
+	touch_grab    C.wlr_seat_touch_grab
+	seat          &C.wlr_seat
+	popups        C.wl_list
+	link          C.wl_list
 
 	wlr_private struct {
 		seat_destroy C.wl_listener
@@ -136,18 +136,18 @@ pub enum Wlr_xdg_surface_role {
 }
 
 pub struct C.wlr_xdg_toplevel_state {
-	maximized bool
+	maximized  bool
 	fullscreen bool
-	resizing bool
-	activated bool
-	suspended bool
+	resizing   bool
+	activated  bool
+	suspended  bool
 
-	tiled u32
-	width u32
+	tiled  u32
+	width  u32
 	height u32
 
 	bounds struct {
-		width u32
+		width  u32
 		height u32
 	}
 
@@ -155,8 +155,8 @@ pub struct C.wlr_xdg_toplevel_state {
 }
 
 pub struct C.wlr_xdg_toplevel_requested {
-	maximized bool
-	minimized bool
+	maximized  bool
+	minimized  bool
 	fullscreen bool
 
 	wlr_private struct {
@@ -166,44 +166,44 @@ pub struct C.wlr_xdg_toplevel_requested {
 
 pub struct C.wlr_xdg_toplevel {
 	resource &C.wl_resource
-	base &C.wlr_xdg_surface
+	base     &C.wlr_xdg_surface
 
-	parent &C.wlr_xdg_toplevel
+	parent  &C.wlr_xdg_toplevel
 	current C.wlr_xdg_toplevel_state
 	pending C.wlr_xdg_toplevel_state
 
 	scheduled C.wlr_xdg_toplevel_configure
 	requested C.wlr_xdg_toplevel_configure
 
-	title string
+	title  string
 	app_id string
 
 	events struct {
-		request_maximize C.wl_signal
-		request_fullscreen C.wl_signal
-		request_minimize C.wl_signal
-		request_move C.wl_signal
-		request_resize C.wl_signal
+		request_maximize         C.wl_signal
+		request_fullscreen       C.wl_signal
+		request_minimize         C.wl_signal
+		request_move             C.wl_signal
+		request_resize           C.wl_signal
 		request_show_window_menu C.wl_signal
-		set_parent C.wl_signal
-		set_title C.wl_signal
-		set_app_id C.wl_signal
+		set_parent               C.wl_signal
+		set_title                C.wl_signal
+		set_app_id               C.wl_signal
 	}
 
 	wlr_private struct {
-		synced C.wlr_surface_synced
+		synced       C.wlr_surface_synced
 		parent_unmap C.wl_listener
 	}
 }
 
 pub struct C.wlr_xdg_surface_configure {
 	surface &C.wlr_xdg_surface
-	link C.wl_list
-	serial u32
+	link    C.wl_list
+	serial  u32
 
 	// union?
 	toplevel_configure &C.wlr_xdg_toplevel_configure
-	popup_configure &C.wlr_xdg_popup_configure
+	popup_configure    &C.wlr_xdg_popup_configure
 }
 
 pub enum Wlr_xdg_surface_state_field {
@@ -219,69 +219,69 @@ pub struct C.wlr_xdg_surface_state {
 }
 
 pub struct C.wlr_xdg_surface {
-	client &C.wlr_xdg_client
+	client   &C.wlr_xdg_client
 	resource &C.wl_resource
-	surface &C.wlr_surface
-	link C.wl_list
+	surface  &C.wlr_surface
+	link     C.wl_list
 
-	role C.wlr_xdg_surface_role
+	role          C.wlr_xdg_surface_role
 	role_resource &C.wl_resource
 
 	// union?
 	toplevel &C.wlr_xdg_toplevel
-	popup &C.wlr_xdg_popup
+	popup    &C.wlr_xdg_popup
 
 	popups C.wl_list
 
-	configured bool
-	configure_idle &C.wl_event_source
+	configured       bool
+	configure_idle   &C.wl_event_source
 	scheduled_serial u32
-	configure_list C.wl_list
+	configure_list   C.wl_list
 
 	current C.wlr_xdg_surface_state
 	pending C.wlr_xdg_surface_state
 
-	initialized bool
+	initialized    bool
 	initial_commit bool
 
 	geometry C.wlr_box
 
 	events struct {
-		destroy C.wl_signal
+		destroy      C.wl_signal
 		ping_timeout C.wl_signal
-		new_popup C.wl_signal
+		new_popup    C.wl_signal
 
-		configure C.wl_signal
+		configure     C.wl_signal
 		ack_configure C.wl_signal
 	}
 
 	data voidptr
 
 	wlr_private struct {
-		synced C.wlr_surface_synced
+		synced                C.wlr_surface_synced
 		role_resource_destroy C.wl_listener
 	}
 }
 
 pub struct C.wlr_xdg_toplevel_move_event {
 	toplevel &C.wlr_xdg_toplevel
-	seat &C.wlr_seat
-	serial u32
+	seat     &C.wlr_seat
+	serial   u32
 }
 
 pub struct C.wlr_xdg_toplevel_resize_event {
 	toplevel &C.wlr_xdg_toplevel
-	seat &C.wlr_seat
-	serial u32
-	edges u32
+	seat     &C.wlr_seat
+	serial   u32
+	edges    u32
 }
 
 pub struct C.wlr_xdg_toplevel_show_window_menu_event {
 	toplevel &C.wlr_xdg_toplevel
-	seat &C.wlr_seat
-	serial u32
-	x u32
-	y u32
+	seat     &C.wlr_seat
+	serial   u32
+	x        u32
+	y        u32
 }
 
 pub fn C.wlr_xdg_shell_create(display &C.wl_display, version u32) &C.wlr_xdg_shell

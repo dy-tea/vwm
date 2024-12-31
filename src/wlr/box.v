@@ -11,16 +11,16 @@ module wlr
 #include "wlr/util/box.h"
 
 pub struct C.wlr_box {
-	x int
-	y int
-	width int
+	x      int
+	y      int
+	width  int
 	height int
 }
 
 pub struct C.wlr_fbox {
-	x f64
-	y f64
-	width f64
+	x      f64
+	y      f64
+	width  f64
 	height f64
 }
 

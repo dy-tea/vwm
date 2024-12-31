@@ -10,7 +10,7 @@ module wlr
 
 #include "wlr/types/wlr_pointer.h"
 
-const wlr_pointer_buttons_cap := 16
+const wlr_pointer_buttons_cap = 16
 
 struct C.wlr_pointer_impl {}
 
@@ -20,116 +20,116 @@ struct C.wlr_pointer {
 
 	output_name string
 
-	buttons [wlr_pointer_buttons_cap]u32
+	buttons      [wlr_pointer_buttons_cap]u32
 	button_count usize
 
 	events struct {
-		motion C.wl_signal
+		motion          C.wl_signal
 		motion_absolute C.wl_signal
-		button C.wl_signal
-		axis C.wl_signal
-		frame C.wl_signal
+		button          C.wl_signal
+		axis            C.wl_signal
+		frame           C.wl_signal
 
-		swipe_begin C.wl_signal
+		swipe_begin  C.wl_signal
 		swipe_update C.wl_signal
-		swipe_end C.wl_signal
+		swipe_end    C.wl_signal
 
-		pinch_begin C.wl_signal
+		pinch_begin  C.wl_signal
 		pinch_update C.wl_signal
-		pinch_end C.wl_signal
+		pinch_end    C.wl_signal
 
 		hold_begin C.wl_signal
-		hold_end C.wl_signal
+		hold_end   C.wl_signal
 	}
 
 	data voidptr
 }
 
 struct C.wlr_pointer_motion_event {
-	pointer C.wlr_pointer
-	time_msec u32
-	delta_x f64
-	delta_y f64
+	pointer    C.wlr_pointer
+	time_msec  u32
+	delta_x    f64
+	delta_y    f64
 	unaccel_dx f64
 	unaccel_dy f64
 }
 
 struct C.wlr_pointer_motion_absolute_event {
-	pointer C.wlr_pointer
+	pointer   C.wlr_pointer
 	time_msec u32
-	x f64
-	y f64
+	x         f64
+	y         f64
 }
 
 struct C.wlr_pointer_button_event {
-	pointer C.wlr_pointer
+	pointer   C.wlr_pointer
 	time_msec u32
-	button u32
-	state C.wl_pointer_button_state
+	button    u32
+	state     C.wl_pointer_button_state
 }
 
-const wlr_pointer_axis_discrete_step := 120
+const wlr_pointer_axis_discrete_step = 120
 
 struct C.wlr_pointer_axis_event {
-	pointer C.wlr_pointer
-	time_msec u32
-	source C.wl_pointer_axis_source
-	orientation C.wl_pointer_axis
+	pointer            C.wlr_pointer
+	time_msec          u32
+	source             C.wl_pointer_axis_source
+	orientation        C.wl_pointer_axis
 	relative_direction C.wl_pointer_relative_direction
-	delta f64
-	delta_discrete int
+	delta              f64
+	delta_discrete     int
 }
 
 struct C.wlr_pointer_swipe_begin_event {
-	pointer C.wlr_pointer
+	pointer   C.wlr_pointer
 	time_msec u32
-	fingers u32
+	fingers   u32
 }
 
 struct C.wlr_pointer_swipe_update_event {
-	pointer C.wlr_pointer
+	pointer   C.wlr_pointer
 	time_msec u32
-	fingers u32
-	dx f64
-	dy f64
+	fingers   u32
+	dx        f64
+	dy        f64
 }
 
 struct C.wlr_pointer_swipe_end_event {
-	pointer C.wlr_pointer
+	pointer   C.wlr_pointer
 	time_msec u32
 	cancelled bool
 }
 
 struct C.wlr_pointer_pinch_begin_event {
-	pointer C.wlr_pointer
+	pointer   C.wlr_pointer
 	time_msec u32
-	fingers u32
+	fingers   u32
 }
 
 struct C.wlr_pointer_pinch_update_event {
-	pointer C.wlr_pointer
+	pointer   C.wlr_pointer
 	time_msec u32
-	fingers u32
-	dx f64
-	dy f64
-	scale f64
-	rotation f64
+	fingers   u32
+	dx        f64
+	dy        f64
+	scale     f64
+	rotation  f64
 }
 
 struct C.wlr_pointer_pinch_end_event {
-	pointer C.wlr_pointer
+	pointer   C.wlr_pointer
 	time_msec u32
 	cancelled bool
 }
 
 struct C.wlr_pointer_hold_begin_event {
-	pointer C.wlr_pointer
+	pointer   C.wlr_pointer
 	time_msec u32
-	fingers u32
+	fingers   u32
 }
 
 struct C.wlr_pointer_hold_end_event {
-	pointer C.wlr_pointer
+	pointer   C.wlr_pointer
 	time_msec u32
 	cancelled bool
 }

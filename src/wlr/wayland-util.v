@@ -13,18 +13,18 @@ module wlr
 pub struct C.wl_object {}
 
 pub struct C.wl_message {
-	name string
+	name      string
 	signature string
-	types &C.wl_interface
+	types     &C.wl_interface
 }
 
 pub struct C.wl_interface {
-	name string
-	version int
+	name         string
+	version      int
 	method_count int
-	methods &C.wl_message
-	event_count int
-	events &C.wl_message
+	methods      &C.wl_message
+	event_count  int
+	events       &C.wl_message
 }
 
 pub struct C.wl_list {
@@ -40,9 +40,9 @@ pub fn C.wl_list_empty(list &C.wl_list) bool
 pub fn C.wl_list_insert_list(list &C.wl_list, other &C.wl_list)
 
 pub struct C.wl_array {
-	size usize
+	size  usize
 	alloc usize
-	data voidptr
+	data  voidptr
 }
 
 pub fn C.wl_array_init(array &C.wl_array)
@@ -50,7 +50,7 @@ pub fn C.wl_array_release(array &C.wl_array)
 pub fn C.wl_array_add(array &C.wl_array, size usize) voidptr
 pub fn C.wl_array_copy(array &C.wl_array, source &C.wl_array) int
 
-pub type Wl_fixed_t = u32
+pub type Wl_fixed_t = int
 
 @[inline]
 pub fn wl_fixed_to_double(fixed Wl_fixed_t) f64 {
@@ -59,14 +59,21 @@ pub fn wl_fixed_to_double(fixed Wl_fixed_t) f64 {
 
 pub fn C.wl_fixed_from_double(d f64) Wl_fixed_t
 
-@[inline]
-pub fn wl_fixed_to_int(f Wl_fixed_t) int {
-	return int(f) / 256
+pub fn wl_fixed_from_double(d f64) Wl_fixed_t {
+	return C.wl_fixed_from_double(d)
 }
 
-pub fn C.wl_fixed_from_int(d int) Wl_fixed_t
+@[inline]
+pub fn wl_fixed_to_int(f Wl_fixed_t) int {
+	return f / 256
+}
 
-pub union C.wl_argument {
+@[inline]
+pub fn wl_fixed_from_int(d int) Wl_fixed_t {
+	return Wl_fixed_t(d)
+}
+
+pub union Wl_argument {
 	i int
 	u u32
 	f Wl_fixed_t
@@ -77,9 +84,9 @@ pub union C.wl_argument {
 	h int
 }
 
-pub type Wl_dispatcher_func_t = fn (data voidptr, target voidptr, opcode u32, msg &C.wl_message, args &C.wl_argument) int
+pub type Wl_dispatcher_func_t = fn (data voidptr, target voidptr, opcode u32, msg &C.wl_message, args &Wl_argument) int
 
-pub type Wl_log_func_t = fn (fmt string, args ...)
+pub type Wl_log_func_t = fn (fmt ...string)
 
 pub enum Wl_iterator_result {
 	stop

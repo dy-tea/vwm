@@ -10,14 +10,17 @@ module wlr
 
 #include "wayland-server-core.h"
 
-const wl_event_readable := 0x01
-const wl_event_writable := 0x02
-const wl_event_hangup := 0x04
-const wl_event_error := 0x08
+const wl_event_readable = 0x01
+const wl_event_writable = 0x02
+const wl_event_hangup = 0x04
+const wl_event_error = 0x08
 
 pub type Wl_event_loop_fd_func_t = fn (fd int, mask u32, data voidptr) int
+
 pub type Wl_event_loop_timer_func_t = fn (data voidptr) int
+
 pub type Wl_event_loop_signal_func_t = fn (signal_number int, data voidptr) int
+
 pub type Wl_event_loop_idle_func_t = fn (data voidptr)
 
 pub fn C.wl_event_loop_create() &C.wl_event_loop
@@ -65,17 +68,17 @@ pub fn C.wl_display_add_client_created_listener(display &C.wl_display, listener 
 pub fn C.wl_display_get_destroy_listener(display &C.wl_display, notify Wl_notify_func_t) &C.wl_listener
 
 pub struct C.wl_global {
-	display &C.wl_display
+	display  &C.wl_display
 	iterface &C.wl_interface
-	name u32
-	version u32
-	data voidptr
-	bind Wl_global_bind_func_t
-	link C.wl_list
-	removed bool
+	name     u32
+	version  u32
+	data     voidptr
+	bind     Wl_global_bind_func_t
+	link     C.wl_list
+	removed  bool
 }
 
-pub fn C.wl_global_create(display C.wl_display, interface C.wl_interface, version int, data voidptr, bind Wl_global_bind_func_t) C.wl_global
+pub fn C.wl_global_create(display C.wl_display, interface, C.wl_interface, version int, data voidptr, bind Wl_global_bind_func_t) C.wl_global
 pub fn C.wl_global_remove(global C.wl_global)
 pub fn C.wl_global_destroy(global C.wl_global)
 
@@ -117,7 +120,7 @@ pub fn C.wl_client_get_user_data(client &C.wl_client) voidptr
 pub fn C.wl_client_set_max_buffer_size(client &C.wl_client, max_buffer_size usize)
 
 pub struct C.wl_listener {
-	link C.wl_list
+	link   C.wl_list
 	notfiy Wl_notify_func_t
 }
 
@@ -142,7 +145,7 @@ pub fn C.wl_resource_post_no_memory(resource &C.wl_resource)
 
 pub fn C.wl_client_get_display(client &C.wl_client) &C.wl_display
 
-pub fn C.wl_resource_create(client &C.wl_client, interface &C.wl_interface, version int, id u32) &C.wl_resource
+pub fn C.wl_resource_create(client &C.wl_client, interface, &C.wl_interface, version int, id u32) &C.wl_resource
 pub fn C.wl_resource_set_implementation(resource &C.wl_resource, impl &C.wl_resource_impl, data voidptr, destroy Wl_resource_destroy_func_t)
 pub fn C.wl_resource_set_dispatcher(resource &C.wl_resource, dispatcher &C.wl_resource_dispatcher, data voidptr, destroy Wl_resource_destroy_func_t)
 pub fn C.wl_resource_destroy(resource &C.wl_resource)
@@ -155,7 +158,7 @@ pub fn C.wl_resource_set_user_data(resource &C.wl_resource, data voidptr)
 pub fn C.wl_resource_get_user_data(resource &C.wl_resource) voidptr
 pub fn C.wl_resource_get_version(resource &C.wl_resource) int
 pub fn C.wl_resource_set_destructor(resource &C.wl_resource, destroy Wl_resource_destroy_func_t)
-pub fn C.wl_resource_instance_of(resource &C.wl_resource, interface &C.wl_interface, impl voidptr) bool
+pub fn C.wl_resource_instance_of(resource &C.wl_resource, interface, &C.wl_interface, impl voidptr) bool
 pub fn C.wl_resource_get_class(resource &C.wl_resource) string
 pub fn C.wl_resource_add_destroy_listener(resource &C.wl_resource, listener &C.wl_listener)
 pub fn C.wl_resource_get_destroy_listener(resource &C.wl_resource, notify Wl_notify_func_t) &C.wl_listener
@@ -181,11 +184,11 @@ pub enum Wl_protocol_logger_type {
 }
 
 pub struct C.wl_protocol_logger_message {
-	resource &C.wl_resource
-	message_opcode int
-	message &C.wl_message
+	resource        &C.wl_resource
+	message_opcode  int
+	message         &C.wl_message
 	arguments_count int
-	arguments &C.wl_argument
+	arguments       &C.wl_argument
 }
 
 pub type Wl_protocol_logger_func_t = fn (data voidptr, direction Wl_protocol_logger_type, message &C.wl_protocol_logger_message)

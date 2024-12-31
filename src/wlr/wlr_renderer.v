@@ -11,10 +11,15 @@ module wlr
 #include "wlr/render/wlr_renderer.h"
 
 struct C.wlr_backend {}
+
 struct C.wlr_renderer_impl {}
+
 struct C.wlr_drm_format_set {}
+
 struct C.wlr_buffer {}
+
 struct C.wlr_box {}
+
 struct C.wlr_fbox {}
 
 pub struct C.wlr_renderer {
