@@ -10,7 +10,7 @@ import pixman
 #flag linux -Lwlroots
 #flag linux -DWLR_USE_UNSTABLE
 
-#include "wlr/types/wlr_damange_ring.h"
+#include "wlr/types/wlr_damage_ring.h"
 
 pub struct C.wlr_damage_ring_buffer {
 	buffer &C.wlr_buffer
