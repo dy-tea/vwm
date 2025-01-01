@@ -23,9 +23,13 @@ pub type Wl_event_loop_signal_func_t = fn (signal_number int, data voidptr) int
 
 pub type Wl_event_loop_idle_func_t = fn (data voidptr)
 
+pub struct C.wl_event_loop {}
+
+pub struct C.wl_event_source {}
+
 pub fn C.wl_event_loop_create() &C.wl_event_loop
 pub fn C.wl_event_loop_destroy(loop &C.wl_event_loop)
-pub fn C.wl_event_loop_add_fd(loop &C.wl_event_loop, fd int, mask u32, func Wl_event_loop_fd_func_t, data voidptr) &C.wl_event_souce
+pub fn C.wl_event_loop_add_fd(loop &C.wl_event_loop, fd int, mask u32, func Wl_event_loop_fd_func_t, data voidptr) &C.wl_event_source
 pub fn C.wl_event_loop_add_timer(loop &C.wl_event_loop, func Wl_event_loop_timer_func_t, data voidptr) &C.wl_event_source
 pub fn C.wl_event_loop_add_signal(loop &C.wl_event_loop, signal_number int, func Wl_event_loop_signal_func_t, data voidptr) &C.wl_event_source
 
@@ -163,6 +167,8 @@ pub fn C.wl_resource_get_class(resource &C.wl_resource) string
 pub fn C.wl_resource_add_destroy_listener(resource &C.wl_resource, listener &C.wl_listener)
 pub fn C.wl_resource_get_destroy_listener(resource &C.wl_resource, notify Wl_notify_func_t) &C.wl_listener
 
+pub struct C.wl_shm_buffer {}
+
 pub fn C.wl_shm_buffer_get(resource &C.wl_resource) &C.wl_shm_buffer
 pub fn C.wl_shm_buffer_begin_access(buffer &C.wl_shm_buffer)
 pub fn C.wl_shm_buffer_end_access(buffer &C.wl_shm_buffer)
@@ -192,6 +198,8 @@ pub struct C.wl_protocol_logger_message {
 }
 
 pub type Wl_protocol_logger_func_t = fn (data voidptr, direction Wl_protocol_logger_type, message &C.wl_protocol_logger_message)
+
+pub struct C.wl_protocol_logger {}
 
 pub fn C.wl_display_add_protocol_logger(display &C.wl_display, logger Wl_protocol_logger_func_t, data voidptr) &C.wl_protocol_logger
 pub fn C.wl_protocol_logger_destroy(logger &C.wl_protocol_logger)

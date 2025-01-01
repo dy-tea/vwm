@@ -29,7 +29,7 @@ struct C.wlr_surface_state {
 	committed u32
 	seq       u32
 
-	buffer              C.wlr_buffer
+	buffer              &C.wlr_buffer
 	dx                  int
 	dy                  int
 	surface_damage      pixman.Pixman_region32_t
@@ -65,12 +65,17 @@ struct C.wlr_surface_state {
 struct C.wlr_surface_role {
 	const_name &char
 	no_object  bool
-	// je ne sais pas
+
+	client_commit fn (surface &C.wlr_surface)
+	commit        fn (surface &C.wlr_surface)
+	map           fn (surface &C.wlr_surface)
+	unmap         fn (surface &C.wlr_surface)
+	destroy       fn (surface &C.wlr_surface)
 }
 
 struct C.wlr_surface_output {
-	surface C.wlr_surface
-	output  C.wlr_output
+	surface &C.wlr_surface
+	output  &C.wlr_output
 
 	link C.wl_list
 
@@ -81,9 +86,9 @@ struct C.wlr_surface_output {
 }
 
 pub struct C.wlr_surface {
-	resource        C.wl_resource
-	compositor      C.wlr_compositor
-	buffer          C.wlr_client_buffer
+	resource        &C.wl_resource
+	compositor      &C.wlr_compositor
+	buffer          &C.wlr_client_buffer
 	buffer_damage   pixman.Pixman_region32_t
 	opaque_region   pixman.Pixman_region32_t
 	input_region    pixman.Pixman_region32_t
@@ -91,8 +96,8 @@ pub struct C.wlr_surface {
 	pending         C.wlr_surface_state
 	chached         C.wl_list
 	mapped          bool
-	role            C.wlr_surface_role
-	role_resource   C.wl_resource
+	role            &C.wlr_surface_role
+	role_resource   &C.wl_resource
 	events          struct {
 		client_commit  C.wl_signal
 		commit         C.wl_signal
@@ -131,8 +136,8 @@ pub struct C.wlr_surface {
 pub struct C.wlr_renderer {}
 
 pub struct C.wlr_compositor {
-	global      C.wl_global
-	renderer    C.wlr_renderer
+	global      &C.wl_global
+	renderer    &C.wlr_renderer = unsafe { nil }
 	events      struct {
 		new_surface C.wl_signal
 		destroy     C.wl_signal
@@ -142,3 +147,51 @@ pub struct C.wlr_compositor {
 		renderer_destroy C.wl_listener
 	}
 }
+
+pub type Wlr_surface_iterator_func_t = fn (surface &C.wlr_surface, sx int, sy int, data voidptr)
+
+pub fn C.wlr_surface_set_role(surface &C.wlr_surface, role &C.wlr_surface_role, error_resource &C.wl_resource, error_code u32) bool
+pub fn C.wlr_surface_set_role_object(surface &C.wlr_surface, role_resource &C.wl_resource) bool
+pub fn C.wlr_surace_map(surface &C.wlr_surface)
+pub fn C.wlr_surface_unmap(surface &C.wlr_surface)
+pub fn C.wlr_surface_reject_pending(surface &C.wlr_surface, resource &C.wl_resource, code u32, msg string, ...)
+pub fn C.wlr_surface_has_buffer(surface &C.wlr_surface) bool
+pub fn C.wlr_surface_get_texture(surface &C.wlr_surface) &C.wlr_texture
+pub fn C.wlr_surface_get_root_surface(surface &C.wlr_surface) &C.wlr_surface
+pub fn C.wlr_surface_point_accepts_input(surface &C.wlr_surface, sx f64, sy f64) bool
+pub fn C.wlr_surface_at(surface &C.wlr_surface, sx int, sy int, sub_x &int, sub_y &int) &C.wlr_surface
+pub fn C.wlr_surface_send_enter(surface &C.wlr_surface, output &C.wlr_output)
+pub fn C.wlr_surface_send_leave(surface &C.wlr_surface, output &C.wlr_output)
+pub fn C.wlr_surface_send_frame_done(surface &C.wlr_surface, when &C.timespec)
+pub fn C.wlr_surface_get_extents(surface &C.wlr_surface, box &C.wlr_box)
+pub fn C.wlr_surface_from_resource(resource &C.wl_resource) &C.wlr_surface
+pub fn C.wlr_surface_for_each_surface(surface &C.wlr_surface, iterator Wlr_surface_iterator_func_t, data voidptr)
+pub fn C.wlr_surface_get_effective_damage(surface &C.wlr_surface, damage &pixman.Pixman_region32_t)
+pub fn C.wlr_surface_get_buffer_source_box(surface &C.wlr_surface, box &C.wlr_fbox)
+pub fn C.wlr_surface_lock_pending(surface &C.wlr_surface) u32
+pub fn C.wlr_surface_unlock_cached(surface &C.wlr_surface, lock, u32)
+pub fn C.wlr_surface_set_preferred_buffer_scale(surface &C.wlr_surface, scale int)
+pub fn C.wlr_surface_set_preferred_buffer_transform(surface &C.wlr_surface, transform Wl_output_transform)
+
+pub struct C.wlr_surface_synced_impl {
+	state_size   usize
+	init_state   fn (state voidptr)
+	finish_state fn (state voidptr)
+	move_state   fn (dst voidptr, src voidptr)
+}
+
+pub struct C.wlr_surface_synced {
+	surface &C.wlr_surface
+	impl    &C.wlr_surface_synced_impl
+	link    C.wl_list
+	index   usize
+}
+
+pub fn C.wlr_surface_synced_init(synced &C.wlr_surface_synced, surface &C.wlr_surface, impl &C.wlr_surface_synced_impl, pending voidptr, current voidptr) &C.wlr_surface_synced
+pub fn C.wlr_surface_synced_finish(synced &C.wlr_surface_synced)
+pub fn C.wlr_surface_synced_get_state(synced &C.wlr_surface_synced) voidptr
+
+pub fn C.wlr_region_from_resource(resource &C.wl_resource) &pixman.Pixman_region32_t
+
+pub fn C.wlr_compopsitor_create(display &C.wl_display) &C.wlr_compositor
+pub fn C.wlr_compositor_set_renderer(compositor &C.wlr_compositor, renderer &C.wlr_renderer)

@@ -16,7 +16,7 @@ pub struct C.wlr_addon_set {
 	}
 }
 
-pub struct C.wlr_addon_iterface {
+pub struct C.wlr_addon_interface {
 	name    string
 	destroy fn (addon &C.wlr_addon)
 }
