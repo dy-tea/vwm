@@ -10,8 +10,14 @@ import pixman
 #flag linux -Lwlroots
 #flag linux -DWLR_USE_UNSTABLE
 
-#include "wlr/types/wlr_output.h"
 #include <time.h>
+
+pub struct C.timespec {
+	tv_sec  int
+	tv_nsec int
+}
+
+#include "wlr/types/wlr_output.h"
 
 pub enum Wlr_output_mode_aspect_ratio {
 	none
@@ -88,7 +94,7 @@ pub struct C.wlr_output_state {
 	transform             Wl_output_transform
 	adaptive_sync_enabled bool
 	render_format         u32
-	subpixel              C.wl_output_subpixel
+	subpixel              Wl_output_subpixel
 
 	buffer         C.wlr_buffer
 	buffer_src_box C.wlr_fbox
@@ -107,7 +113,7 @@ pub struct C.wlr_output_state {
 	gamma_lut      u16
 	gamma_lut_size usize
 
-	layers     C.wl_output_layer_state
+	layers     C.wlr_output_layer_state
 	layers_len usize
 
 	wait_timeline   C.wlr_drm_syncobj_timeline
@@ -143,7 +149,7 @@ pub struct C.wlr_output {
 
 	enabled              bool
 	scale                f32
-	subpixel             C.wl_output_subpixel
+	subpixel             Wl_output_subpixel
 	transform            Wl_output_transform
 	adaptive_sync_status Wlr_output_adaptive_sync_status
 	render_format        u32
