@@ -12,8 +12,6 @@ import pixman
 
 #include "wlr/render/wlr_texture.h"
 
-// TODO render/dmabuf.h
-
 pub struct C.wlr_buffer {}
 
 pub struct C.wlr_renderer {}
