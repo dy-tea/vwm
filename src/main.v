@@ -74,7 +74,9 @@ struct Comp_keyboard {
 
 fn main() {
 	display := C.wl_display_create()
-	backend := C.wlr_backend_autocreate(C.wl_get_event_loop(display), unsafe { nil })
+	loop := C.wl_display_get_event_loop(display)
+	session := C.wlr_session {}
+	backend := C.wlr_backend_autocreate(loop, session)
 	renderer := C.wlr_renderer_autocreate(backend)
 
 	mut server := Comp_server{

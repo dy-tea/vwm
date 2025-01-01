@@ -51,7 +51,7 @@ pub struct C.wl_display {}
 
 pub fn C.wl_display_create() &C.wl_display
 pub fn C.wl_display_destroy(display &C.wl_display)
-pub fn C.wl_get_event_loop(display &C.wl_display) &C.wl_event_loop
+pub fn C.wl_display_get_event_loop(display &C.wl_display) &C.wl_event_loop
 pub fn C.wl_display_add_socket(display &C.wl_display, name string) int
 pub fn C.wl_display_add_socket_auto(display &C.wl_display) int
 pub fn C.wl_display_add_socket_fd(display &C.wl_display, sock_fd int) int

@@ -10,14 +10,14 @@ module wlr
 
 #include "wlr/backend.h"
 
-struct C.wlr_session {}
+pub struct C.wlr_session {}
 
-struct C.wlr_backend_output_state {
+pub struct C.wlr_backend_output_state {
 	output C.wlr_output
 	base   C.wlr_output_state
 }
 
-struct C.wlr_backend_impl {}
+pub struct C.wlr_backend_impl {}
 
 pub struct C.wlr_backend {
 	impl     C.wlr_backend_impl
