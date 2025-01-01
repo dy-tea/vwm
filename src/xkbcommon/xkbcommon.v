@@ -5,7 +5,7 @@ module xkbcommon
 #flag linux -lxkbcommon
 #include "xkbcommon.h"
 
-struct Xkb_context {
+pub struct Xkb_context {
 }
 
 //* *@struct xkb_keymap
@@ -15,7 +15,7 @@ struct Xkb_context {
 // * *A keymap is immutable after it is created (besides reference counts, etc.);
 // *if you need to change it, you must create a new one.
 //
-struct Xkb_keymap {
+pub struct Xkb_keymap {
 }
 
 //* *@struct xkb_state
@@ -25,7 +25,7 @@ struct Xkb_keymap {
 // *simple state machine, wherein key presses and releases are the input, and
 // *key symbols (keysyms) are the output.
 //
-type Xkb_keycode_t = u32
+pub type Xkb_keycode_t = u32
 
 //* *A number used to represent a physical key on a keyboard.
 // * *A standard PC-compatible keyboard might have 102 keys.  An appropriate
@@ -76,7 +76,7 @@ type Xkb_keycode_t = u32
 // * *@ingroup keysyms
 // *@sa XKB_KEYSYM_MAX
 //
-type Xkb_keysym_t = u32
+pub type Xkb_keysym_t = u32
 
 //* *Index of a keyboard layout.
 // * *The layout index is a state component which detemines which <em>keyboard
@@ -97,10 +97,10 @@ type Xkb_keysym_t = u32
 // * *Layouts are also called "groups" by XKB.
 // * *@sa xkb_keymap_num_layouts() xkb_keymap_num_layouts_for_key()
 //
-type Xkb_layout_index_t = u32
+pub type Xkb_layout_index_t = u32
 
 //*A mask of layout indices.
-type Xkb_layout_mask_t = u32
+pub type Xkb_layout_mask_t = u32
 
 //* *Index of a shift level.
 // * *Any key, in any layout, can have several <em>shift levels</em>.  Each
@@ -111,7 +111,7 @@ type Xkb_layout_mask_t = u32
 // *many such combinations are possible (see xkb_mod_index_t).
 // * *Level indices are consecutive.  The first level has index 0.
 //
-type Xkb_level_index_t = u32
+pub type Xkb_level_index_t = u32
 
 //* *Index of a modifier.
 // * *A @e modifier is a state component which changes the way keys are
@@ -130,10 +130,10 @@ type Xkb_level_index_t = u32
 // *header file.  Modifier names are case-sensitive.
 // * *@sa xkb_keymap_num_mods()
 //
-type Xkb_mod_index_t = u32
+pub type Xkb_mod_index_t = u32
 
 //*A mask of modifier indices.
-type Xkb_mod_mask_t = u32
+pub type Xkb_mod_mask_t = u32
 
 //* *Index of a keyboard LED.
 // * *LEDs are logical objects which may be @e active or @e inactive.  They
@@ -153,12 +153,12 @@ type Xkb_mod_mask_t = u32
 // * *LEDs are also called "indicators" by XKB.
 // * *@sa xkb_keymap_num_leds()
 //
-type Xkb_led_index_t = u32
+pub type Xkb_led_index_t = u32
 
 //*A mask of LED indices.
-type Xkb_led_mask_t = u32
+pub type Xkb_led_mask_t = u32
 
-struct Xkb_rule_names {
+pub struct Xkb_rule_names {
 	//*     *The rules file to use. The rules file describes how to interpret
 	//     *the values of the model, layout, variant and options fields.
 	//     *     *If NULL or the empty string "", a default value is used.
@@ -998,7 +998,7 @@ pub fn keymap_key_repeats(keymap &Xkb_keymap, key Xkb_keycode_t) int {
 	return C.xkb_keymap_key_repeats(keymap, key)
 }
 
-struct Xkb_state {}
+pub struct Xkb_state {}
 
 //*@}
 //* *@defgroup state Keyboard State
@@ -1081,7 +1081,7 @@ enum Xkb_key_direction {
 // *exclude locked modifiers.
 // * *In XKB, the DEPRESSED components are also known as 'base'.
 //
-enum Xkb_state_component {
+pub enum Xkb_state_component {
 	//*Depressed modifiers, i.e. a key is physically holding them.
 	xkb_state_mods_depressed = 1 << 0
 	//*Latched modifiers, i.e. will be unset after the next non-modifier
@@ -1284,7 +1284,7 @@ pub fn state_key_get_level(state &Xkb_state, key Xkb_keycode_t, layout Xkb_layou
 // *successful match.  XKB_STATE_MATCH_NON_EXCLUSIVE is bitmaskable with
 // *the other modes.
 //
-enum Xkb_state_match {
+pub enum Xkb_state_match {
 	//*Returns true if any of the modifiers are active.
 	xkb_state_match_any = 1 << 0
 	//*Returns true if all of the modifiers are active.
@@ -1455,7 +1455,7 @@ pub fn state_mod_indices_are_active(state &Xkb_state, type_ Xkb_state_component,
 // *a modifier, meaning it is not reported as consumed even if it would
 // *have otherwise.
 //
-enum Xkb_consumed_mode {
+pub enum Xkb_consumed_mode {
 	//*     *This is the mode defined in the XKB specification and used by libX11.
 	//     *     *A modifier is consumed if and only if it *ay affect*key translation.
 	//     *     *For example, if `Control+Alt+<Backspace>` produces some assigned keysym,

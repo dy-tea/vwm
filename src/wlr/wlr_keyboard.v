@@ -38,25 +38,25 @@ const wlr_keyboard_keys_cap = 32
 struct C.wlr_keyboard_impl {}
 
 pub struct C.wlr_keyboard_modifiers {
-	depressed C.xkb_mod_mask_t
-	latched   C.xkb_mod_mask_t
-	locked    C.xkb_mod_mask_t
-	gorup     C.xkb_layout_index_t
+	depressed xkbcommon.Xkb_mod_mask_t
+	latched   xkbcommon.Xkb_mod_mask_t
+	locked    xkbcommon.Xkb_mod_mask_t
+	group     xkbcommon.Xkb_layout_index_t
 }
 
 pub struct C.wlr_keyboard {
 	base C.wlr_input_device
 
-	impl  C.wlr_keyboard_impl
-	group C.wlr_keyboard_group
+	impl  &C.wlr_keyboard_impl
+	group &C.wlr_keyboard_group
 
 	keymap_string &char
 	keymap_size   usize
 	keymap_fd     int
-	keymap        C.xkb_keymap
-	xkb_state     C.xkb_state
-	led_indexes   [wlr_led_count]C.xkb_led_index_t
-	mod_indices   [wlr_modifier_count]C.xkb_mod_index_t
+	keymap        &xkbcommon.Xkb_keymap
+	xkb_state     &xkbcommon.Xkb_state
+	led_indexes   [wlr_led_count]xkbcommon.Xkb_led_index_t
+	mod_indices   [wlr_modifier_count]xkbcommon.Xkb_mod_index_t
 
 	leds         u32
 	keycodes     [wlr_keyboard_keys_cap]u32
@@ -82,7 +82,7 @@ pub struct C.wlr_keyboard_key_event {
 	time_msec    u32
 	keycode      u32
 	update_state bool
-	state        C.wl_keyboard_key_state
+	state        Wl_keyboard_key_state
 }
 
 // Get a struct wlr_keyboard from a struct wlr_input_device
