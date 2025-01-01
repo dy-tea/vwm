@@ -39,7 +39,7 @@ pub struct C.wlr_output_cursor {
 	width         u32
 	height        u32
 	src_box       C.wlr_fbox
-	transform     C.wl_output_transform
+	transform     Wl_output_transform
 	hotspot_x     int
 	hotspot_y     int
 	texture       C.wlr_texture
@@ -85,7 +85,7 @@ pub struct C.wlr_output_state {
 	damage                pixman.Pixman_region32_t
 	enabled               bool
 	scale                 f32
-	transform             C.wl_output_transform
+	transform             Wl_output_transform
 	adaptive_sync_enabled bool
 	render_format         u32
 	subpixel              C.wl_output_subpixel
@@ -144,7 +144,7 @@ pub struct C.wlr_output {
 	enabled              bool
 	scale                f32
 	subpixel             C.wl_output_subpixel
-	transform            C.wl_output_transform
+	transform            Wl_output_transform
 	adaptive_sync_status Wlr_output_adaptive_sync_status
 	render_format        u32
 

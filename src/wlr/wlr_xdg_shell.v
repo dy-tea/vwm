@@ -111,7 +111,7 @@ pub struct C.wlr_xdg_popup {
 	grab_link C.wl_list
 
 	wlr_private struct {
-		synced C.wlr_surface_snyced
+		synced C.wlr_surface_synced
 	}
 }
 

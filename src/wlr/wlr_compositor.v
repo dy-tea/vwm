@@ -36,7 +36,7 @@ struct C.wlr_surface_state {
 	buffer_damage       pixman.Pixman_region32_t
 	opaque_region       pixman.Pixman_region32_t
 	input_region        pixman.Pixman_region32_t
-	transform           C.wl_output_transform // TODO
+	transform           Wl_output_transform
 	scale               int
 	frame_callback_last C.wl_list
 
@@ -108,7 +108,7 @@ pub struct C.wlr_surface {
 		role_resource_destroy           C.wl_listener
 		previous                        struct {
 			scale         int
-			transform     C.wl_output_transform
+			transform     Wl_output_transform
 			width         int
 			height        int
 			buffer_width  int
@@ -120,7 +120,7 @@ pub struct C.wlr_surface {
 		pending_rejected                bool
 		preferred_buffer_scale          bool
 		preferred_buffer_transform_set  bool
-		preferred_buffer_transform      C.wl_output_transform
+		preferred_buffer_transform      Wl_output_transform
 		synced                          C.wl_list
 		synced_len                      usize
 		pending_buffer_resource         C.wl_resource

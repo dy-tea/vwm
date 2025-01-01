@@ -802,9 +802,15 @@ fn C.wl_pointer_axis_source_is_valid(value u32, version u32) bool
 pub fn wl_pointer_axis_source_is_valid(value u32, version u32) bool {
 	return match version {
 		u32(Wl_pointer_axis_source.wheel), u32(Wl_pointer_axis_source.finger),
-		u32(Wl_pointer_axis_source.continuous) { version >= 1 }
-		u32(Wl_pointer_axis_source.wheel_tilt) { version >= 6 }
-		else { false }
+		u32(Wl_pointer_axis_source.continuous) {
+			version >= 1
+		}
+		u32(Wl_pointer_axis_source.wheel_tilt) {
+			version >= 6
+		}
+		else {
+			false
+		}
 	}
 }
 

@@ -80,8 +80,8 @@ pub struct C.wlr_pointer_grab_interface {
 	enter       fn (grab C.wlr_seat_pointer_grab, surface C.wlr_surface, sx f64, sy f64)
 	clear_focus fn (grab C.wlr_seat_pointer_grab)
 	motion      fn (grab C.wlr_seat_pointer_grab, time_msec u32, sx f64, sy f64)
-	button      fn (grab C.wlr_seat_pointer_grab, time_msec u32, button u32, state C.wl_pointer_button_state) u32
-	axis        fn (grab C.wlr_seat_pointer_grab, time_msec u32, orientation C.wl_pointer_axis, value f64, value_discrete int, source C.wl_pointer_axis_source)
+	button      fn (grab C.wlr_seat_pointer_grab, time_msec u32, button u32, state Wl_pointer_button_state) u32
+	axis        fn (grab C.wlr_seat_pointer_grab, time_msec u32, orientation Wl_pointer_axis, value f64, value_discrete int, source Wl_pointer_axis_source)
 	frame       fn (grab C.wlr_seat_pointer_grab)
 	cancel      fn (grab C.wlr_seat_pointer_grab)
 }
@@ -142,7 +142,7 @@ pub struct C.wlr_seat_pointer_state {
 	default_grab &C.wlr_seat_pointer_grab
 
 	sent_axis_source   bool
-	cached_axis_source C.wl_pointer_axis_source
+	cached_axis_source Wl_pointer_axis_source
 
 	buttons      [wlr_pointer_buttons_cap]C.wlr_seat_pointer_button
 	button_count usize
@@ -310,9 +310,9 @@ pub fn C.wlr_seat_pointer_clear_focus(wlr_seat C.wlr_seat)
 
 pub fn C.wlr_seat_pointer_send_motion(wlr_seat C.wlr_seat, time_msec u32, sx f64, sy f64)
 
-pub fn C.wlr_seat_pointer_send_button(wlr_seat C.wlr_seat, time_msec u32, button u32, state C.wl_pointer_button_state) u32
+pub fn C.wlr_seat_pointer_send_button(wlr_seat C.wlr_seat, time_msec u32, button u32, state Wl_pointer_button_state) u32
 
-pub fn C.wlr_seat_pointer_send_axis(wlr_seat C.wlr_seat, time_msec u32, orientation C.wl_pointer_axis, value f64, value_discrete int, source C.wl_pointer_axis_source, relative_direction C.wl_pointer_axis_relative_direction)
+pub fn C.wlr_seat_pointer_send_axis(wlr_seat C.wlr_seat, time_msec u32, orientation Wl_pointer_axis, value f64, value_discrete int, source Wl_pointer_axis_source, relative_direction Wl_pointer_axis_relative_direction)
 
 pub fn C.wlr_seat_pointer_send_frame(wlr_seat C.wlr_seat)
 
@@ -326,7 +326,7 @@ pub fn C.wlr_seat_pointer_notify_motion(wlr_seat C.wlr_seat, time_msec u32, sx f
 
 pub fn C.wlr_seat_pointer_notify_button(wlr_seat C.wlr_seat, time_msec u32, button u32, state C.wl_pointer_button_state) u32
 
-pub fn C.wlr_seat_pointer_notify_axis(wlr_seat C.wlr_seat, time_msec u32, orientation C.wl_pointer_axis, value f64, value_discrete int, source C.wl_pointer_axis_source, relative_direction C.wl_pointer_axis_relative_direction)
+pub fn C.wlr_seat_pointer_notify_axis(wlr_seat C.wlr_seat, time_msec u32, orientation Wl_pointer_axis, value f64, value_discrete int, source Wl_pointer_axis_source, relative_direction Wl_pointer_axis_relative_direction)
 
 pub fn C.wlr_seat_pointer_notify_frame(wlr_seat C.wlr_seat)
 

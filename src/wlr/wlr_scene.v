@@ -95,7 +95,7 @@ pub struct C.wlr_scene {
 		gamma_control_manager_v1_destroy   C.wl_listener
 		gamma_control_manager_v1_set_gamma C.wl_listener
 
-		debug_damage_option          C.wlr_scene_debug_damage_option
+		debug_damage_option          Wlr_scene_debug_damage_option
 		direct_scanout               bool
 		calculate_visibility         bool
 		highlight_transparent_region bool
@@ -160,7 +160,7 @@ pub struct C.wlr_scene_buffer {
 	src_box       C.wlr_fbox
 	dst_width     int
 	dst_height    int
-	transform     C.wl_output_transform
+	transform     Wl_output_transform
 	opaque_region pixman.Pixman_region32_t
 
 	wlr_private struct {
@@ -302,7 +302,7 @@ pub fn C.wlr_scene_buffer_set_source_box(scene_buffer C.wlr_scene_buffer, box C.
 
 pub fn C.wlr_scene_buffer_set_dest_size(scene_buffer C.wlr_scene_buffer, width int, height int)
 
-pub fn C.wlr_scene_buffer_set_transform(scene_buffer C.wlr_scene_buffer, transform C.wl_output_transform)
+pub fn C.wlr_scene_buffer_set_transform(scene_buffer C.wlr_scene_buffer, transform Wl_output_transform)
 
 pub fn C.wlr_scene_buffer_set_opacity(scene_buffer C.wlr_scene_buffer, opacity f32)
 

@@ -29,10 +29,10 @@ pub fn C.wlr_box_intersection(dest &C.wlr_box, box_a &C.wlr_box, box_b &C.wlr_bo
 pub fn C.wlr_box_contains_point(box &C.wlr_box, x f64, y f64) bool
 pub fn C.wlr_box_contains_box(bigger &C.wlr_box, smaller &C.wlr_box) bool
 pub fn C.wlr_box_empty(box &C.wlr_box) bool
-pub fn C.wlr_box_transform(dest &C.wlr_box, box &C.wlr_box, transform C.wl_output_transform, width int, height int)
+pub fn C.wlr_box_transform(dest &C.wlr_box, box &C.wlr_box, transform Wl_output_transform, width int, height int)
 
 pub fn C.wlr_fbox_empty(box &C.wlr_fbox) bool
-pub fn C.wlr_fbox_transform(dest &C.wlr_fbox, box &C.wlr_fbox, transform C.wl_output_transform, width f64, height f64)
+pub fn C.wlr_fbox_transform(dest &C.wlr_fbox, box &C.wlr_fbox, transform Wl_output_transform, width f64, height f64)
 
 pub fn C.wlr_box_equal(a &C.wlr_box, b &C.wlr_box) bool
 pub fn C.wlr_fbox_equal(a &C.wlr_fbox, b &C.wlr_fbox) bool

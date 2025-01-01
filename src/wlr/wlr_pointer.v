@@ -65,7 +65,7 @@ struct C.wlr_pointer_button_event {
 	pointer   &C.wlr_pointer
 	time_msec u32
 	button    u32
-	state     C.wl_pointer_button_state
+	state     Wl_pointer_button_state
 }
 
 const wlr_pointer_axis_discrete_step = 120
