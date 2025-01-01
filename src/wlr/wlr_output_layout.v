@@ -14,7 +14,7 @@ pub struct C.wlr_box {}
 
 pub struct C.wlr_output_layout {
 	outputs C.wl_list
-	display C.wlr_display
+	display C.wl_display
 
 	events struct {
 		add     C.wl_signal
