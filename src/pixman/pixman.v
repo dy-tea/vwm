@@ -71,40 +71,40 @@ module pixman
 //
 // *Misc structs
 //
-type Pixman_color_t = struct {
+pub type Pixman_color_t = struct {
 	red   u16
 	green u16
 	blue  u16
 	alpha u16
 }
-type Pixman_point_fixed_t = struct {
+pub type Pixman_point_fixed_t = struct {
 	x int
 	y int
 }
-type Pixman_line_fixed_t = struct {
+pub type Pixman_line_fixed_t = struct {
 	p1 Pixman_point_fixed_t
 	p2 Pixman_point_fixed_t
 }
-type Pixman_vector_t = struct {
+pub type Pixman_vector_t = struct {
 	vector [3]int
 }
-type Pixman_transform_t = struct {
+pub type Pixman_transform_t = struct {
 	matrix [3][3]int
 }
 
-struct Pixman_color {
+pub struct Pixman_color {
 	red   u16
 	green u16
 	blue  u16
 	alpha u16
 }
 
-struct Pixman_point_fixed {
+pub struct Pixman_point_fixed {
 	x int
 	y int
 }
 
-struct Pixman_line_fixed {
+pub struct Pixman_line_fixed {
 	p1 Pixman_point_fixed_t
 	p2 Pixman_point_fixed_t
 }
@@ -112,16 +112,16 @@ struct Pixman_line_fixed {
 //
 // *Fixed point matrices
 //
-struct Pixman_vector {
+pub struct Pixman_vector {
 	vector [3]int
 }
 
-struct Pixman_transform {
+pub struct Pixman_transform {
 	matrix [3][3]int
 }
 
 // forward declaration (sorry)
-struct Pixman_image_t {}
+pub struct Pixman_image_t {}
 
 fn C.pixman_transform_init_identity(matrix &Pixman_transform)
 
