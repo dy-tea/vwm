@@ -45,7 +45,7 @@ pub struct C.wlr_linux_dmabuf_v1 {
 	}
 
 	wlr_private struct {
-		default_feedback &C.wlr_linux_dmabuf_feedback_v1_compiled
+		default_feedback voidptr // FIXME: C.wlr_linux_dmabuf_feedback_v1_compiled
 		default_formats  C.wlr_drm_format_set
 		surfaces         C.wl_list
 
