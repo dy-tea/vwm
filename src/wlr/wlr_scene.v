@@ -13,8 +13,6 @@ import pixman
 #include "wlr/types/wlr_scene.h"
 #include <time.h>
 
-// TODO types/wlr_damage_ring.h,wlr_dmabuf_v1.h
-
 pub struct C.wlr_output {}
 
 pub struct C.wlr_output_layout {}
