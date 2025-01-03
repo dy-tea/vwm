@@ -194,5 +194,5 @@ pub fn C.wlr_surface_synced_get_state(synced &C.wlr_surface_synced) voidptr
 
 pub fn C.wlr_region_from_resource(resource &C.wl_resource) &pixman.Pixman_region32_t
 
-pub fn C.wlr_compopsitor_create(display &C.wl_display) &C.wlr_compositor
+pub fn C.wlr_compositor_create(display &C.wl_display, version u32, renderer &C.wlr_renderer) &C.wlr_compositor
 pub fn C.wlr_compositor_set_renderer(compositor &C.wlr_compositor, renderer &C.wlr_renderer)

@@ -10,13 +10,17 @@ enum Comp_cursor_mode {
 
 struct Comp_server {
 mut:
-	wl_display &C.wl_display = unsafe { nil }
-	backend    &C.wlr_backend = unsafe { nil }
-	renderer   &C.wlr_renderer = unsafe { nil }
+	wl_display   &C.wl_display              = unsafe { nil }
+	backend      &C.wlr_backend             = unsafe { nil }
+	renderer     &C.wlr_renderer            = unsafe { nil }
+	allocator    &C.wlr_allocator           = unsafe { nil }
+	scene        &C.wlr_scene               = unsafe { nil }
+	scene_layout &C.wlr_scene_output_layout = unsafe { nil }
 
-	xdg_shell       &C.wlr_xdg_shell = unsafe { nil }
-	new_xdg_surface C.wl_listener
-	views           C.wl_list
+	xdg_shell        &C.wlr_xdg_shell = unsafe { nil }
+	new_xdg_toplevel C.wl_listener
+	new_xdg_popup    C.wl_listener
+	toplevels        C.wl_list
 
 	cursor                 &C.wlr_cursor          = unsafe { nil }
 	cursor_mgr             &C.wlr_xcursor_manager = unsafe { nil }
@@ -75,8 +79,21 @@ struct Comp_keyboard {
 
 fn main() {
 	mut server := Comp_server{}
+
 	server.wl_display = C.wl_display_create()
-	server.backend = C.wlr_backend_autocreate(C.wl_display_get_event_loop(server.wl_display), unsafe {nil})
+
+	server.backend = C.wlr_backend_autocreate(C.wl_display_get_event_loop(server.wl_display),
+		unsafe { nil })
 	server.renderer = C.wlr_renderer_autocreate(server.backend)
 	C.wlr_renderer_init_wl_display(server.renderer, server.wl_display)
+
+	server.allocator = C.wlr_allocator_autocreate(server.backend, server.renderer)
+
+	C.wlr_compositor_create(server.wl_display, 5, server.renderer)
+	C.wlr_subcompositor_create(server.wl_display)
+
+	C.wlr_data_device_manager_create(server.wl_display)
+
+	server.output_layout = C.wlr_output_layout_create(server.wl_display)
+	C.wl_list_init(&server.outputs)
 }
