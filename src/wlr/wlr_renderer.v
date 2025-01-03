@@ -38,7 +38,7 @@ pub struct C.wlr_renderer {
 	}
 }
 
-pub fn C.wlr_renderer_autocreate(backend &C.wlr_backend) C.wlr_renderer
+pub fn C.wlr_renderer_autocreate(backend &C.wlr_backend) &C.wlr_renderer
 
 pub fn C.wlr_renderer_get_texture_formats(r &C.wlr_renderer, buffer_caps u32) C.wlr_drm_format_set
 

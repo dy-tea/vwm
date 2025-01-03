@@ -9,9 +9,10 @@ enum Comp_cursor_mode {
 }
 
 struct Comp_server {
-	wl_display &C.wl_display
-	backend    &C.wlr_backend
-	renderer   &C.wlr_renderer
+mut:
+	wl_display &C.wl_display = unsafe { nil }
+	backend    &C.wlr_backend = unsafe { nil }
+	renderer   &C.wlr_renderer = unsafe { nil }
 
 	xdg_shell       &C.wlr_xdg_shell = unsafe { nil }
 	new_xdg_surface C.wl_listener
@@ -73,17 +74,9 @@ struct Comp_keyboard {
 }
 
 fn main() {
-	display := C.wl_display_create()
-	loop := C.wl_display_get_event_loop(display)
-	session := C.wlr_session_create(loop)
-	backend := C.wlr_backend_autocreate(loop, &session)
-	renderer := C.wlr_renderer_autocreate(backend)
-
-	mut server := Comp_server{
-		wl_display: display
-		backend:    backend
-		renderer:   &renderer
-	}
-
+	mut server := Comp_server{}
+	server.wl_display = C.wl_display_create()
+	server.backend = C.wlr_backend_autocreate(C.wl_display_get_event_loop(server.wl_display), unsafe {nil})
+	server.renderer = C.wlr_renderer_autocreate(server.backend)
 	C.wlr_renderer_init_wl_display(server.renderer, server.wl_display)
 }
