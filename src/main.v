@@ -77,6 +77,10 @@ struct Comp_keyboard {
 	key       C.wl_listener
 }
 
+fn server_new_xdg_popup(mut listener C.wl_listener, data voidptr) {
+	// TODO (no idea how to implement this)
+}
+
 fn main() {
 	mut server := Comp_server{}
 
@@ -96,4 +100,9 @@ fn main() {
 
 	server.output_layout = C.wlr_output_layout_create(server.wl_display)
 	C.wl_list_init(&server.outputs)
+
+	server.xdg_shell = C.wlr_xdg_shell_create(server.wl_display, 3)
+	server.new_xdg_toplevel.notify = server_new_xdg_popup
+
+	// C.wl_signal_add(&server.xdg_shell.events.new_toplevel, &server.new_xdg_toplevel)
 }

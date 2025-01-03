@@ -26,7 +26,7 @@ pub struct C.wlr_data_device_manager {
 	}
 }
 
-enum Wlr_data_offer_type {
+pub enum Wlr_data_offer_type {
 	selection
 	drag
 }
@@ -86,7 +86,7 @@ pub struct C.wlr_drag_icon {
 	}
 }
 
-enum Wlr_drag_grab_type {
+pub enum Wlr_drag_grab_type {
 	keyboard
 	keyboard_pointer
 	keyboard_touch

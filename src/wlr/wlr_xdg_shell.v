@@ -44,7 +44,7 @@ pub struct C.wlr_xdg_client {
 	ping_timer  &C.wl_event_source
 }
 
-pub struct C.wlr_positioner_rules {
+pub struct C.wlr_xdg_positioner_rules {
 	anchor_rect           C.wlr_box
 	anchor                C.xdg_positioner_anchor
 	gravity               C.xdg_positioner_gravity
@@ -72,7 +72,7 @@ pub struct C.wlr_positioner_rules {
 
 pub struct C.wlr_xdg_positioner {
 	resource &C.wl_resource
-	rules    C.wlr_positioner_rules
+	rules    C.wlr_xdg_positioner_rules
 }
 
 pub struct C.wlr_xdg_popup_state {
@@ -87,7 +87,7 @@ pub enum Wlr_xdg_popup_configure_field {
 pub struct C.wlr_xdg_popup_configure {
 	fields           u32
 	geometry         C.wlr_box
-	rules            C.wlr_positioner_rules
+	rules            C.wlr_xdg_positioner_rules
 	reposition_token u32
 }
 
@@ -147,6 +147,35 @@ pub struct C.wlr_xdg_toplevel_state {
 	width  u32
 	height u32
 
+	max_width  u32
+	max_height u32
+	min_width  u32
+	min_height u32
+}
+
+pub enum Wlr_xdg_toplevel_wm_capabilities {
+	window_menu = 1 << 0
+	maximize    = 1 << 1
+	fullscreen  = 1 << 2
+	minimize    = 1 << 3
+}
+
+pub enum Wlr_xdg_toplevel_configure_field {
+	bounds          = 1 << 0
+	wm_capabilities = 1 << 1
+}
+
+pub struct C.wlr_xdg_toplevel_configure {
+	maximized  bool
+	fullscreen bool
+	resizing   bool
+	activated  bool
+	suspended  bool
+
+	tiled  u32
+	width  u32
+	height u32
+
 	bounds struct {
 		width  u32
 		height u32
@@ -156,9 +185,10 @@ pub struct C.wlr_xdg_toplevel_state {
 }
 
 pub struct C.wlr_xdg_toplevel_requested {
-	maximized  bool
-	minimized  bool
-	fullscreen bool
+	maximized         bool
+	minimized         bool
+	fullscreen        bool
+	fullscreen_output &C.wlr_output
 
 	wlr_private struct {
 		fullscreen_output_destroy C.wl_listener
@@ -225,7 +255,7 @@ pub struct C.wlr_xdg_surface {
 	surface  &C.wlr_surface
 	link     C.wl_list
 
-	role          C.wlr_xdg_surface_role
+	role          Wlr_xdg_surface_role
 	role_resource &C.wl_resource
 
 	// union?

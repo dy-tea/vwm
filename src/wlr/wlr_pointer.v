@@ -13,9 +13,9 @@ module wlr
 
 const wlr_pointer_buttons_cap = 16
 
-struct C.wlr_pointer_impl {}
+pub struct C.wlr_pointer_impl {}
 
-struct C.wlr_pointer {
+pub struct C.wlr_pointer {
 	base C.wlr_input_device
 	impl &C.wlr_pointer_impl
 
@@ -46,7 +46,7 @@ struct C.wlr_pointer {
 	data voidptr
 }
 
-struct C.wlr_pointer_motion_event {
+pub struct C.wlr_pointer_motion_event {
 	pointer    &C.wlr_pointer
 	time_msec  u32
 	delta_x    f64
@@ -55,14 +55,14 @@ struct C.wlr_pointer_motion_event {
 	unaccel_dy f64
 }
 
-struct C.wlr_pointer_motion_absolute_event {
+pub struct C.wlr_pointer_motion_absolute_event {
 	pointer   &C.wlr_pointer
 	time_msec u32
 	x         f64
 	y         f64
 }
 
-struct C.wlr_pointer_button_event {
+pub struct C.wlr_pointer_button_event {
 	pointer   &C.wlr_pointer
 	time_msec u32
 	button    u32
@@ -71,7 +71,7 @@ struct C.wlr_pointer_button_event {
 
 const wlr_pointer_axis_discrete_step = 120
 
-struct C.wlr_pointer_axis_event {
+pub struct C.wlr_pointer_axis_event {
 	pointer            &C.wlr_pointer
 	time_msec          u32
 	source             C.wl_pointer_axis_source
@@ -81,13 +81,13 @@ struct C.wlr_pointer_axis_event {
 	delta_discrete     int
 }
 
-struct C.wlr_pointer_swipe_begin_event {
+pub struct C.wlr_pointer_swipe_begin_event {
 	pointer   &C.wlr_pointer
 	time_msec u32
 	fingers   u32
 }
 
-struct C.wlr_pointer_swipe_update_event {
+pub struct C.wlr_pointer_swipe_update_event {
 	pointer   &C.wlr_pointer
 	time_msec u32
 	fingers   u32
@@ -95,19 +95,19 @@ struct C.wlr_pointer_swipe_update_event {
 	dy        f64
 }
 
-struct C.wlr_pointer_swipe_end_event {
+pub struct C.wlr_pointer_swipe_end_event {
 	pointer   &C.wlr_pointer
 	time_msec u32
 	cancelled bool
 }
 
-struct C.wlr_pointer_pinch_begin_event {
+pub struct C.wlr_pointer_pinch_begin_event {
 	pointer   &C.wlr_pointer
 	time_msec u32
 	fingers   u32
 }
 
-struct C.wlr_pointer_pinch_update_event {
+pub struct C.wlr_pointer_pinch_update_event {
 	pointer   &C.wlr_pointer
 	time_msec u32
 	fingers   u32
@@ -117,19 +117,19 @@ struct C.wlr_pointer_pinch_update_event {
 	rotation  f64
 }
 
-struct C.wlr_pointer_pinch_end_event {
+pub struct C.wlr_pointer_pinch_end_event {
 	pointer   &C.wlr_pointer
 	time_msec u32
 	cancelled bool
 }
 
-struct C.wlr_pointer_hold_begin_event {
+pub struct C.wlr_pointer_hold_begin_event {
 	pointer   &C.wlr_pointer
 	time_msec u32
 	fingers   u32
 }
 
-struct C.wlr_pointer_hold_end_event {
+pub struct C.wlr_pointer_hold_end_event {
 	pointer   &C.wlr_pointer
 	time_msec u32
 	cancelled bool

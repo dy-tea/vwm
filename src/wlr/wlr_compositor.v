@@ -13,7 +13,7 @@ import pixman
 
 #include "wlr/types/wlr_compositor.h"
 
-enum Wlr_surface_state_field {
+pub enum Wlr_surface_state_field {
 	buffer              = 1 << 0
 	surface_damage      = 1 << 1
 	buffer_damage       = 1 << 2
@@ -26,7 +26,7 @@ enum Wlr_surface_state_field {
 	offset              = 1 << 9
 }
 
-struct C.wlr_surface_state {
+pub struct C.wlr_surface_state {
 	committed u32
 	seq       u32
 
@@ -63,7 +63,7 @@ struct C.wlr_surface_state {
 	synced C.wl_array
 }
 
-struct C.wlr_surface_role {
+pub struct C.wlr_surface_role {
 	const_name &char
 	no_object  bool
 
@@ -74,7 +74,7 @@ struct C.wlr_surface_role {
 	destroy       fn (surface &C.wlr_surface)
 }
 
-struct C.wlr_surface_output {
+pub struct C.wlr_surface_output {
 	surface &C.wlr_surface
 	output  &C.wlr_output
 

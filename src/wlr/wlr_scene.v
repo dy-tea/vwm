@@ -44,13 +44,13 @@ type Wlr_scene_buffer_point_accepts_input_func_t = fn (buffer C.wlr_scene_buffer
 
 type Wlr_scene_node_iterator_func_t = fn (buffer C.wlr_scene_buffer, sx int, sy int, user_data voidptr)
 
-enum Wlr_scene_node_type {
+pub enum Wlr_scene_node_type {
 	tree
 	rect
 	buffer
 }
 
-struct C.wlr_scene_node {
+pub struct C.wlr_scene_node {
 	type   Wlr_scene_node_type
 	parent C.wlr_scene_tree
 
@@ -73,7 +73,7 @@ struct C.wlr_scene_node {
 	}
 }
 
-enum Wlr_scene_debug_damage_option {
+pub enum Wlr_scene_debug_damage_option {
 	none
 	rerender
 	highlight
@@ -129,12 +129,12 @@ pub struct C.wlr_scene_rect {
 	color  [4]f32
 }
 
-struct C.wlr_scene_outputs_update_event {
+pub struct C.wlr_scene_outputs_update_event {
 	active C.wlr_scene_output
 	size   usize
 }
 
-struct C.wlr_scene_output_sample_event {
+pub struct C.wlr_scene_output_sample_event {
 	output         C.wlr_scene_output
 	direct_scanout bool
 }

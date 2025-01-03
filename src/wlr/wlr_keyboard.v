@@ -15,7 +15,7 @@ import xkbcommon
 
 const wlr_led_count = 3
 
-enum Wlr_keyboard_led {
+pub enum Wlr_keyboard_led {
 	led_num_lock    = 1 << 0
 	led_caps_lock   = 1 << 1
 	led_scroll_lock = 1 << 2
@@ -23,7 +23,7 @@ enum Wlr_keyboard_led {
 
 const wlr_modifier_count = 8
 
-enum Wlr_keyboard_modifier {
+pub enum Wlr_keyboard_modifier {
 	shift = 1 << 0
 	caps  = 1 << 1
 	ctrl  = 1 << 2
@@ -36,7 +36,7 @@ enum Wlr_keyboard_modifier {
 
 const wlr_keyboard_keys_cap = 32
 
-struct C.wlr_keyboard_impl {}
+pub struct C.wlr_keyboard_impl {}
 
 pub struct C.wlr_keyboard_modifiers {
 	depressed xkbcommon.Xkb_mod_mask_t
@@ -87,23 +87,23 @@ pub struct C.wlr_keyboard_key_event {
 }
 
 // Get a struct wlr_keyboard from a struct wlr_input_device
-fn C.wlr_keyboard_from_input_device(input_device C.wlr_input_device) C.wlr_keyboard
+pub fn C.wlr_keyboard_from_input_device(input_device C.wlr_input_device) C.wlr_keyboard
 
-fn C.wlr_keyboard_set_keymap(kb C.wlr_keyboard, keymap C.xkb_keymap) bool
+pub fn C.wlr_keyboard_set_keymap(kb C.wlr_keyboard, keymap C.xkb_keymap) bool
 
-fn C.wlr_keyboard_keymaps_match(km1 C.kxb_keymap, km2 C.xkb_keymap) bool
+pub fn C.wlr_keyboard_keymaps_match(km1 C.kxb_keymap, km2 C.xkb_keymap) bool
 
 // Interpret pointer button key symbols
-fn C.wlr_keyboard_keysym_to_pointer_button(keysym C.xkb_keysym_t, keysym) u32
+pub fn C.wlr_keyboard_keysym_to_pointer_button(keysym C.xkb_keysym_t, keysym) u32
 
 // Interpet pointer motion key symbols
-fn C.wlr_keyboard_keysym_to_pointer_motion(keysym C.xkb_keysym_t, dx int, dy int)
+pub fn C.wlr_keyboard_keysym_to_pointer_motion(keysym C.xkb_keysym_t, dx int, dy int)
 
 // Set the keyboard repeat info
-fn C.wlr_keyboard_set_repeat_info(kb C.wlr_keyboard, rate_hz int, delay_ms int)
+pub fn C.wlr_keyboard_set_repeat_info(kb C.wlr_keyboard, rate_hz int, delay_ms int)
 
 // Update the LEDs on the device, if any
-fn C.wlr_keyboard_led_update(keyboard C.wlr_keyboard, leds u32)
+pub fn C.wlr_keyboard_led_update(keyboard C.wlr_keyboard, leds u32)
 
 // Get the set of currently depressed or latched modifiers
-fn C.wlr_keyboard_get_modifiers(keyboard C.wlr_keyboard) u32
+pub fn C.wlr_keyboard_get_modifiers(keyboard C.wlr_keyboard) u32

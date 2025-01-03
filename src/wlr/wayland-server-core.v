@@ -126,7 +126,7 @@ pub fn C.wl_client_set_max_buffer_size(client &C.wl_client, max_buffer_size usiz
 
 pub struct C.wl_listener {
 	link   C.wl_list
-	notfiy Wl_notify_func_t
+	notify Wl_notify_func_t
 }
 
 pub struct C.wl_signal {

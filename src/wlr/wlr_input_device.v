@@ -11,12 +11,12 @@ module wlr
 
 #include "wlr/types/wlr_input_device.h"
 
-enum Wlr_button_state {
+pub enum Wlr_button_state {
 	released
 	pressed
 }
 
-enum Wlr_input_device_type {
+pub enum Wlr_input_device_type {
 	keyboard
 	pointer
 	touch
