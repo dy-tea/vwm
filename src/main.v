@@ -76,12 +76,12 @@ fn main() {
 	display := C.wl_display_create()
 	loop := C.wl_display_get_event_loop(display)
 	session := C.wlr_session_create(loop)
-	backend := C.wlr_backend_autocreate(loop, session)
+	backend := C.wlr_backend_autocreate(loop, &session)
 	renderer := C.wlr_renderer_autocreate(backend)
 
 	mut server := Comp_server{
 		wl_display: display
-		backend:    &backend
+		backend:    backend
 		renderer:   &renderer
 	}
 
