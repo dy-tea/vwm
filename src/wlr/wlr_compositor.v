@@ -49,13 +49,10 @@ pub struct C.wlr_surface_state {
 	subsurfaces_below C.wl_list
 	subsufaces_above  C.wl_list
 
-	viewport struct {
-		has_src    bool
-		has_dst    bool
-		src        C.wlr_fbox
-		dst_width  int
-		dst_height int
-	}
+	viewport_has_src bool
+	viewport_has_dst bool
+	viewport_src     C.wlr_box
+	viewport_dst     C.wlr_box
 
 	chached_state_locks usize
 	chached_state_link  C.wl_list
@@ -77,8 +74,7 @@ pub struct C.wlr_surface_role {
 pub struct C.wlr_surface_output {
 	surface &C.wlr_surface
 	output  &C.wlr_output
-
-	link C.wl_list
+	link    C.wl_list
 
 	wlr_private struct {
 		bind    C.wl_listener
@@ -87,26 +83,26 @@ pub struct C.wlr_surface_output {
 }
 
 pub struct C.wlr_surface {
-	resource        &C.wl_resource
-	compositor      &C.wlr_compositor
-	buffer          &C.wlr_client_buffer
-	buffer_damage   pixman.Pixman_region32_t
-	opaque_region   pixman.Pixman_region32_t
-	input_region    pixman.Pixman_region32_t
-	current         C.wlr_surface_state
-	pending         C.wlr_surface_state
-	chached         C.wl_list
-	mapped          bool
-	role            &C.wlr_surface_role
-	role_resource   &C.wl_resource
-	events          struct {
-		client_commit  C.wl_signal
-		commit         C.wl_signal
-		map            C.wl_signal
-		unmap          C.wl_signal
-		new_subsurface C.wl_signal
-		destroy        C.wl_signal
-	}
+	resource      &C.wl_resource
+	compositor    &C.wlr_compositor
+	buffer        &C.wlr_client_buffer
+	buffer_damage pixman.Pixman_region32_t
+	opaque_region pixman.Pixman_region32_t
+	input_region  pixman.Pixman_region32_t
+	current       C.wlr_surface_state
+	pending       C.wlr_surface_state
+	chached       C.wl_list
+	mapped        bool
+	role          &C.wlr_surface_role
+	role_resource &C.wl_resource
+
+	events_client_commit  C.wl_signal
+	events_commit         C.wl_signal
+	events_map            C.wl_signal
+	event_unmap           C.wl_signal
+	events_new_subsurface C.wl_signal
+	events_destroy        C.wl_signal
+
 	current_outputs C.wl_list
 	addons          C.wlr_addon_set
 	data            voidptr

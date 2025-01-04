@@ -22,9 +22,7 @@ pub struct C.wlr_drm_lease {
 	lessee_id u32
 	backend   &C.wlr_drm_backend
 
-	events struct {
-		destroy C.wl_signal
-	}
+	events_destroy C.wl_signal
 
 	data voidptr
 }

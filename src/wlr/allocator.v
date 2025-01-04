@@ -19,11 +19,9 @@ pub struct C.wlr_allocator_interface {
 pub fn C.wlr_allocator_init(alloc &C.wlr_allocator, impl &C.wlr_allocator_interface, buffer_caps u32)
 
 pub struct C.wlr_allocator {
-	impl        &C.wlr_allocator_interface
-	buffer_caps u32
-	events      struct {
-		destroy C.wl_signal
-	}
+	impl           &C.wlr_allocator_interface
+	buffer_caps    u32
+	events_destroy C.wl_signal
 }
 
 pub fn C.wlr_allocator_autocreate(backend &C.wlr_backend, renderer &C.wlr_renderer) &C.wlr_allocator

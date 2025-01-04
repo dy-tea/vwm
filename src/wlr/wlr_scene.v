@@ -20,8 +20,6 @@ pub struct C.wlr_output_layout {}
 
 pub struct C.wlr_output_layout_output {}
 
-pub struct C.wlr_xdg_surface {}
-
 pub struct C.wlr_layer_surface_v1 {}
 
 pub struct C.wlr_drag_icon {}

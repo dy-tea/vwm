@@ -91,6 +91,7 @@ pub struct C.wlr_xdg_popup_configure {
 	reposition_token u32
 }
 
+@[heap]
 pub struct C.wlr_xdg_popup {
 	base C.wlr_xdg_surface
 	link C.wl_list

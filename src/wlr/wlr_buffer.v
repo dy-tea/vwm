@@ -59,10 +59,8 @@ pub struct C.wlr_buffer {
 	n_locks            usize
 	accessing_data_ptr bool
 
-	events struct {
-		destroy C.wl_signal
-		release C.wl_signal
-	}
+	events_destroy C.wl_signal
+	events_release C.wl_signal
 
 	addons C.wlr_addon_set
 }
@@ -85,7 +83,6 @@ pub fn C.wlr_buffer_end_data_ptr_access(buffer &C.wlr_buffer)
 pub struct C.wlr_client_buffer {
 	base    C.wlr_buffer
 	texture &C.wlr_texture
-	source  &C.wlr_buffer
 
 	wlr_private struct {
 		source_destroy   C.wl_listener

@@ -36,7 +36,7 @@ mut:
 	request_set_selection C.wl_listener
 	keyboards             C.wl_list
 	cursor_mode           Comp_cursor_mode
-	grabbed_view          &Comp_view = unsafe { nil }
+	grabbed_toplevel      &Comp_toplevel = unsafe { nil }
 	grab_x                f64
 	grab_y                f64
 	grab_geobox           C.wlr_box
@@ -48,24 +48,34 @@ mut:
 }
 
 struct Comp_output {
-	link       C.wl_list
-	server     &Comp_server
-	wlr_output &C.wlr_output
-	frame      C.wl_listener
+	link          C.wl_list
+	server        &Comp_server
+	wlr_output    &C.wlr_output
+	frame         C.wl_listener
+	request_state C.wl_listener
+	destroy       C.wl_listener
 }
 
-struct Comp_view {
-	link           C.wl_list
-	server         &Comp_server
-	xdg_surface    &C.wlr_xdg_surface
-	map            C.wl_listener
-	unmap          C.wl_listener
-	destroy        C.wl_listener
-	request_move   C.wl_listener
-	request_resize C.wl_listener
-	mapped         bool
-	x              int
-	y              int
+struct Comp_toplevel {
+	link         C.wl_list
+	server       &Comp_server
+	xdg_toplevel &C.wlr_xdg_toplevel
+
+	map                C.wl_listener
+	unmap              C.wl_listener
+	commit             C.wl_listener
+	destroy            C.wl_listener
+	request_move       C.wl_listener
+	request_resize     C.wl_listener
+	request_maximize   C.wl_listener
+	request_fullscreen C.wl_listener
+}
+
+struct Comp_popup {
+	xdg_popup &C.wlr_xdg_popup
+mut:
+	commit  C.wl_listener
+	destroy C.wl_listener
 }
 
 struct Comp_keyboard {
@@ -75,10 +85,33 @@ struct Comp_keyboard {
 
 	modifiers C.wl_listener
 	key       C.wl_listener
+	destroy   C.wl_listener
 }
 
-fn server_new_xdg_popup(mut listener C.wl_listener, data voidptr) {
-	// TODO (no idea how to implement this)
+fn xdg_popup_commit(listener &C.wl_listener, mut data voidptr) {
+
+}
+
+fn xdg_popup_destroy(listener &C.wl_listener, mut data voidptr) {
+}
+
+// &C.xdg_popup(data)
+
+fn server_new_xdg_popup(listener &C.wl_listener, mut data C.wlr_xdg_popup) {
+	mut popup := &Comp_popup{
+		xdg_popup: data
+	}
+
+	parent := C.wlr_xdg_surface_try_from_wlr_surface(data.parent)
+	parent_tree := &parent.data
+	base_data := C.wlr_scene_xdg_surface_create(parent_tree, data.base)
+	data.base.data = &base_data // cannot ref directly
+
+	popup.commit.notify = xdg_popup_commit
+	C.wl_signal_add(&data.base.surface.events_commit, popup.commit)
+
+	popup.destroy.notify = xdg_popup_destroy
+	C.wl_signal_add(&data.base.surface.events_destroy, popup.destroy)
 }
 
 fn main() {

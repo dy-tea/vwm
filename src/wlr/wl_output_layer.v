@@ -17,9 +17,7 @@ pub struct C.wlr_output_layer {
 	link   C.wl_list
 	addons C.wlr_addon_set
 
-	events struct {
-		feedback C.wl_signal
-	}
+	events_feedback C.wl_signal
 
 	data voidptr
 
