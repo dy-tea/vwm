@@ -60,6 +60,7 @@ struct Comp_toplevel {
 	link         C.wl_list
 	server       &Comp_server
 	xdg_toplevel &C.wlr_xdg_toplevel
+	scene_tree   &C.wlr_scene_tree
 
 	map                C.wl_listener
 	unmap              C.wl_listener
@@ -88,21 +89,127 @@ struct Comp_keyboard {
 	destroy   C.wl_listener
 }
 
+fn (server Comp_server) desktop_toplevel_at(lx f64, ly f64, mut surface &&C.wlr_surface, sx &f64, sy &f64) &Comp_toplevel {
+	node := C.wlr_scene_node_at(&server.scene.tree.node, lx, ly, sx, sy)
+	if node == unsafe { nil } || node.type != wlr.Scene_node_type.buffer {
+		return unsafe { nil }
+	}
+
+	scene_buffer := C.wlr_scene_buffer_from_node(node)
+	scene_surface := C.wlr_scene_surface_try_from_buffer(scene_buffer)
+	if scene_surface == unsafe { nil } {
+		return unsafe { nil }
+	}
+
+	unsafe {
+		*surface = scene_surface.surface
+	}
+
+	mut tree := node.parent
+	for tree != unsafe { nil } && tree.node.data == unsafe {nil} {
+		tree = tree.node.parent
+	}
+
+	return tree.node.data
+}
+
+fn (server Comp_server) process_cursor_move() {
+	toplevel := server.grabbed_toplevel
+	C.wlr_scene_node_set_position(&toplevel.scene_tree.node, server.cursor.x - server.grab_x, server.cursor.y - server.grab_y)
+}
+
+fn (server Comp_server) process_cursor_resize() {
+	toplevel := server.grabbed_toplevel
+
+	border_x := server.cursor.x - server.grab_x
+	border_y := server.cursor.y - server.grab_y
+
+	mut new_left := server.grab_geobox.x
+	mut new_right := server.grab_geobox.x + server.grab_geobox.width
+
+	mut new_top := server.grab_geobox.y
+	mut new_bottom := server.grab_geobox.y + server.grab_geobox.height
+
+	if server.resize_edges & u32(wlr.Edges.top) > 0 {
+		new_top = int(border_y)
+		if new_top >= new_bottom {
+			new_top = new_bottom - 1
+		}
+	} else if server.resize_edges & u32(wlr.Edges.bottom) > 0 {
+		new_bottom = int(border_y)
+		if new_bottom <= new_top {
+			new_bottom = new_top + 1
+		}
+	}
+
+	if server.resize_edges & u32(wlr.Edges.left) > 0 {
+		new_left = int(border_x)
+		if new_left >= new_right {
+			new_left = new_right - 1
+		}
+	} else if server.resize_edges & u32(wlr.Edges.right) > 0 {
+		new_right = int(border_x)
+		if new_right <= new_left {
+			new_right = new_left + 1
+		}
+	}
+
+	geo_box := &toplevel.xdg_toplevel.base.geometry
+	C.wlr_scene_node_set_position(&toplevel.scene_tree.node, new_left - geo_box.x, new_top - geo_box.y)
+	C.wlr_xdg_toplevel_set_size(toplevel.xdg_toplevel, new_right - new_left, new_bottom - new_top)
+}
+
+fn (server Comp_server) process_cursor_motion(time u32) {
+	if server.cursor_mode == .move {
+		server.process_cursor_move()
+		return
+	} else if server.cursor_mode == .resize {
+		server.process_cursor_resize()
+		return
+	}
+
+	sx := f64(0)
+	sy := f64(0)
+
+	mut surface := &C.wlr_surface(unsafe {nil})
+	toplevel := server.desktop_toplevel_at(server.cursor.x, server.cursor.y, mut surface, &sx, &sy)
+
+	if toplevel == unsafe { nil } {
+		C.wlr_cursor_set_xcursor(server.cursor, server.cursor_mgr, "default".str)
+	}
+
+	if surface != unsafe { nil } {
+		C.wlr_seat_pointer_notify_enter(server.seat, surface, sx, sy)
+		C.wlr_seat_pointer_notify_motion(server.seat, time, sx, sy)
+	} else {
+		C.wlr_seat_pointer_clear_focus(server.seat)
+	}
+}
+
+fn (server Comp_server) server_cursor_motion(listener &C.wl_listener, mut data voidptr) {
+	unsafe {
+		event := &C.wlr_pointer_motion_event(data)
+
+		C.wlr_cursor_move(server.cursor, &event.pointer.base, &event.delta_x, &event.delta_y)
+		server.process_cursor_motion(event.time_msec)
+	}
+}
+
 fn xdg_popup_commit(listener &C.wl_listener, mut data voidptr) {
 	comp_popup := &Comp_popup(data)
-	popup := wlr.wl_container_of(comp_popup, listener, __offsetof(Comp_popup, commit))
-	if popup.xdg_popup.base.initial_commit {
-		C.wlr_xdg_surface_schedule_configure(popup.xdg_popup.base)
+	// popup := wlr.wl_container_of(comp_popup, listener, __offsetof(Comp_popup, commit))
+	if comp_popup.xdg_popup.base.initial_commit {
+		C.wlr_xdg_surface_schedule_configure(comp_popup.xdg_popup.base)
 	}
 }
 
 fn xdg_popup_destroy(listener &C.wl_listener, mut data voidptr) {
 	comp_popup := &Comp_popup(data)
-	popup := wlr.wl_container_of(comp_popup, listener, __offsetof(Comp_popup, destroy))
-	C.wl_list_remove(&popup.commit.link)
-	C.wl_list_remove(&popup.destroy.link)
+	// popup := wlr.wl_container_of(comp_popup, listener, __offsetof(Comp_popup, destroy))
+	C.wl_list_remove(&comp_popup.commit.link)
+	C.wl_list_remove(&comp_popup.destroy.link)
 	unsafe {
-		free(popup)
+		free(comp_popup)
 	}
 }
 
@@ -127,25 +234,38 @@ fn server_new_xdg_popup(listener &C.wl_listener, mut data C.wlr_xdg_popup) {
 fn main() {
 	mut server := Comp_server{}
 
+	// Display
 	server.wl_display = C.wl_display_create()
 
+	// Backend
 	server.backend = C.wlr_backend_autocreate(C.wl_display_get_event_loop(server.wl_display),
 		unsafe { nil })
 	server.renderer = C.wlr_renderer_autocreate(server.backend)
 	C.wlr_renderer_init_wl_display(server.renderer, server.wl_display)
 
+	// Allocator
 	server.allocator = C.wlr_allocator_autocreate(server.backend, server.renderer)
 
+	// Compositor
 	C.wlr_compositor_create(server.wl_display, 5, server.renderer)
 	C.wlr_subcompositor_create(server.wl_display)
-
 	C.wlr_data_device_manager_create(server.wl_display)
 
+	// Outputs
 	server.output_layout = C.wlr_output_layout_create(server.wl_display)
 	C.wl_list_init(&server.outputs)
 
+	// Shell
 	server.xdg_shell = C.wlr_xdg_shell_create(server.wl_display, 3)
 	server.new_xdg_toplevel.notify = server_new_xdg_popup
+	C.wl_signal_add(&server.xdg_shell.events.new_toplevel, &server.new_xdg_toplevel)
+	server.new_xdg_popup.notify = server_new_xdg_popup
+	C.wl_signal_add(&server.xdg_shell.events.new_popup, &server.new_xdg_popup)
 
-	// C.wl_signal_add(&server.xdg_shell.events.new_toplevel, &server.new_xdg_toplevel)
+	// Cursor
+	server.cursor = C.wlr_cursor_create()
+	C.wlr_cursor_attach_output_layout(server.cursor, server.output_layout)
+	server.cursor_mgr = C.wlr_xcursor_manager_create(unsafe { nil }, 24)
+	server.cursor_mode = .passthrough
+	server.cursor_motion.notify = server.server_cursor_motion
 }

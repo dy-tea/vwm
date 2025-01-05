@@ -11,7 +11,7 @@ module wlr
 
 #include "wlr/util/edges.h"
 
-pub enum Wlr_edges {
+pub enum Edges {
 	none   = 0
 	top    = 1 << 0
 	bottom = 1 << 1

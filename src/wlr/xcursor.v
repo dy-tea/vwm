@@ -39,4 +39,4 @@ pub fn C.wlr_xcursor_theme_destroy(theme &C.wlr_xcursor_theme)
 
 pub fn C.wlr_xcursor_theme_get_cursor(theme &C.wlr_xcusor_theme, name string) &C.wlr_xcursor
 pub fn C.wlr_xcursor_frame(cursor &C.wlr_xcursor, time u32) int
-pub fn C.wlr_xcursor_get_resize_name(edges Wlr_edges) string
+pub fn C.wlr_xcursor_get_resize_name(edges Edges) string

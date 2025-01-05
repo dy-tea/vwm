@@ -44,14 +44,14 @@ type Wlr_scene_buffer_point_accepts_input_func_t = fn (buffer &C.wlr_scene_buffe
 @[typedef]
 type Wlr_scene_node_iterator_func_t = fn (buffer &C.wlr_scene_buffer, sx int, sy int, user_data voidptr)
 
-pub enum Wlr_scene_node_type {
+pub enum Scene_node_type {
 	tree
 	rect
 	buffer
 }
 
 pub struct C.wlr_scene_node {
-	type   Wlr_scene_node_type
+	type   Scene_node_type
 	parent &C.wlr_scene_tree
 
 	link C.wl_list
@@ -80,7 +80,7 @@ pub enum Wlr_scene_debug_damage_option {
 }
 
 pub struct C.wlr_scene_tree {
-	node     &&C.wlr_scene_node
+	node     C.wlr_scene_node
 	children C.wl_list
 }
 
@@ -256,7 +256,7 @@ pub fn C.wlr_scene_node_coords(node &C.wlr_scene_node, lx int, ly int) bool
 
 pub fn C.wlr_scene_node_for_each_buffer(node &C.wlr_scene_node, iterator Wlr_scene_node_iterator_func_t, user_data voidptr)
 
-pub fn C.wlr_scene_node_at(node &C.wlr_scene_node, lx f64, ly f64, nx f64, ny f64) &C.wlr_scene_node
+pub fn C.wlr_scene_node_at(node &C.wlr_scene_node, lx f64, ly f64, nx &f64, ny &f64) &C.wlr_scene_node
 
 pub fn C.wlr_scene_create() &C.wlr_scene
 

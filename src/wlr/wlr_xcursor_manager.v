@@ -23,7 +23,7 @@ pub struct C.wlr_xcursor_manager {
 	scaled_themes C.wl_list
 }
 
-pub fn C.wlr_xcursor_manager_create(name string, size u32) &C.wlr_xcursor_manager
+pub fn C.wlr_xcursor_manager_create(name &char, size u32) &C.wlr_xcursor_manager
 pub fn C.wlr_xcursor_manager_destroy(manager &C.wlr_xcursor_manager)
 
 pub fn C.wlr_xcursor_manager_load(manager &C.wlr_xcursor_manager, scale f32) &C.wlr_xcursor_manager_theme

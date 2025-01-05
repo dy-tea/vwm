@@ -19,6 +19,7 @@ pub struct C.wlr_xdg_shell {
 	ping_timeout u32
 
 	events struct {
+	pub:
 		new_surface  C.wl_signal
 		new_toplevel C.wl_signal
 		new_popup    C.wl_signal
