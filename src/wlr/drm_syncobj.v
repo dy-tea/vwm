@@ -23,7 +23,10 @@ pub struct C.wlr_drm_syncobj_timeline {
 }
 
 pub struct C.wlr_drm_syncobj_timeline_waiter {
-	events_ready C.wl_signal
+	events struct {
+	pub:
+		ready C.wl_signal
+	}
 
 	wlr_private struct {
 		ev_fd        int

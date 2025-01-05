@@ -21,9 +21,13 @@ pub struct C.wlr_backend_impl {}
 pub struct C.wlr_backend {
 	impl              &C.wlr_backend_impl
 	features_timeline bool
-	events_destroy    C.wl_signal
-	events_new_input  C.wl_signal
-	events_new_output C.wl_signal
+
+	events struct {
+	pub:
+		destroy    C.wl_signal
+		new_input  C.wl_signal
+		new_output C.wl_signal
+	}
 }
 
 pub fn C.wlr_backend_autocreate(loop &C.wl_event_loop, session_ptr &&C.wlr_session) &C.wlr_backend

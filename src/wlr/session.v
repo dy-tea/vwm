@@ -33,8 +33,11 @@ pub struct C.wlr_device {
 	dev       C.dev_t
 	link      C.wl_list
 
-	events_change C.wl_signal
-	events_remove C.wl_signal
+	events struct {
+	pub:
+		change C.wl_signal
+		remove C.wl_signal
+	}
 }
 
 pub struct C.wlr_session {
@@ -54,10 +57,12 @@ pub struct C.wlr_session {
 
 	event_loop &C.wl_event_loop
 
-	events_active       C.wl_signal
-	events_add_drm_card C.wl_signal
-
-	destroy C.wl_signal
+	events struct {
+	pub:
+		active       C.wl_signal
+		add_drm_card C.wl_signal
+		destroy      C.wl_signal
+	}
 
 	wlr_private struct {
 		event_loop_destroy C.wl_listener

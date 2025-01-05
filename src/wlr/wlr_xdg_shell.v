@@ -93,7 +93,7 @@ pub struct C.wlr_xdg_popup_configure {
 
 @[heap]
 pub struct C.wlr_xdg_popup {
-	base C.wlr_xdg_surface
+	base &C.wlr_xdg_surface
 	link C.wl_list
 
 	resource &C.wl_resource
@@ -211,6 +211,7 @@ pub struct C.wlr_xdg_toplevel {
 	app_id string
 
 	events struct {
+	pub:
 		request_maximize         C.wl_signal
 		request_fullscreen       C.wl_signal
 		request_minimize         C.wl_signal
@@ -279,6 +280,7 @@ pub struct C.wlr_xdg_surface {
 	geometry C.wlr_box
 
 	events struct {
+	pub:
 		destroy      C.wl_signal
 		ping_timeout C.wl_signal
 		new_popup    C.wl_signal

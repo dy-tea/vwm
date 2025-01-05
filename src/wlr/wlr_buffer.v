@@ -59,8 +59,11 @@ pub struct C.wlr_buffer {
 	n_locks            usize
 	accessing_data_ptr bool
 
-	events_destroy C.wl_signal
-	events_release C.wl_signal
+	events struct {
+	pub:
+		destroy C.wl_signal
+		release C.wl_signal
+	}
 
 	addons C.wlr_addon_set
 }

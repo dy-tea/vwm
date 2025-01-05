@@ -96,12 +96,15 @@ pub struct C.wlr_surface {
 	role          &C.wlr_surface_role
 	role_resource &C.wl_resource
 
-	events_client_commit  C.wl_signal
-	events_commit         C.wl_signal
-	events_map            C.wl_signal
-	event_unmap           C.wl_signal
-	events_new_subsurface C.wl_signal
-	events_destroy        C.wl_signal
+	events struct {
+	pub:
+		client_commit  C.wl_signal
+		commit         C.wl_signal
+		map            C.wl_signal
+		unmap          C.wl_signal
+		new_subsurface C.wl_signal
+		destroy        C.wl_signal
+	}
 
 	current_outputs C.wl_list
 	addons          C.wlr_addon_set

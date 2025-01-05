@@ -71,7 +71,7 @@ struct Comp_toplevel {
 	request_fullscreen C.wl_listener
 }
 
-struct Comp_popup {
+pub struct Comp_popup {
 	xdg_popup &C.wlr_xdg_popup
 mut:
 	commit  C.wl_listener
@@ -89,10 +89,21 @@ struct Comp_keyboard {
 }
 
 fn xdg_popup_commit(listener &C.wl_listener, mut data voidptr) {
-
+	comp_popup := &Comp_popup(data)
+	popup := wlr.wl_container_of(comp_popup, listener, __offsetof(Comp_popup, commit))
+	if popup.xdg_popup.base.initial_commit {
+		C.wlr_xdg_surface_schedule_configure(popup.xdg_popup.base)
+	}
 }
 
 fn xdg_popup_destroy(listener &C.wl_listener, mut data voidptr) {
+	comp_popup := &Comp_popup(data)
+	popup := wlr.wl_container_of(comp_popup, listener, __offsetof(Comp_popup, destroy))
+	C.wl_list_remove(&popup.commit.link)
+	C.wl_list_remove(&popup.destroy.link)
+	unsafe {
+		free(popup)
+	}
 }
 
 // &C.xdg_popup(data)
@@ -103,15 +114,14 @@ fn server_new_xdg_popup(listener &C.wl_listener, mut data C.wlr_xdg_popup) {
 	}
 
 	parent := C.wlr_xdg_surface_try_from_wlr_surface(data.parent)
-	parent_tree := &parent.data
-	base_data := C.wlr_scene_xdg_surface_create(parent_tree, data.base)
+	base_data := C.wlr_scene_xdg_surface_create(parent.data, data.base)
 	data.base.data = &base_data // cannot ref directly
 
 	popup.commit.notify = xdg_popup_commit
-	C.wl_signal_add(&data.base.surface.events_commit, popup.commit)
+	C.wl_signal_add(&data.base.surface.events.commit, &popup.commit)
 
 	popup.destroy.notify = xdg_popup_destroy
-	C.wl_signal_add(&data.base.surface.events_destroy, popup.destroy)
+	C.wl_signal_add(&data.base.surface.events.destroy, &popup.destroy)
 }
 
 fn main() {
