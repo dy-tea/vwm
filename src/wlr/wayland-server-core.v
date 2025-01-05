@@ -16,12 +16,16 @@ const wl_event_writable = 0x02
 const wl_event_hangup = 0x04
 const wl_event_error = 0x08
 
+@[typedef]
 pub type Wl_event_loop_fd_func_t = fn (fd int, mask u32, data voidptr) int
 
+@[typedef]
 pub type Wl_event_loop_timer_func_t = fn (data voidptr) int
 
+@[typedef]
 pub type Wl_event_loop_signal_func_t = fn (signal_number int, data voidptr) int
 
+@[typedef]
 pub type Wl_event_loop_idle_func_t = fn (data voidptr)
 
 pub struct C.wl_event_loop {}
@@ -43,6 +47,7 @@ pub fn C.wl_event_loop_dispatch_idle(loop &C.wl_event_loop)
 pub fn C.wl_event_loop_add_idle(loop &C.wl_event_loop, func Wl_event_loop_idle_func_t, data voidptr) &C.wl_event_source
 pub fn C.wl_event_loop_get_fd(loop &C.wl_event_loop) int
 
+@[typedef]
 type Wl_notify_func_t = fn (listener &C.wl_listener, data voidptr)
 
 pub fn C.wl_event_loop_add_destroy_listener(loop &C.wl_event_loop, listener C.wl_listener)
@@ -64,6 +69,7 @@ pub fn C.wl_display_set_default_max_buffer_size(display &C.wl_display, max_buffe
 
 pub struct C.wl_client {}
 
+@[typedef]
 pub type Wl_global_bind_func_t = fn (client &C.wl_client, data voidptr, version u32, id u32)
 
 pub fn C.wl_display_get_serial(display C.wl_display) u32
@@ -87,6 +93,7 @@ pub fn C.wl_global_create(display C.wl_display, interface, C.wl_interface, versi
 pub fn C.wl_global_remove(global C.wl_global)
 pub fn C.wl_global_destroy(global C.wl_global)
 
+@[typedef]
 pub type Wl_display_global_filter_func_t = fn (client &C.wl_client, global &C.wl_global, data voidptr) bool
 
 pub fn C.wl_display_set_global_filter(display &C.wl_display, filter Wl_display_global_filter_func_t, data voidptr)
@@ -114,10 +121,12 @@ pub fn C.wl_client_post_no_memory(client &C.wl_client)
 pub fn C.wl_client_post_implementation_error(client &C.wl_client, msg string, ...)
 pub fn C.wl_client_add_resource_created_listener(client &C.wl_client, listener &C.wl_listener)
 
+@[typedef]
 pub type Wl_client_for_each_resource_iterator_func_t = fn (resource &C.wl_resource, data voidptr) Wl_iterator_result
 
 pub fn C.wl_client_for_each_resource(client &C.wl_client, iterator Wl_client_for_each_resource_iterator_func_t, data voidptr)
 
+@[typedef]
 pub type Wl_user_data_destroy_func_t = fn (data voidptr)
 
 pub fn C.wl_client_set_user_data(client &C.wl_client, data voidptr, destroy Wl_user_data_destroy_func_t)
@@ -139,6 +148,7 @@ pub fn C.wl_signal_get(signal &C.wl_signal, notify Wl_notify_func_t) &C.wl_liste
 pub fn C.wl_signal_emit(signal &C.wl_signal, data voidptr)
 pub fn C.wl_signal_emit_mutable(signal &C.wl_signal, data voidptr)
 
+@[typedef]
 pub type Wl_resource_destroy_func_t = fn (resource &C.wl_resource)
 
 pub fn C.wl_resource_post_event(resource &C.wl_resource, opcode u32, ...)
@@ -198,6 +208,7 @@ pub struct C.wl_protocol_logger_message {
 	arguments       &Wl_argument
 }
 
+@[typedef]
 pub type Wl_protocol_logger_func_t = fn (data voidptr, direction Wl_protocol_logger_type, message &C.wl_protocol_logger_message)
 
 pub struct C.wl_protocol_logger {}

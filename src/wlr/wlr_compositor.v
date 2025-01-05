@@ -148,6 +148,7 @@ pub struct C.wlr_compositor {
 	}
 }
 
+@[typedef]
 pub type Wlr_surface_iterator_func_t = fn (surface &C.wlr_surface, sx int, sy int, data voidptr)
 
 pub fn C.wlr_surface_set_role(surface &C.wlr_surface, role &C.wlr_surface_role, error_resource &C.wl_resource, error_code u32) bool

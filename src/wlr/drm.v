@@ -13,6 +13,7 @@ module wlr
 
 pub struct C.wlr_drm_backend {}
 
+@[typedef]
 pub struct C._drmModeModeInfo {}
 
 pub struct C.drmModeModeInfo {}

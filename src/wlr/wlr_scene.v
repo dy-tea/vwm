@@ -38,8 +38,10 @@ pub struct C.wlr_gamma_control_manager_v1 {}
 
 pub struct C.wlr_output_state {}
 
+@[typedef]
 type Wlr_scene_buffer_point_accepts_input_func_t = fn (buffer &C.wlr_scene_buffer, sx &f64, xy &f64)
 
+@[typedef]
 type Wlr_scene_node_iterator_func_t = fn (buffer &C.wlr_scene_buffer, sx int, sy int, user_data voidptr)
 
 pub enum Wlr_scene_node_type {
@@ -78,7 +80,7 @@ pub enum Wlr_scene_debug_damage_option {
 }
 
 pub struct C.wlr_scene_tree {
-	node &    &C.wlr_scene_node
+	node     &&C.wlr_scene_node
 	children C.wl_list
 }
 
@@ -121,7 +123,7 @@ pub struct C.wlr_scene_surface {
 }
 
 pub struct C.wlr_scene_rect {
-	node &  C.wlr_scene_node
+	node   &C.wlr_scene_node
 	width  int
 	height int
 	color  [4]f32
