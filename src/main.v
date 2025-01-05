@@ -89,24 +89,23 @@ struct Comp_keyboard {
 	destroy   C.wl_listener
 }
 
-fn (server Comp_server) desktop_toplevel_at(lx f64, ly f64, mut surface &&C.wlr_surface, sx &f64, sy &f64) &Comp_toplevel {
+fn (server Comp_server) desktop_toplevel_at(lx f64, ly f64, mut surface C.wlr_surface, sx &f64, sy &f64) ?&Comp_toplevel {
 	node := C.wlr_scene_node_at(&server.scene.tree.node, lx, ly, sx, sy)
 	if node == unsafe { nil } || node.type != wlr.Scene_node_type.buffer {
-		return unsafe { nil }
+		return none
 	}
 
 	scene_buffer := C.wlr_scene_buffer_from_node(node)
 	scene_surface := C.wlr_scene_surface_try_from_buffer(scene_buffer)
 	if scene_surface == unsafe { nil } {
-		return unsafe { nil }
+		return none
 	}
 
 	unsafe {
 		*surface = scene_surface.surface
 	}
-
 	mut tree := node.parent
-	for tree != unsafe { nil } && tree.node.data == unsafe {nil} {
+	for tree != unsafe { nil } && tree.node.data == unsafe { nil } {
 		tree = tree.node.parent
 	}
 
@@ -115,7 +114,8 @@ fn (server Comp_server) desktop_toplevel_at(lx f64, ly f64, mut surface &&C.wlr_
 
 fn (server Comp_server) process_cursor_move() {
 	toplevel := server.grabbed_toplevel
-	C.wlr_scene_node_set_position(&toplevel.scene_tree.node, server.cursor.x - server.grab_x, server.cursor.y - server.grab_y)
+	C.wlr_scene_node_set_position(&toplevel.scene_tree.node, server.cursor.x - server.grab_x,
+		server.cursor.y - server.grab_y)
 }
 
 fn (server Comp_server) process_cursor_resize() {
@@ -171,11 +171,12 @@ fn (server Comp_server) process_cursor_motion(time u32) {
 	sx := f64(0)
 	sy := f64(0)
 
-	mut surface := &C.wlr_surface(unsafe {nil})
-	toplevel := server.desktop_toplevel_at(server.cursor.x, server.cursor.y, mut surface, &sx, &sy)
+	mut surface := &C.wlr_surface(unsafe { nil })
+	toplevel := server.desktop_toplevel_at(server.cursor.x, server.cursor.y, mut surface,
+		&sx, &sy)
 
-	if toplevel == unsafe { nil } {
-		C.wlr_cursor_set_xcursor(server.cursor, server.cursor_mgr, "default".str)
+	if toplevel == none {
+		C.wlr_cursor_set_xcursor(server.cursor, server.cursor_mgr, 'default'.str)
 	}
 
 	if surface != unsafe { nil } {
