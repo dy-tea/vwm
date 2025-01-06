@@ -41,6 +41,7 @@ pub fn C.wl_list_empty(list &C.wl_list) bool
 pub fn C.wl_list_insert_list(list &C.wl_list, other &C.wl_list)
 
 pub fn wl_container_of[T, S](ptr T, sample S, member_offset u32) &T {
+	panic('do not use this function, it does not work')
 	return unsafe { &T(charptr(sample) - member_offset) }
 }
 

@@ -341,8 +341,7 @@ fn main() {
 	C.wl_signal_add(&server.cursor.events.motion_absolute, &server.cursor_motion_absolute)
 	server.cursor_button.notify = server.server_cursor_button
 
-	// FIXME; pixman needs to be translated manually or something
-	// drastic to fix type mismatch
+	// FIXME: look at pixman Format_code_t for potential issues
 
 	println('Run completed.')
 }
