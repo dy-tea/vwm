@@ -26,7 +26,7 @@ pub struct C.wlr_renderer_impl {
 pub fn C.wlr_renderer_init(renderer &C.wlr_renderer, impl &C.wlr_renderer_impl, render_buffer_caps u32)
 
 pub struct C.wlr_texture_impl {
-	update_from_buffer    fn (texture &C.wlr_texture, buffer &C.wlr_buffer, damage &pixman.Pixman_region32_t) bool
+	update_from_buffer    fn (texture &C.wlr_texture, buffer &C.wlr_buffer, damage &C.pixman_region32_t) bool
 	read_pixels           fn (texture &C.wlr_texture, options &C.wlr_texture_read_pixels_options) bool
 	preferred_read_format fn (texture &C.wlr_texture) u32
 	destroy               fn (texture &C.wlr_texture)

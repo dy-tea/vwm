@@ -70,7 +70,7 @@ pub struct C.wlr_touch_point {
 
 	link C.wl_list
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		surface_destroy       C.wl_listener
 		focus_surface_destroy C.wl_listener
 		client_destroy        C.wl_listener
@@ -159,7 +159,7 @@ pub struct C.wlr_seat_pointer_state {
 		focus_change C.wl_signal
 	}
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		surface_destroy C.wl_listener
 	}
 }
@@ -179,7 +179,7 @@ pub struct C.wlr_seat_keyboard_state {
 		focus_change C.wl_signal
 	}
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		keyboard_destroy     C.wl_listener
 		keyboard_keymap      C.wl_listener
 		keyboard_repeat_info C.wl_listener
@@ -253,7 +253,7 @@ pub struct C.wlr_seat {
 
 	data voidptr
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		display_destroy                   C.wl_listener
 		selection_source_destroya         C.wl_listener
 		primary_selection_source_destroya C.wl_listener

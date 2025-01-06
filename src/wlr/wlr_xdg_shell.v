@@ -28,7 +28,7 @@ pub struct C.wlr_xdg_shell {
 
 	data voidptr
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		display_destroy C.wl_listener
 	}
 }
@@ -113,7 +113,7 @@ pub struct C.wlr_xdg_popup {
 
 	grab_link C.wl_list
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		synced C.wlr_surface_synced
 	}
 }
@@ -127,7 +127,7 @@ pub struct C.wlr_xdg_popup_grab {
 	popups        C.wl_list
 	link          C.wl_list
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		seat_destroy C.wl_listener
 	}
 }
@@ -192,7 +192,7 @@ pub struct C.wlr_xdg_toplevel_requested {
 	fullscreen        bool
 	fullscreen_output &C.wlr_output
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		fullscreen_output_destroy C.wl_listener
 	}
 }
@@ -224,7 +224,7 @@ pub struct C.wlr_xdg_toplevel {
 		set_app_id               C.wl_signal
 	}
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		synced       C.wlr_surface_synced
 		parent_unmap C.wl_listener
 	}
@@ -292,7 +292,7 @@ pub struct C.wlr_xdg_surface {
 
 	data voidptr
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		synced                C.wlr_surface_synced
 		role_resource_destroy C.wl_listener
 	}

@@ -22,7 +22,7 @@ pub struct C.wlr_gamma_control_manager_v1 {
 
 	data voidptr
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		display_destroy &C.wlr_backend
 	}
 }
@@ -43,7 +43,7 @@ pub struct C.wlr_gamma_control_v1 {
 
 	data voidptr
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		output_destroy_listener C.wl_listener
 	}
 }

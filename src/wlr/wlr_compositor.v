@@ -33,13 +33,13 @@ pub struct C.wlr_surface_state {
 	buffer              &C.wlr_buffer
 	dx                  int
 	dy                  int
-	surface_damage      pixman.Pixman_region32_t
-	buffer_damage       pixman.Pixman_region32_t
-	opaque_region       pixman.Pixman_region32_t
-	input_region        pixman.Pixman_region32_t
+	surface_damage      C.pixman_region32_t
+	buffer_damage       C.pixman_region32_t
+	opaque              C.pixman_region32_t
+	input               C.pixman_region32_t
 	transform           Wl_output_transform
 	scale               int
-	frame_callback_last C.wl_list
+	frame_callback_list C.wl_list
 
 	width         int
 	height        int
@@ -47,15 +47,18 @@ pub struct C.wlr_surface_state {
 	buffer_height int
 
 	subsurfaces_below C.wl_list
-	subsufaces_above  C.wl_list
+	subsurfaces_above C.wl_list
 
-	viewport_has_src bool
-	viewport_has_dst bool
-	viewport_src     C.wlr_box
-	viewport_dst     C.wlr_box
+	viewport struct {
+	pub:
+		has_src bool
+		has_dst bool
+		src     C.wlr_box
+		dst     C.wlr_box
+	}
 
-	chached_state_locks usize
-	chached_state_link  C.wl_list
+	cached_state_locks usize
+	cached_state_link  C.wl_list
 
 	synced C.wl_array
 }
@@ -76,7 +79,7 @@ pub struct C.wlr_surface_output {
 	output  &C.wlr_output
 	link    C.wl_list
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		bind    C.wl_listener
 		destroy C.wl_listener
 	}
@@ -86,12 +89,12 @@ pub struct C.wlr_surface {
 	resource      &C.wl_resource
 	compositor    &C.wlr_compositor
 	buffer        &C.wlr_client_buffer
-	buffer_damage pixman.Pixman_region32_t
-	opaque_region pixman.Pixman_region32_t
-	input_region  pixman.Pixman_region32_t
+	buffer_damage C.pixman_region32_t
+	opaque_region C.pixman_region32_t
+	input_region  C.pixman_region32_t
 	current       C.wlr_surface_state
 	pending       C.wlr_surface_state
-	chached       C.wl_list
+	cached        C.wl_list
 	mapped        bool
 	role          &C.wlr_surface_role
 	role_resource &C.wl_resource
@@ -109,7 +112,7 @@ pub struct C.wlr_surface {
 	current_outputs C.wl_list
 	addons          C.wlr_addon_set
 	data            voidptr
-	wlr_private     struct {
+	WLR_PRIVATE     struct {
 		role_resource_destroy           C.wl_listener
 		previous                        struct {
 			scale         int
@@ -142,7 +145,7 @@ pub struct C.wlr_compositor {
 		new_surface C.wl_signal
 		destroy     C.wl_signal
 	}
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		display_destroy  C.wl_listener
 		renderer_destroy C.wl_listener
 	}
@@ -167,7 +170,7 @@ pub fn C.wlr_surface_send_frame_done(surface &C.wlr_surface, when &C.timespec)
 pub fn C.wlr_surface_get_extents(surface &C.wlr_surface, box &C.wlr_box)
 pub fn C.wlr_surface_from_resource(resource &C.wl_resource) &C.wlr_surface
 pub fn C.wlr_surface_for_each_surface(surface &C.wlr_surface, iterator Wlr_surface_iterator_func_t, data voidptr)
-pub fn C.wlr_surface_get_effective_damage(surface &C.wlr_surface, damage &pixman.Pixman_region32_t)
+pub fn C.wlr_surface_get_effective_damage(surface &C.wlr_surface, damage &C.pixman_region32_t)
 pub fn C.wlr_surface_get_buffer_source_box(surface &C.wlr_surface, box &C.wlr_fbox)
 pub fn C.wlr_surface_lock_pending(surface &C.wlr_surface) u32
 pub fn C.wlr_surface_unlock_cached(surface &C.wlr_surface, lock, u32)
@@ -192,7 +195,7 @@ pub fn C.wlr_surface_synced_init(synced &C.wlr_surface_synced, surface &C.wlr_su
 pub fn C.wlr_surface_synced_finish(synced &C.wlr_surface_synced)
 pub fn C.wlr_surface_synced_get_state(synced &C.wlr_surface_synced) voidptr
 
-pub fn C.wlr_region_from_resource(resource &C.wl_resource) &pixman.Pixman_region32_t
+pub fn C.wlr_region_from_resource(resource &C.wl_resource) &C.pixman_region32_t
 
 pub fn C.wlr_compositor_create(display &C.wl_display, version u32, renderer &C.wlr_renderer) &C.wlr_compositor
 pub fn C.wlr_compositor_set_renderer(compositor &C.wlr_compositor, renderer &C.wlr_renderer)

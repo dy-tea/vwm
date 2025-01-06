@@ -55,7 +55,7 @@ pub struct C.wlr_output_cursor {
 	wait_point    u64
 	link          C.wl_list
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		renderer_destroy C.wl_listener
 	}
 }
@@ -89,7 +89,7 @@ pub enum Wlr_output_state_mode_type {
 pub struct C.wlr_output_state {
 	committed             u32
 	allow_reconfiguration bool
-	damage                pixman.Pixman_region32_t
+	damage                C.pixman_region32_t
 	enabled               bool
 	scale                 f32
 	transform             Wl_output_transform
@@ -195,14 +195,14 @@ pub struct C.wlr_output {
 
 	data voidptr
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		display_destroy C.wl_listener
 	}
 }
 
 pub struct C.wlr_output_event_damage {
 	output C.wlr_output
-	damage pixman.Pixman_region32_t
+	damage C.pixman_region32_t
 }
 
 pub struct C.wlr_output_event_precommit {
@@ -276,7 +276,7 @@ pub fn C.wlr_output_lock_attach_render(output C.wlr_output, lock, bool)
 
 pub fn C.wlr_output_lock_software_cursors(output C.wlr_output, lock, bool)
 
-pub fn C.wlr_output_add_software_cursors_to_render_pass(output C.wlr_output, render_pass C.wlr_render_pass, damage pixman.Pixman_region32_t)
+pub fn C.wlr_output_add_software_cursors_to_render_pass(output C.wlr_output, render_pass C.wlr_render_pass, damage C.pixman_region32_t)
 
 pub fn C.wlr_output_get_primary_formats(output C.wlr_output, buffer_caps u32) C.wlr_drm_format_set
 
@@ -311,7 +311,7 @@ pub fn C.wlr_output_state_set_buffer(state C.wlr_output_state, buffer C.wlr_buff
 
 pub fn C.wlr_output_state_set_gamma_lut(state C.wlr_output_state, ramp_size usize, r u16, g u16, b u16) bool
 
-pub fn C.wlr_output_state_set_damage(state C.wlr_output_state, damgage pixman.Pixman_region32_t)
+pub fn C.wlr_output_state_set_damage(state C.wlr_output_state, damgage C.pixman_region32_t)
 
 pub fn C.wlr_output_state_set_layers(state C.wlr_output_state, layers C.wl_output_layer_state, len usize)
 

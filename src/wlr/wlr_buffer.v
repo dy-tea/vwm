@@ -87,7 +87,7 @@ pub struct C.wlr_client_buffer {
 	base    C.wlr_buffer
 	texture &C.wlr_texture
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		source_destroy   C.wl_listener
 		renderer_destroy C.wl_listener
 

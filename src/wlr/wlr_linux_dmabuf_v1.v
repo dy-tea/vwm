@@ -20,7 +20,7 @@ pub struct C.wlr_dmabuf_v1_buffer {
 	resource  &C.wl_resource
 	atributes C.wlr_dmabuf_attributes
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		release C.wl_listener
 	}
 }
@@ -45,7 +45,7 @@ pub struct C.wlr_linux_dmabuf_v1 {
 		destroy C.wl_signal
 	}
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		default_feedback voidptr // FIXME: C.wlr_linux_dmabuf_feedback_v1_compiled
 		default_formats  C.wlr_drm_format_set
 		surfaces         C.wl_list

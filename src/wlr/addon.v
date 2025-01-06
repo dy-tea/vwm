@@ -12,7 +12,7 @@ module wlr
 #include "wlr/util/addon.h"
 
 pub struct C.wlr_addon_set {
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		addons C.wl_list
 	}
 }
@@ -25,7 +25,7 @@ pub struct C.wlr_addon_interface {
 pub struct C.wlr_addon {
 	impl &C.wlr_addon_interface
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		owner voidptr
 		link  C.wl_list
 	}

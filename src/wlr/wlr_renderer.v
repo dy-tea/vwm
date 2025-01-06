@@ -23,7 +23,7 @@ pub struct C.wlr_renderer {
 		output_color_tranforms bool
 		timeline               bool
 	}
-	wlr_private        struct {
+	WLR_PRIVATE        struct {
 		impl C.wlr_renderer_impl
 	}
 }

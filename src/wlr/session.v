@@ -64,7 +64,7 @@ pub struct C.wlr_session {
 		destroy      C.wl_signal
 	}
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		event_loop_destroy C.wl_listener
 	}
 }

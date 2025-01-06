@@ -17,7 +17,7 @@ pub struct C.wlr_swapchain_slot {
 	buffer   &C.wlr_buffer
 	acquired bool
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		release C.wl_listener
 	}
 }
@@ -31,7 +31,7 @@ pub struct C.wlr_swapchain {
 
 	slots [wlr_swapchain_cap]C.wlr_swapchain_slot
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		allocator_destroy C.wl_listener
 	}
 }

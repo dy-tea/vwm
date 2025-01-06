@@ -16,7 +16,7 @@ pub struct C.wlr_subsurface_parent_state {
 	y    u32
 	link C.wl_list
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		synced &C.wlr_surface_synced
 	}
 }
@@ -29,8 +29,8 @@ pub struct C.wlr_subsurface {
 	current &C.wlr_subsurface_parent_state
 	pending &C.wlr_subsurface_parent_state
 
-	chached_seq u32
-	has_cache   bool
+	cached_seq u32
+	has_cache  bool
 
 	synchronized bool
 	added        bool
@@ -41,7 +41,7 @@ pub struct C.wlr_subsurface {
 
 	data voidptr
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		parent_synced C.wl_listener
 
 		surface_client_commit C.wl_listener
@@ -56,7 +56,7 @@ pub struct C.wlr_subcompositor {
 		destroy &C.wl_signal
 	}
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		display_destroy C.wl_listener
 	}
 }

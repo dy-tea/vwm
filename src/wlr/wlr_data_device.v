@@ -21,7 +21,7 @@ pub struct C.wlr_data_device_manager {
 
 	data voidptr
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		display_destroy C.wl_listener
 	}
 }
@@ -40,7 +40,7 @@ pub struct C.wlr_data_offer {
 	preferred_action Wl_data_device_manager_dnd_action
 	in_ask           bool
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		source_destroy C.wl_listener
 	}
 }
@@ -81,7 +81,7 @@ pub struct C.wlr_drag_icon {
 
 	data voidptr
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		surface_destroy C.wl_listener
 	}
 }
@@ -121,7 +121,7 @@ pub struct C.wlr_drag {
 
 	data voidptr
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		source_destroy      C.wl_listener
 		seat_client_destroy C.wl_listener
 		focus_destroy       C.wl_listener

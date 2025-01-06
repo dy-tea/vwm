@@ -47,7 +47,7 @@ pub struct C.wlr_render_texture_options {
 	src_box     C.wlr_fbox
 	dst_box     C.wlr_box
 	alpha       &f32
-	clip        &pixman.Pixman_region32_t
+	clip        &C.pixman_region32_t
 	transform   Wl_output_transform
 	filter_mode Wlr_scale_filter_mode
 	blend_mode  Wlr_render_blend_mode
@@ -68,7 +68,7 @@ pub struct C.wlr_render_color {
 pub struct C.wlr_render_rect_options {
 	box        C.wlr_box
 	color      C.wlr_render_color
-	clip       &pixman.Pixman_region32_t
+	clip       &C.pixman_region32_t
 	blend_mode Wlr_render_blend_mode
 }
 

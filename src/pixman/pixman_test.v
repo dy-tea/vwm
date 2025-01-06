@@ -4,32 +4,32 @@ import rand
 
 // TODO make this build
 fn test_region() {
-	mut r1 := unsafe { Pixman_region32_t{} }
-	mut r2 := unsafe { Pixman_region32_t{} }
-	mut r3 := unsafe { Pixman_region32_t{} }
+	mut r1 := unsafe { C.pixman_region32_t{} }
+	mut r2 := unsafe { C.pixman_region32_t{} }
+	mut r3 := unsafe { C.pixman_region32_t{} }
 
 	boxes := [
-		Pixman_box32_t{10, 10, 20, 20},
-		Pixman_box32_t{30, 30, 30, 40},
-		Pixman_box32_t{50, 45, 60, 44},
+		C.pixman_box32_t{10, 10, 20, 20},
+		C.pixman_box32_t{30, 30, 30, 40},
+		C.pixman_box32_t{50, 45, 60, 44},
 	]
 
 	boxes2 := [
-		Pixman_box32_t{2, 6, 7, 6},
-		Pixman_box32_t{4, 1, 6, 7},
+		C.pixman_box32_t{2, 6, 7, 6},
+		C.pixman_box32_t{4, 1, 6, 7},
 	]
 
 	boxes3 := [
-		Pixman_box32_t{2, 6, 7, 6},
-		Pixman_box32_t{4, 1, 6, 1},
+		C.pixman_box32_t{2, 6, 7, 6},
+		C.pixman_box32_t{4, 1, 6, 1},
 	]
 
 	mut i := 0
 	mut j := 0
 
-	mut image := Pixman_image_t{}
-	mut fill := Pixman_image_t{}
-	white := Pixman_color_t{0xffff, 0xffff, 0xffff, 0xffff}
+	mut image := C.pixman_image_t{}
+	mut fill := C.pixman_image_t{}
+	white := C.pixman_color_t{0xffff, 0xffff, 0xffff, 0xffff}
 
 	rand.seed([u32(0), u32(0)])
 
@@ -86,10 +86,10 @@ fn test_region() {
 		pixman_region32_intersect(&r1, &r1, &r2)
 		pixman_region32_fini(&r2)
 
-		image = pixman_image_create_bits(Pixman_format_code_t.pixman_a1, size, size, unsafe { nil },
-			0)
+		image = pixman_image_create_bits(C.pixman_format_code_t.pixman_a1, size, size,
+			unsafe { nil }, 0)
 		pixman_image_set_clip_region32(&image, &r1)
-		pixman_image_composite32(Pixman_op_t.pixman_op_src, &fill, unsafe { nil }, &image,
+		pixman_image_composite32(C.pixman_op_t.pixman_op_src, &fill, unsafe { nil }, &image,
 			0, 0, 0, 0, 0, 0, size, size)
 		pixman_region32_init_from_image(&r2, &image)
 

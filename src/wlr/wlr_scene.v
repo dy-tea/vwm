@@ -68,8 +68,8 @@ pub struct C.wlr_scene_node {
 
 	addons C.wlr_addon_set
 
-	wlr_private struct {
-		visible pixman.Pixman_region32_t
+	WLR_PRIVATE struct {
+		visible C.pixman_region32_t
 	}
 }
 
@@ -91,7 +91,7 @@ pub struct C.wlr_scene {
 	linux_dmabuf_v1          &C.wlr_linux_dmabuf_v1
 	gamma_control_manager_v1 &C.wlr_gamma_control_manager_v1
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		linux_dmabuf_v1_destroy            C.wl_listener
 		gamma_control_manager_v1_destroy   C.wl_listener
 		gamma_control_manager_v1_set_gamma C.wl_listener
@@ -107,7 +107,7 @@ pub struct C.wlr_scene_surface {
 	buffer  &C.wlr_scene_buffer
 	surface &C.wlr_surface
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		clip C.wlr_box
 
 		addon C.wlr_addon
@@ -162,9 +162,9 @@ pub struct C.wlr_scene_buffer {
 	dst_width     int
 	dst_height    int
 	transform     Wl_output_transform
-	opaque_region pixman.Pixman_region32_t
+	opaque_region C.pixman_region32_t
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		active_outputs        u64
 		texture               &C.wlr_texture
 		prev_feedback_options C.wlr_linux_dmabuf_feedback_v1_init_options
@@ -197,8 +197,8 @@ pub struct C.wlr_scene_output {
 		destroy C.wl_signal
 	}
 
-	wlr_private struct {
-		pending_commit_damage pixman.Pixman_region32_t
+	WLR_PRIVATE struct {
+		pending_commit_damage C.pixman_region32_t
 
 		index        u8
 		prev_scanout bool
@@ -228,7 +228,7 @@ pub struct C.wlr_scene_layer_surface_v1 {
 	tree          &C.wlr_scene_tree
 	layer_surface &C.wlr_layer_surface_v1
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		tree_destroy          C.wl_listener
 		layer_surface_destroy C.wl_listener
 		layer_surface_map     C.wl_listener
@@ -286,10 +286,10 @@ pub fn C.wlr_scene_buffer_create(parent &C.wlr_scene_tree, buffer &C.wlr_buffer)
 
 pub fn C.wlr_scene_buffer_set_buffer(scene_buffer &C.wlr_scene_buffer, buffer &C.wlr_buffer)
 
-pub fn C.wlr_scene_buffer_set_buffer_with_damage(scene_buffer &C.wlr_scene_buffer, buffer &C.wlr_buffer, region &pixman.Pixman_region32_t)
+pub fn C.wlr_scene_buffer_set_buffer_with_damage(scene_buffer &C.wlr_scene_buffer, buffer &C.wlr_buffer, region &C.pixman_region32_t)
 
 struct C.wlr_scene_buffer_set_buffer_options {
-	damage &pixman.Pixman_region32_t
+	damage &C.pixman_region32_t
 
 	wait_timeline &C.wlr_drm_syncobj_timeline
 	wait_point    u64
@@ -297,7 +297,7 @@ struct C.wlr_scene_buffer_set_buffer_options {
 
 pub fn C.wlr_scene_buffer_set_buffer_with_options(scene_buffer &C.wlr_scene_buffer, buffer &C.wlr_buffer, options &C.wlr_scene_buffer_set_buffer_options)
 
-pub fn C.wlr_scene_buffer_set_opaque_region(scene_buffer &C.wlr_scene_buffer, region &pixman.Pixman_region32_t)
+pub fn C.wlr_scene_buffer_set_opaque_region(scene_buffer &C.wlr_scene_buffer, region &C.pixman_region32_t)
 
 pub fn C.wlr_scene_buffer_set_source_box(scene_buffer &C.wlr_scene_buffer, box &C.wlr_fbox)
 

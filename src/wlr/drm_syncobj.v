@@ -17,7 +17,7 @@ pub struct C.wlr_drm_syncobj_timeline {
 
 	addons C.wlr_addon_set
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		n_refs usize
 	}
 }
@@ -28,7 +28,7 @@ pub struct C.wlr_drm_syncobj_timeline_waiter {
 		ready C.wl_signal
 	}
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		ev_fd        int
 		event_source &C.wl_event_source
 	}

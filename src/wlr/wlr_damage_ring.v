@@ -15,20 +15,20 @@ import pixman
 
 pub struct C.wlr_damage_ring_buffer {
 	buffer &C.wlr_buffer
-	damage pixman.Pixman_region32_t
+	damage C.pixman_region32_t
 
 	ring &C.wlr_damage_ring
 	link C.wl_list
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		destroy C.wl_listener
 	}
 }
 
 pub struct C.wlr_damage_ring {
-	current pixman.Pixman_region32_t
+	current C.pixman_region32_t
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		buffers C.wl_list
 	}
 }
@@ -36,8 +36,8 @@ pub struct C.wlr_damage_ring {
 pub fn C.wlr_damage_ring_init(ring &C.wlr_damage_ring)
 pub fn C.wlr_damage_ring_finish(ring &C.wlr_damage_ring)
 
-pub fn C.wlr_damage_ring_add(ring &C.wlr_damage_ring, damage &pixman.Pixman_region32_t)
+pub fn C.wlr_damage_ring_add(ring &C.wlr_damage_ring, damage &C.pixman_region32_t)
 pub fn C.wlr_damage_ring_add_box(ring &C.wlr_damage_ring, box &C.wlr_box)
 pub fn C.wlr_damage_ring_add_whole(ring &C.wlr_damage_ring)
 
-pub fn C.wlr_damage_ring_rotate_buffers(ring &C.wlr_damage_ring, buffer &C.wlr_buffer, damage &pixman.Pixman_region32_t)
+pub fn C.wlr_damage_ring_rotate_buffers(ring &C.wlr_damage_ring, buffer &C.wlr_buffer, damage &C.pixman_region32_t)

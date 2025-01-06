@@ -24,7 +24,7 @@ pub struct C.wlr_output_layer {
 
 	data voidptr
 
-	wlr_private struct {
+	WLR_PRIVATE struct {
 		src_box C.wlr_fbox
 		dst_box C.wlr_box
 	}
@@ -35,7 +35,7 @@ pub struct C.wlr_output_layer_state {
 	buffer   &C.wlr_buffer
 	src_box  C.wlr_fbox
 	dst_box  C.wlr_box
-	damage   &pixman.Pixman_region32_t
+	damage   &C.pixman_region32_t
 	accepted bool
 }
 
