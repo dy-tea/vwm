@@ -330,7 +330,7 @@ pub fn C.wlr_seat_pointer_warp(wlr_seat &C.wlr_seat, sx f64, sy f64)
 
 pub fn C.wlr_seat_pointer_notify_motion(wlr_seat &C.wlr_seat, time_msec u32, sx f64, sy f64)
 
-pub fn C.wlr_seat_pointer_notify_button(wlr_seat &C.wlr_seat, time_msec u32, button u32, state &C.wl_pointer_button_state) u32
+pub fn C.wlr_seat_pointer_notify_button(wlr_seat &C.wlr_seat, time_msec u32, button u32, state Wl_pointer_button_state) u32
 
 pub fn C.wlr_seat_pointer_notify_axis(wlr_seat &C.wlr_seat, time_msec u32, orientation Wl_pointer_axis, value f64, value_discrete int, source Wl_pointer_axis_source, relative_direction Wl_pointer_axis_relative_direction)
 

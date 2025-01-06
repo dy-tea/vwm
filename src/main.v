@@ -8,6 +8,7 @@ enum Comp_cursor_mode {
 	resize
 }
 
+@[heap]
 struct Comp_server {
 mut:
 	wl_display   &C.wl_display              = unsafe { nil }
@@ -89,6 +90,39 @@ struct Comp_keyboard {
 	destroy   C.wl_listener
 }
 
+fn focus_toplevel(toplevel &Comp_toplevel) {
+	if toplevel == unsafe {nil} {
+		return
+	}
+
+	server := toplevel.server
+	seat := server.seat
+	prev_surface := seat.keyboard_state.focused_surface
+	surface := toplevel.xdg_toplevel.base.surface
+
+	if prev_surface == surface {
+		return
+	}
+
+	if prev_surface != unsafe {nil} {
+		prev_toplevel := C.wlr_xdg_toplevel_try_from_wlr_surface(prev_surface)
+		if prev_toplevel != unsafe {nil} {
+			C.wlr_xdg_toplevel_set_activated(prev_toplevel, false)
+		}
+	}
+
+	keyboard := C.wlr_seat_get_keyboard(seat)
+
+	C.wlr_scene_node_raise_to_top(&toplevel.scene_tree.node)
+	C.wl_list_remove(&toplevel.link)
+	C.wl_list_insert(&server.toplevels, &toplevel.link)
+	C.wlr_xdg_toplevel_set_activated(toplevel.xdg_toplevel, true)
+
+	if keyboard != unsafe {nil} {
+		C.wlr_seat_keyboard_notify_enter(seat, surface, keyboard.keycodes, keyboard.num_keycodes, &keyboard.modifiers)
+	}
+}
+
 fn (server Comp_server) desktop_toplevel_at(lx f64, ly f64, mut surface C.wlr_surface, sx &f64, sy &f64) ?&Comp_toplevel {
 	node := C.wlr_scene_node_at(&server.scene.tree.node, lx, ly, sx, sy)
 	if node == unsafe { nil } || node.type != wlr.Scene_node_type.buffer {
@@ -110,6 +144,11 @@ fn (server Comp_server) desktop_toplevel_at(lx f64, ly f64, mut surface C.wlr_su
 	}
 
 	return tree.node.data
+}
+
+fn (mut server Comp_server) reset_cursor_mode() {
+	server.cursor_mode = .passthrough
+	server.grabbed_toplevel = unsafe {nil}
 }
 
 fn (server Comp_server) process_cursor_move() {
@@ -187,12 +226,37 @@ fn (server Comp_server) process_cursor_motion(time u32) {
 	}
 }
 
-fn (server Comp_server) server_cursor_motion(listener &C.wl_listener, mut data voidptr) {
+fn (server Comp_server) server_cursor_motion(listener &C.wl_listener, data voidptr) {
 	unsafe {
 		event := &C.wlr_pointer_motion_event(data)
 
 		C.wlr_cursor_move(server.cursor, &event.pointer.base, &event.delta_x, &event.delta_y)
 		server.process_cursor_motion(event.time_msec)
+	}
+}
+
+fn (server Comp_server) server_cursor_motion_absolute(listener &C.wl_listener, data voidptr) {
+	unsafe {
+		event := &C.wlr_pointer_motion_absolute_event(data)
+
+		C.wlr_cursor_warp_absolute(server.cursor, &event.pointer.base, event.x, event.y)
+		server.process_cursor_motion(event.time_msec)
+	}
+}
+
+fn (mut server Comp_server) server_cursor_button(listener &C.wl_listener, data voidptr) {
+	event := unsafe { &C.wlr_pointer_button_event(data) }
+	C.wlr_seat_pointer_notify_button(server.seat, event.time_msec, &event.button, event.state)
+
+	if event.state == .released {
+		server.reset_cursor_mode()
+	} else {
+		sx := f64(0)
+		sy := f64(0)
+		mut surface := &C.wlr_surface(unsafe { nil })
+		if toplevel := server.desktop_toplevel_at(server.cursor.x, server.cursor.y, mut surface, &sx, &sy) {
+			focus_toplevel(toplevel)
+		}
 	}
 }
 
@@ -269,4 +333,13 @@ fn main() {
 	server.cursor_mgr = C.wlr_xcursor_manager_create(unsafe { nil }, 24)
 	server.cursor_mode = .passthrough
 	server.cursor_motion.notify = server.server_cursor_motion
+	C.wl_signal_add(&server.cursor.events.motion, &server.cursor_motion)
+	server.cursor_motion_absolute.notify = server.server_cursor_motion_absolute
+	C.wl_signal_add(&server.cursor.events.motion_absolute, &server.cursor_motion_absolute)
+	server.cursor_button.notify = server.server_cursor_button
+
+ 	// FIXME; pixman needs to be translated manually or something
+  // drastic to fix type mismatch
+
+  println('Run completed.')
 }

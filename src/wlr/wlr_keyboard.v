@@ -56,11 +56,11 @@ pub struct C.wlr_keyboard {
 	keymap_fd     int
 	keymap        &xkbcommon.Xkb_keymap
 	xkb_state     &xkbcommon.Xkb_state
-	led_indexes   [wlr_led_count]xkbcommon.Xkb_led_index_t
-	mod_indices   [wlr_modifier_count]xkbcommon.Xkb_mod_index_t
+	led_indexes   [/*wlr_led_count*/]xkbcommon.Xkb_led_index_t
+	mod_indices   [/*wlr_modifier_count*/]xkbcommon.Xkb_mod_index_t
 
 	leds         u32
-	keycodes     [wlr_keyboard_keys_cap]u32
+	keycodes     [/*wlr_keyboard_keys_cap*/]u32
 	num_keycodes usize
 	modifiers    C.wlr_keyboard_modifiers
 
