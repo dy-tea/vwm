@@ -38,10 +38,8 @@ pub struct C.wlr_gamma_control_manager_v1 {}
 
 pub struct C.wlr_output_state {}
 
-@[typedef]
 type Wlr_scene_buffer_point_accepts_input_func_t = fn (buffer &C.wlr_scene_buffer, sx &f64, xy &f64)
 
-@[typedef]
 type Wlr_scene_node_iterator_func_t = fn (buffer &C.wlr_scene_buffer, sx int, sy int, user_data voidptr)
 
 pub enum Scene_node_type {

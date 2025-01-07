@@ -19,7 +19,6 @@ pub enum Wlr_log_importance {
 	last
 }
 
-@[typedef]
 type Wlr_log_func_t = fn (importance Wlr_log_importance, fmt ...string)
 
 pub fn C.wlr_log_init(verbosity Wlr_log_importance, callback Wlr_log_func_t)

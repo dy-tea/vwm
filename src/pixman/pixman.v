@@ -125,7 +125,6 @@ pub struct C.pixman_transform {
 }
 
 // forward declaration (sorry)
-@[typedef]
 pub struct C.pixman_image_t {}
 
 fn C.pixman_transform_init_identity(matrix &C.pixman_transform)
@@ -228,15 +227,15 @@ pub fn transform_is_inverse(a &C.pixman_transform, b &C.pixman_transform) bool {
 // *Floating point matrices
 //
 
-type C.pixman_f_transform_t = C.pixman_f_transform
+pub type C.pixman_f_transform_t = C.pixman_f_transform
 
-type C.pixman_f_vector_t = C.pixman_f_vector
+pub type C.pixman_f_vector_t = C.pixman_f_vector
 
-struct C.pixman_f_vector {
+pub struct C.pixman_f_vector {
 	v [3]f64
 }
 
-struct C.pixman_f_transform {
+pub struct C.pixman_f_transform {
 	m [3][3]f64
 }
 
@@ -324,16 +323,14 @@ pub fn f_transform_init_identity(t &C.pixman_f_transform) {
 	C.pixman_f_transform_init_identity(t)
 }
 
-@[typedef]
-enum Repeat_t {
+pub enum Repeat_t {
 	none
 	normal
 	pad
 	reflect
 }
 
-@[typedef]
-enum Dither_t {
+pub enum Dither_t {
 	none
 	fast
 	good
@@ -342,8 +339,7 @@ enum Dither_t {
 	ordered_blue_noise_64
 }
 
-@[typedef]
-enum Filter_t {
+pub enum Filter_t {
 	fast
 	good
 	best
@@ -369,8 +365,7 @@ enum Filter_t {
 	separable_convolution
 }
 
-@[typedef]
-enum Op_t {
+pub enum Op_t {
 	clear                 = 0
 	src                   = 1
 	dst                   = 2
@@ -430,41 +425,40 @@ enum Op_t {
 // *Regions
 //
 
-type C.pixman_region16_data_t = C.pixman_region16_data
+pub type C.pixman_region16_data_t = C.pixman_region16_data
 
-type C.pixman_box16_t = C.pixman_box16
+pub type C.pixman_box16_t = C.pixman_box16
 
-type C.pixman_rectangle16_t = C.pixman_rectangle16
+pub type C.pixman_rectangle16_t = C.pixman_rectangle16
 
-type C.pixman_region16_t = C.pixman_region16
+pub type C.pixman_region16_t = C.pixman_region16
 
-struct C.pixman_region16_data {
+pub struct C.pixman_region16_data {
 	size     int
 	numRects int
 	//  pixman_box16_t	rects[size];   in memory but not explicitly declared
 }
 
-struct C.pixman_rectangle16 {
+pub struct C.pixman_rectangle16 {
 	x      i16
 	y      i16
 	width  u16
 	height u16
 }
 
-struct C.pixman_box16 {
+pub struct C.pixman_box16 {
 	x1 i16
 	y1 i16
 	x2 i16
 	y2 i16
 }
 
-struct C.pixman_region16 {
+pub struct C.pixman_region16 {
 	extents C.pixman_box16_t
 	data    &C.pixman_region16_data_t
 }
 
-@[typedef]
-enum Region_overlap_t {
+pub enum Region_overlap_t {
 	out
 	in
 	part
@@ -635,35 +629,35 @@ pub fn region_clear(region &C.pixman_region16_t) {
 // *32 bit regions
 //
 
-type C.pixman_region32_data_t = C.pixman_region32_data
+pub type C.pixman_region32_data_t = C.pixman_region32_data
 
-type C.pixman_box32_t = C.pixman_box32
+pub type C.pixman_box32_t = C.pixman_box32
 
-type C.pixman_rectangle32_t = C.pixman_rectangle32
+pub type C.pixman_rectangle32_t = C.pixman_rectangle32
 
-type C.pixman_region32_t = C.pixman_region32
+pub type C.pixman_region32_t = C.pixman_region32
 
-struct C.pixman_region32_data {
+pub struct C.pixman_region32_data {
 	size     int
 	numRects int
 	//  pixman_box32_t	rects[size];   in memory but not explicitly declared
 }
 
-struct C.pixman_rectangle32 {
+pub struct C.pixman_rectangle32 {
 	x      int
 	y      int
 	width  u32
 	height u32
 }
 
-struct C.pixman_box32 {
+pub struct C.pixman_box32 {
 	x1 int
 	y1 int
 	x2 int
 	y2 int
 }
 
-struct C.pixman_region32 {
+pub struct C.pixman_region32 {
 	extents C.pixman_box32_t
 	data    &C.pixman_region32_data_t
 }
@@ -850,28 +844,23 @@ pub fn version_string() &i8 {
 // *Images
 //
 
-@[typedef]
-type Indexed_t = C.pixman_indexed
+pub type Indexed_t = C.pixman_indexed
 
-@[typedef]
-struct C.pixman_gradient_stop_t {
+pub struct C.pixman_gradient_stop_t {
 	x     int
 	color C.pixman_color_t
 }
 
-@[typedef]
-type Read_memory_func_t = fn (voidptr, int) u32
+pub type Read_memory_func_t = fn (voidptr, int) u32
 
-@[typedef]
-type Write_memory_func_t = fn (voidptr, u32, int)
+pub type Write_memory_func_t = fn (voidptr, u32, int)
 
-@[typedef]
-type Image_destroy_func_t = fn (&C.pixman_image_t, voidptr)
+pub type Image_destroy_func_t = fn (&C.pixman_image_t, voidptr)
 
-type C.pixman_index_type = u8
+pub type C.pixman_index_type = u8
 
 // XXX depth must be <= 8
-struct C.pixman_indexed {
+pub struct C.pixman_indexed {
 	color bool
 	rgba  [256]u32
 	ent   [32768]C.pixman_index_type
@@ -882,8 +871,8 @@ struct C.pixman_indexed {
 // *sample implementation allows only packed RGB and GBR
 // *representations for data to simplify software rendering,
 //
-@[_allow_multiple_values; typedef]
-enum Format_code_t {
+@[_allow_multiple_values]
+pub enum Format_code_t {
 	// 128bpp formats
 	rgba_float = 128 >> 3 << 24 | 3 << 22 | 11 << 16 | 32 >> 3 << 12 | 32 >> 3 << 8 | 32 >> 3 << 4 | 32 >> 3
 	// 96bpp formats
@@ -1144,8 +1133,7 @@ pub fn image_get_format(image &C.pixman_image_t) Format_code_t {
 	return C.pixman_image_get_format(image)
 }
 
-@[typedef]
-enum Kernel_t {
+pub enum Kernel_t {
 	pixman_kernel_impulse
 	pixman_kernel_box
 	pixman_kernel_linear
@@ -1225,11 +1213,9 @@ pub fn disable_out_of_bounds_workaround() {
 //
 // *Glyphs
 //
-@[typedef]
-struct C.pixman_glyph_cache_t {}
+pub struct C.pixman_glyph_cache_t {}
 
-@[typedef]
-struct C.pixman_glyph_t {
+pub struct C.pixman_glyph_t {
 	x     int
 	y     int
 	glyph voidptr
@@ -1308,22 +1294,22 @@ pub fn composite_glyphs_no_mask(op Op_t, src &C.pixman_image_t, dest &C.pixman_i
 // *Trapezoids
 //
 
-type C.pixman_edge_t = C.pixman_edge
+pub type C.pixman_edge_t = C.pixman_edge
 
-type C.pixman_trapezoid_t = C.pixman_trapezoid
+pub type C.pixman_trapezoid_t = C.pixman_trapezoid
 
-type C.pixman_trap_t = C.pixman_trap
+pub type C.pixman_trap_t = C.pixman_trap
 
-type C.pixman_span_fix_t = C.pixman_span_fix
+pub type C.pixman_span_fix_t = C.pixman_span_fix
 
-type C.pixman_triangle_t = C.pixman_triangle
+pub type C.pixman_triangle_t = C.pixman_triangle
 
 //
 // *An edge structure.  This represents a single polygon edge
 // *and can be quickly stepped across small or large gaps in the
 // *sample grid
 //
-struct C.pixman_edge {
+pub struct C.pixman_edge {
 	x           int
 	e           int
 	stepx       int
@@ -1336,27 +1322,27 @@ struct C.pixman_edge {
 	dx_big      int
 }
 
-struct C.pixman_trapezoid {
+pub struct C.pixman_trapezoid {
 	top    int
 	bottom int
 	left   C.pixman_line_fixed_t
 	right  C.pixman_line_fixed_t
 }
 
-struct C.pixman_triangle {
+pub struct C.pixman_triangle {
 	p1 C.pixman_point_fixed_t
 	p2 C.pixman_point_fixed_t
 	p3 C.pixman_point_fixed_t
 }
 
 // whether 't' is a well defined not obviously empty trapezoid
-struct C.pixman_span_fix {
+pub struct C.pixman_span_fix {
 	l int
 	r int
 	y int
 }
 
-struct C.pixman_trap {
+pub struct C.pixman_trap {
 	top C.pixman_span_fix_t
 	bot C.pixman_span_fix_t
 }
