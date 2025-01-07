@@ -51,10 +51,11 @@ pub struct C.wlr_surface_state {
 
 	viewport struct {
 	pub:
-		has_src bool
-		has_dst bool
-		src     C.wlr_box
-		dst     C.wlr_box
+		has_src    bool
+		has_dst    bool
+		src        C.wlr_fbox
+		dst_width  int
+		dst_height int
 	}
 
 	cached_state_locks usize
