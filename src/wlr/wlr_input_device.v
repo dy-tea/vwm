@@ -30,6 +30,7 @@ pub struct C.wlr_input_device {
 	name &char
 
 	events struct {
+	pub:
 		destroy C.wl_signal
 	}
 

@@ -11,8 +11,6 @@ module wlr
 
 #include "wlr/backend/libinput.h"
 
-pub struct C.wlr_input_device {}
-
 pub fn C.wlr_libinput_backend_create(session &C.wlr_session) &C.wlr_backend
 
 pub fn C.wlr_libinput_get_device_handle(device &C.wlr_input_device) &C.libinput_device

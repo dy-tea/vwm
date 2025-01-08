@@ -54,8 +54,8 @@ pub struct C.wlr_keyboard {
 	keymap_string &char
 	keymap_size   usize
 	keymap_fd     int
-	keymap        &xkbcommon.Xkb_keymap
-	xkb_state     &xkbcommon.Xkb_state
+	keymap        &C.xkb_keymap
+	xkb_state     &C.xkb_state
 	led_indexes   [/*wlr_led_count*/]xkbcommon.Xkb_led_index_t
 	mod_indices   [/*wlr_modifier_count*/]xkbcommon.Xkb_mod_index_t
 
@@ -65,11 +65,13 @@ pub struct C.wlr_keyboard {
 	modifiers    C.wlr_keyboard_modifiers
 
 	repeat_info struct {
+	pub:
 		rate  int
 		delay int
 	}
 
 	events struct {
+	pub:
 		key         C.wl_signal
 		modifiers   C.wl_signal
 		keymap      C.wl_signal

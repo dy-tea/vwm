@@ -11,8 +11,6 @@ module wlr
 
 #include "wlr/types/wlr_cursor.h"
 
-pub struct C.wlr_input_device {}
-
 pub struct C.wlr_xcursor_manager {}
 
 pub struct C.wlr_cursor_state {}

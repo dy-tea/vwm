@@ -81,10 +81,10 @@ mut:
 }
 
 struct Comp_keyboard {
-	link   C.wl_list
-	server &Comp_server
-	device &C.wlr_input_device
-
+	server 	&Comp_server
+	wlr_keyboard &C.wlr_keyboard
+mut:
+	link   		C.wl_list
 	modifiers C.wl_listener
 	key       C.wl_listener
 	destroy   C.wl_listener
@@ -122,6 +122,57 @@ fn focus_toplevel(toplevel &Comp_toplevel) {
 		C.wlr_seat_keyboard_notify_enter(seat, surface, keyboard.keycodes, keyboard.num_keycodes,
 			&keyboard.modifiers)
 	}
+}
+
+fn (mut server Comp_server) server_new_keyboard(device &C.wlr_input_device) {
+	wlr_keyboard := C.wlr_keyboard_from_input_device(device)
+	mut keyboard := &Comp_keyboard{
+		server: server
+		wlr_keyboard: &wlr_keyboard
+	}
+
+	context := C.xkb_context_new(.no_flags)
+	keymap := C.xkb_keymap_new_from_names(context, unsafe {nil}, .no_flags)
+
+	C.wlr_keyboard_set_keymap(wlr_keyboard, keymap)
+	C.xkb_keymap_unref(keymap)
+	C.xkb_context_unref(context)
+	C.wlr_keyboard_set_repeat_info(wlr_keyboard, 25, 600)
+
+	keyboard.modifiers.notify = server_keyboard_modifiers
+	C.wl_signal_add(&wlr_keyboard.events.modifiers, &keyboard.modifiers)
+	keyboard.key.notify = keyboard_handle_key // TODO
+	C.wl_signal_add(&wlr_keyboard.events.key, &keyboard.key)
+	keyboard.destroy.notify = keyboard_handle_destroy // TODO
+	C.wl_signal_add(&device.events.destroy, &keyboard.destroy)
+
+	C.wlr_seat_set_keyboard(server.seat, keyboard.wlr_keyboard)
+
+	C.wl_list_insert(server.keyboards, &keyboard.link)
+}
+
+fn (mut server Comp_server) server_new_pointer(device &C.wlr_input_device) {
+	C.wlr_cursor_attach_input_device(server.cursor, device)
+}
+
+fn (mut server Comp_server) server_new_input(listener &C.wl_listener, data voidptr)  {
+	device := unsafe {&C.wlr_input_device(data)}
+
+	match device.type {
+		.keyboard {
+			server.server_new_keyboard(device)
+		}
+		.pointer {
+			server.server_new_pointer(device)
+		}
+		else {}
+	}
+
+	mut caps := int(wlr.Wl_seat_capability.pointer)
+	if !C.wl_list_empty(&server.keyboards) {
+		caps |= int(wlr.Wl_seat_capability.keyboard)
+	}
+	C.wlr_seat_set_capabilities(server.seat, caps)
 }
 
 fn (server Comp_server) desktop_toplevel_at(lx f64, ly f64, mut surface C.wlr_surface, sx &f64, sy &f64) ?&Comp_toplevel {
@@ -263,6 +314,10 @@ fn (mut server Comp_server) server_cursor_button(listener &C.wl_listener, data v
 	}
 }
 
+fn (mut server Comp_server) server_cursor_frame(listener &C.wl_listener, data voidptr) {
+	C.wlr_seat_pointer_notify_frame(server.seat)
+}
+
 fn xdg_popup_commit(listener &C.wl_listener, mut data voidptr) {
 	comp_popup := &Comp_popup(data)
 	// popup := wlr.wl_container_of(comp_popup, listener, __offsetof(Comp_popup, commit))
@@ -340,8 +395,13 @@ fn main() {
 	server.cursor_motion_absolute.notify = server.server_cursor_motion_absolute
 	C.wl_signal_add(&server.cursor.events.motion_absolute, &server.cursor_motion_absolute)
 	server.cursor_button.notify = server.server_cursor_button
+	C.wl_signal_add(&server.cursor.events.button, &server.cursor_button)
+	server.cursor_frame.notify = server.server_cursor_frame
+	C.wl_signal_add(&server.cursor.events.frame, &server.cursor_frame)
 
-	// FIXME: look at pixman Format_code_t for potential issues
+	// Seat
+	C.wl_list_init(&server.keyboards)
+	server.new_input.notify = server_new_input
 
 	println('Run completed.')
 }

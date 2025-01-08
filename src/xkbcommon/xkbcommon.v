@@ -5,8 +5,7 @@ module xkbcommon
 #flag linux -lxkbcommon
 #include "xkbcommon.h"
 
-pub struct Xkb_context {
-}
+pub struct C.xkb_context {}
 
 //* *@struct xkb_keymap
 // *Opaque compiled keymap object.
@@ -15,8 +14,7 @@ pub struct Xkb_context {
 // * *A keymap is immutable after it is created (besides reference counts, etc.);
 // *if you need to change it, you must create a new one.
 //
-pub struct Xkb_keymap {
-}
+pub struct C.xkb_keymap {}
 
 //* *@struct xkb_state
 // *Opaque keyboard state object.
@@ -158,7 +156,7 @@ pub type Xkb_led_index_t = u32
 //*A mask of LED indices.
 pub type Xkb_led_mask_t = u32
 
-pub struct Xkb_rule_names {
+pub struct C.xkb_rule_names {
 	//*     *The rules file to use. The rules file describes how to interpret
 	//     *the values of the model, layout, variant and options fields.
 	//     *     *If NULL or the empty string "", a default value is used.
@@ -244,11 +242,11 @@ pub fn keysym_get_name(keysym Xkb_keysym_t, buffer &i8, size usize) int {
 }
 
 //*Flags for xkb_keysym_from_name().
-enum Xkb_keysym_flags {
+pub enum Xkb_keysym_flags {
 	//*Do not apply any flags.
-	xkb_keysym_no_flags = 0
+	no_flags = 0
 	//*Find keysym by case-insensitive search.
-	xkb_keysym_case_insensitive = 1 << 0
+	case_insensitive = 1 << 0
 }
 
 //* *Get a keysym from its name.
@@ -362,20 +360,20 @@ pub fn keysym_to_lower(ks Xkb_keysym_t) Xkb_keysym_t {
 // *  `XKB_DEFAULT_VARIANT`, `XKB_DEFAULT_OPTIONS` - see xkb_rule_names.
 //
 //*Flags for context creation.
-enum Xkb_context_flags {
+pub enum Xkb_context_flags {
 	//*Do not apply any context flags.
-	xkb_context_no_flags = 0
+	no_flags = 0
 	//*Create this context with an empty include path.
-	xkb_context_no_default_includes = 1 << 0
+	no_default_includes = 1 << 0
 	//*     *Don't take RMLVO names from the environment.
 	//     *     *@since 0.3.0
 	//
-	xkb_context_no_environment_names = 1 << 1
+	no_environment_names = 1 << 1
 	//*     *Disable the use of secure_getenv for this context, so that privileged
 	//     *processes can use environment variables. Client uses at their own risk.
 	//     *     *@since 1.5.0
 	//
-	xkb_context_no_secure_getenv = 1 << 2
+	no_secure_getenv = 1 << 2
 }
 
 //* *Create a new context.
@@ -383,9 +381,9 @@ enum Xkb_context_flags {
 // * *@returns A new context, or NULL on failure.
 // * *@memberof xkb_context
 //
-fn C.xkb_context_new(flags Xkb_context_flags) &Xkb_context
+fn C.xkb_context_new(flags Xkb_context_flags) &C.xkb_context
 
-pub fn context_new(flags Xkb_context_flags) &Xkb_context {
+pub fn context_new(flags Xkb_context_flags) &C.xkb_context {
 	return C.xkb_context_new(flags)
 }
 
@@ -393,9 +391,9 @@ pub fn context_new(flags Xkb_context_flags) &Xkb_context {
 // * *@returns The passed in context.
 // * *@memberof xkb_context
 //
-fn C.xkb_context_ref(context &Xkb_context) &Xkb_context
+fn C.xkb_context_ref(context &C.xkb_context) &C.xkb_context
 
-pub fn context_ref(context &Xkb_context) &Xkb_context {
+pub fn context_ref(context &C.xkb_context) &C.xkb_context {
 	return C.xkb_context_ref(context)
 }
 
@@ -403,9 +401,9 @@ pub fn context_ref(context &Xkb_context) &Xkb_context {
 // * *@param context The context.  If it is NULL, this function does nothing.
 // * *@memberof xkb_context
 //
-fn C.xkb_context_unref(context &Xkb_context)
+fn C.xkb_context_unref(context &C.xkb_context)
 
-pub fn context_unref(context &Xkb_context) {
+pub fn context_unref(context &C.xkb_context) {
 	C.xkb_context_unref(context)
 }
 
@@ -414,9 +412,9 @@ pub fn context_unref(context &Xkb_context) {
 // *callbacks.
 // * *@memberof xkb_context
 //
-fn C.xkb_context_set_user_data(context &Xkb_context, user_data voidptr)
+fn C.xkb_context_set_user_data(context &C.xkb_context, user_data voidptr)
 
-pub fn context_set_user_data(context &Xkb_context, user_data voidptr) {
+pub fn context_set_user_data(context &C.xkb_context, user_data voidptr) {
 	C.xkb_context_set_user_data(context, user_data)
 }
 
@@ -430,9 +428,9 @@ pub fn context_set_user_data(context &Xkb_context, user_data voidptr) {
 // void *xkb_context_get_user_data(struct xkb_context *ontext);
 //
 ///* @}
-fn C.xkb_context_get_user_data(context &Xkb_context) voidptr
+fn C.xkb_context_get_user_data(context &C.xkb_context) voidptr
 
-pub fn context_get_user_data(context &Xkb_context) voidptr {
+pub fn context_get_user_data(context &C.xkb_context) voidptr {
 	return C.xkb_context_get_user_data(context)
 }
 
@@ -457,9 +455,9 @@ pub fn context_get_user_data(context &Xkb_context) voidptr {
 // *inaccessible.
 // * *@memberof xkb_context
 //
-fn C.xkb_context_include_path_append(context &Xkb_context, path &i8) int
+fn C.xkb_context_include_path_append(context &C.xkb_context, path &i8) int
 
-pub fn context_include_path_append(context &Xkb_context, path &i8) int {
+pub fn context_include_path_append(context &C.xkb_context, path &i8) int {
 	return C.xkb_context_include_path_append(context, path)
 }
 
@@ -467,9 +465,9 @@ pub fn context_include_path_append(context &Xkb_context, path &i8) int {
 // * *@returns 1 on success, or 0 if the primary include path could not be added.
 // * *@memberof xkb_context
 //
-fn C.xkb_context_include_path_append_default(context &Xkb_context) int
+fn C.xkb_context_include_path_append_default(context &C.xkb_context) int
 
-pub fn context_include_path_append_default(context &Xkb_context) int {
+pub fn context_include_path_append_default(context &C.xkb_context) int {
 	return C.xkb_context_include_path_append_default(context)
 }
 
@@ -479,27 +477,27 @@ pub fn context_include_path_append_default(context &Xkb_context) int {
 // * *@returns 1 on success, or 0 if the primary include path could not be added.
 // * *@memberof xkb_context
 //
-fn C.xkb_context_include_path_reset_defaults(context &Xkb_context) int
+fn C.xkb_context_include_path_reset_defaults(context &C.xkb_context) int
 
-pub fn context_include_path_reset_defaults(context &Xkb_context) int {
+pub fn context_include_path_reset_defaults(context &C.xkb_context) int {
 	return C.xkb_context_include_path_reset_defaults(context)
 }
 
 //* *Remove all entries from the context's include path.
 // * *@memberof xkb_context
 //
-fn C.xkb_context_include_path_clear(context &Xkb_context)
+fn C.xkb_context_include_path_clear(context &C.xkb_context)
 
-pub fn context_include_path_clear(context &Xkb_context) {
+pub fn context_include_path_clear(context &C.xkb_context) {
 	C.xkb_context_include_path_clear(context)
 }
 
 //* *Get the number of paths in the context's include path.
 // * *@memberof xkb_context
 //
-fn C.xkb_context_num_include_paths(context &Xkb_context) u32
+fn C.xkb_context_num_include_paths(context &C.xkb_context) u32
 
-pub fn context_num_include_paths(context &Xkb_context) u32 {
+pub fn context_num_include_paths(context &C.xkb_context) u32 {
 	return C.xkb_context_num_include_paths(context)
 }
 
@@ -508,9 +506,9 @@ pub fn context_num_include_paths(context &Xkb_context) u32 {
 // *invalid, returns NULL.
 // * *@memberof xkb_context
 //
-fn C.xkb_context_include_path_get(context &Xkb_context, index u32) &i8
+fn C.xkb_context_include_path_get(context &C.xkb_context, index u32) &i8
 
-pub fn context_include_path_get(context &Xkb_context, index u32) &i8 {
+pub fn context_include_path_get(context &C.xkb_context, index u32) &i8 {
 	return C.xkb_context_include_path_get(context, index)
 }
 
@@ -520,16 +518,16 @@ pub fn context_include_path_get(context &Xkb_context, index u32) &i8 {
 // * *@{
 //
 //*Specifies a logging level.
-enum Xkb_log_level {
-	xkb_log_level_critical = 10
+pub enum Xkb_log_level {
+	critical = 10
 	//* Log critical internal errors only.
-	xkb_log_level_error = 20
+	error = 20
 	//* Log all errors.
-	xkb_log_level_warning = 30
+	warning = 30
 	//* Log warnings and errors.
-	xkb_log_level_info = 40
+	info = 40
 	//* Log information, warnings, and errors.
-	xkb_log_level_debug = 50
+	debug = 50
 	//* Log everything.
 }
 
@@ -542,18 +540,18 @@ enum Xkb_log_level {
 // *default value.  It may be specified as a level number or name.
 // * *@memberof xkb_context
 //
-fn C.xkb_context_set_log_level(context &Xkb_context, level Xkb_log_level)
+fn C.xkb_context_set_log_level(context &C.xkb_context, level Xkb_log_level)
 
-pub fn context_set_log_level(context &Xkb_context, level Xkb_log_level) {
+pub fn context_set_log_level(context &C.xkb_context, level Xkb_log_level) {
 	C.xkb_context_set_log_level(context, level)
 }
 
 //* *Get the current logging level.
 // * *@memberof xkb_context
 //
-fn C.xkb_context_get_log_level(context &Xkb_context) Xkb_log_level
+fn C.xkb_context_get_log_level(context &C.xkb_context) Xkb_log_level
 
-pub fn context_get_log_level(context &Xkb_context) Xkb_log_level {
+pub fn context_get_log_level(context &C.xkb_context) Xkb_log_level {
 	return C.xkb_context_get_log_level(context)
 }
 
@@ -570,18 +568,18 @@ pub fn context_get_log_level(context &Xkb_context) Xkb_log_level {
 // * *Most verbose messages are of level XKB_LOG_LEVEL_WARNING or lower.
 // * *@memberof xkb_context
 //
-fn C.xkb_context_set_log_verbosity(context &Xkb_context, verbosity int)
+fn C.xkb_context_set_log_verbosity(context &C.xkb_context, verbosity int)
 
-pub fn context_set_log_verbosity(context &Xkb_context, verbosity int) {
+pub fn context_set_log_verbosity(context &C.xkb_context, verbosity int) {
 	C.xkb_context_set_log_verbosity(context, verbosity)
 }
 
 //* *Get the current logging verbosity of the context.
 // * *@memberof xkb_context
 //
-fn C.xkb_context_get_log_verbosity(context &Xkb_context) int
+fn C.xkb_context_get_log_verbosity(context &C.xkb_context) int
 
-pub fn context_get_log_verbosity(context &Xkb_context) int {
+pub fn context_get_log_verbosity(context &C.xkb_context) int {
 	return C.xkb_context_get_log_verbosity(context)
 }
 
@@ -600,9 +598,9 @@ pub fn context_get_log_verbosity(context &Xkb_context) int {
 // *it with additional private context.
 // * *@memberof xkb_context
 //
-fn C.xkb_context_set_log_fn(context &Xkb_context, log_fn C.va_list)
+fn C.xkb_context_set_log_fn(context &C.xkb_context, log_fn C.va_list)
 
-pub fn context_set_log_fn(context &Xkb_context, log_fn C.va_list) {
+pub fn context_set_log_fn(context &C.xkb_context, log_fn C.va_list) {
 	C.xkb_context_set_log_fn(context, log_fn)
 }
 
@@ -612,9 +610,9 @@ pub fn context_set_log_fn(context &Xkb_context, log_fn C.va_list) {
 // * *@{
 //
 //*Flags for keymap compilation.
-enum Xkb_keymap_compile_flags {
+pub enum Xkb_keymap_compile_flags {
 	//*Do not apply any flags.
-	xkb_keymap_compile_no_flags = 0
+	no_flags = 0
 }
 
 //* *Create a keymap from RMLVO names.
@@ -628,16 +626,16 @@ enum Xkb_keymap_compile_flags {
 // * *@sa xkb_rule_names
 // *@memberof xkb_keymap
 //
-fn C.xkb_keymap_new_from_names(context &Xkb_context, names &Xkb_rule_names, flags Xkb_keymap_compile_flags) &Xkb_keymap
+fn C.xkb_keymap_new_from_names(context &C.xkb_context, names &C.xkb_rule_names, flags Xkb_keymap_compile_flags) &C.xkb_keymap
 
-pub fn keymap_new_from_names(context &Xkb_context, names &Xkb_rule_names, flags Xkb_keymap_compile_flags) &Xkb_keymap {
+pub fn keymap_new_from_names(context &C.xkb_context, names &C.xkb_rule_names, flags Xkb_keymap_compile_flags) &C.xkb_keymap {
 	return C.xkb_keymap_new_from_names(context, names, flags)
 }
 
 //*The possible keymap formats.
-enum Xkb_keymap_format {
+pub enum Xkb_keymap_format {
 	//*The current/classic XKB text format, as generated by xkbcomp -xkb.
-	xkb_keymap_format_text_v1 = 1
+	text_v1 = 1
 }
 
 //* *Create a keymap from a keymap file.
@@ -653,9 +651,9 @@ enum Xkb_keymap_format {
 // *sections.
 // * *@memberof xkb_keymap
 //
-fn C.xkb_keymap_new_from_file(context &Xkb_context, file &C.FILE, format Xkb_keymap_format, flags Xkb_keymap_compile_flags) &Xkb_keymap
+fn C.xkb_keymap_new_from_file(context &C.xkb_context, file &C.FILE, format Xkb_keymap_format, flags Xkb_keymap_compile_flags) &C.xkb_keymap
 
-pub fn keymap_new_from_file(context &Xkb_context, file &C.FILE, format Xkb_keymap_format, flags Xkb_keymap_compile_flags) &Xkb_keymap {
+pub fn keymap_new_from_file(context &C.xkb_context, file &C.FILE, format Xkb_keymap_format, flags Xkb_keymap_compile_flags) &C.xkb_keymap {
 	return C.xkb_keymap_new_from_file(context, file, format, flags)
 }
 
@@ -665,9 +663,9 @@ pub fn keymap_new_from_file(context &Xkb_context, file &C.FILE, format Xkb_keyma
 // * *@see xkb_keymap_new_from_file()
 // *@memberof xkb_keymap
 //
-fn C.xkb_keymap_new_from_string(context &Xkb_context, string_ &i8, format Xkb_keymap_format, flags Xkb_keymap_compile_flags) &Xkb_keymap
+fn C.xkb_keymap_new_from_string(context &C.xkb_context, string_ &i8, format Xkb_keymap_format, flags Xkb_keymap_compile_flags) &C.xkb_keymap
 
-pub fn keymap_new_from_string(context &Xkb_context, string_ &i8, format Xkb_keymap_format, flags Xkb_keymap_compile_flags) &Xkb_keymap {
+pub fn keymap_new_from_string(context &C.xkb_context, string_ &i8, format Xkb_keymap_format, flags Xkb_keymap_compile_flags) &C.xkb_keymap {
 	return C.xkb_keymap_new_from_string(context, string_, format, flags)
 }
 
@@ -678,9 +676,9 @@ pub fn keymap_new_from_string(context &Xkb_context, string_ &i8, format Xkb_keym
 // *@memberof xkb_keymap
 // *@since 0.3.0
 //
-fn C.xkb_keymap_new_from_buffer(context &Xkb_context, buffer &i8, length usize, format Xkb_keymap_format, flags Xkb_keymap_compile_flags) &Xkb_keymap
+fn C.xkb_keymap_new_from_buffer(context &C.xkb_context, buffer &i8, length usize, format Xkb_keymap_format, flags Xkb_keymap_compile_flags) &C.xkb_keymap
 
-pub fn keymap_new_from_buffer(context &Xkb_context, buffer &i8, length usize, format Xkb_keymap_format, flags Xkb_keymap_compile_flags) &Xkb_keymap {
+pub fn keymap_new_from_buffer(context &C.xkb_context, buffer &i8, length usize, format Xkb_keymap_format, flags Xkb_keymap_compile_flags) &C.xkb_keymap {
 	return C.xkb_keymap_new_from_buffer(context, buffer, length, format, flags)
 }
 
@@ -688,9 +686,9 @@ pub fn keymap_new_from_buffer(context &Xkb_context, buffer &i8, length usize, fo
 // * *@returns The passed in keymap.
 // * *@memberof xkb_keymap
 //
-fn C.xkb_keymap_ref(keymap &Xkb_keymap) &Xkb_keymap
+fn C.xkb_keymap_ref(keymap &C.xkb_keymap) &C.xkb_keymap
 
-pub fn keymap_ref(keymap &Xkb_keymap) &Xkb_keymap {
+pub fn keymap_ref(keymap &C.xkb_keymap) &C.xkb_keymap {
 	return C.xkb_keymap_ref(keymap)
 }
 
@@ -698,15 +696,15 @@ pub fn keymap_ref(keymap &Xkb_keymap) &Xkb_keymap {
 // * *@param keymap The keymap.  If it is NULL, this function does nothing.
 // * *@memberof xkb_keymap
 //
-fn C.xkb_keymap_unref(keymap &Xkb_keymap)
+fn C.xkb_keymap_unref(keymap &C.xkb_keymap)
 
-pub fn keymap_unref(keymap &Xkb_keymap) {
+pub fn keymap_unref(keymap &C.xkb_keymap) {
 	C.xkb_keymap_unref(keymap)
 }
 
-fn C.xkb_keymap_get_as_string(keymap &Xkb_keymap, format Xkb_keymap_format) &i8
+fn C.xkb_keymap_get_as_string(keymap &C.xkb_keymap, format Xkb_keymap_format) &i8
 
-pub fn keymap_get_as_string(keymap &Xkb_keymap, format Xkb_keymap_format) &i8 {
+pub fn keymap_get_as_string(keymap &C.xkb_keymap, format Xkb_keymap_format) &i8 {
 	return C.xkb_keymap_get_as_string(keymap, format)
 }
 
@@ -720,9 +718,9 @@ pub fn keymap_get_as_string(keymap &Xkb_keymap, format Xkb_keymap_format) &i8 {
 // *@memberof xkb_keymap
 // *@since 0.3.1
 //
-fn C.xkb_keymap_min_keycode(keymap &Xkb_keymap) Xkb_keycode_t
+fn C.xkb_keymap_min_keycode(keymap &C.xkb_keymap) Xkb_keycode_t
 
-pub fn keymap_min_keycode(keymap &Xkb_keymap) Xkb_keycode_t {
+pub fn keymap_min_keycode(keymap &C.xkb_keymap) Xkb_keycode_t {
 	return C.xkb_keymap_min_keycode(keymap)
 }
 
@@ -731,9 +729,9 @@ pub fn keymap_min_keycode(keymap &Xkb_keymap) Xkb_keycode_t {
 // *@memberof xkb_keymap
 // *@since 0.3.1
 //
-fn C.xkb_keymap_max_keycode(keymap &Xkb_keymap) Xkb_keycode_t
+fn C.xkb_keymap_max_keycode(keymap &C.xkb_keymap) Xkb_keycode_t
 
-pub fn keymap_max_keycode(keymap &Xkb_keymap) Xkb_keycode_t {
+pub fn keymap_max_keycode(keymap &C.xkb_keymap) Xkb_keycode_t {
 	return C.xkb_keymap_max_keycode(keymap)
 }
 
@@ -742,7 +740,7 @@ pub fn keymap_max_keycode(keymap &Xkb_keymap) Xkb_keycode_t {
 // *@memberof xkb_keymap
 // *@since 0.3.1
 //
-type Xkb_keymap_key_iter_t = fn (&Xkb_keymap, Xkb_keycode_t, voidptr)
+pub type C.xkb_keymap_key_iter_t = fn (&C.xkb_keymap, Xkb_keycode_t, voidptr)
 
 //* *Run a specified function for every valid keycode in the keymap.  If a
 // *keymap is sparse, this function may be called fewer than
@@ -751,9 +749,9 @@ type Xkb_keymap_key_iter_t = fn (&Xkb_keymap, Xkb_keycode_t, voidptr)
 // *@memberof xkb_keymap
 // *@since 0.3.1
 //
-fn C.xkb_keymap_key_for_each(keymap &Xkb_keymap, iter Xkb_keymap_key_iter_t, data voidptr)
+fn C.xkb_keymap_key_for_each(keymap &C.xkb_keymap, iter C.xkb_keymap_key_iter_t, data voidptr)
 
-pub fn keymap_key_for_each(keymap &Xkb_keymap, iter Xkb_keymap_key_iter_t, data voidptr) {
+pub fn keymap_key_for_each(keymap &C.xkb_keymap, iter C.xkb_keymap_key_iter_t, data voidptr) {
 	C.xkb_keymap_key_for_each(keymap, iter, data)
 }
 
@@ -766,9 +764,9 @@ pub fn keymap_key_for_each(keymap &Xkb_keymap, iter Xkb_keymap_key_iter_t, data 
 // *@memberof xkb_keymap
 // *@since 0.6.0
 //
-fn C.xkb_keymap_key_get_name(keymap &Xkb_keymap, key Xkb_keycode_t) &i8
+fn C.xkb_keymap_key_get_name(keymap &C.xkb_keymap, key Xkb_keycode_t) &i8
 
-pub fn keymap_key_get_name(keymap &Xkb_keymap, key Xkb_keycode_t) &i8 {
+pub fn keymap_key_get_name(keymap &C.xkb_keymap, key Xkb_keycode_t) &i8 {
 	return C.xkb_keymap_key_get_name(keymap, key)
 }
 
@@ -780,9 +778,9 @@ pub fn keymap_key_get_name(keymap &Xkb_keymap, key Xkb_keycode_t) &i8 {
 // *@memberof xkb_keymap
 // *@since 0.6.0
 //
-fn C.xkb_keymap_key_by_name(keymap &Xkb_keymap, name &i8) Xkb_keycode_t
+fn C.xkb_keymap_key_by_name(keymap &C.xkb_keymap, name &i8) Xkb_keycode_t
 
-pub fn keymap_key_by_name(keymap &Xkb_keymap, name &i8) Xkb_keycode_t {
+pub fn keymap_key_by_name(keymap &C.xkb_keymap, name &i8) Xkb_keycode_t {
 	return C.xkb_keymap_key_by_name(keymap, name)
 }
 
@@ -790,9 +788,9 @@ pub fn keymap_key_by_name(keymap &Xkb_keymap, name &i8) Xkb_keycode_t {
 // * *@sa xkb_mod_index_t
 // *@memberof xkb_keymap
 //
-fn C.xkb_keymap_num_mods(keymap &Xkb_keymap) Xkb_mod_index_t
+fn C.xkb_keymap_num_mods(keymap &C.xkb_keymap) Xkb_mod_index_t
 
-pub fn keymap_num_mods(keymap &Xkb_keymap) Xkb_mod_index_t {
+pub fn keymap_num_mods(keymap &C.xkb_keymap) Xkb_mod_index_t {
 	return C.xkb_keymap_num_mods(keymap)
 }
 
@@ -801,9 +799,9 @@ pub fn keymap_num_mods(keymap &Xkb_keymap) Xkb_mod_index_t {
 // * *@sa xkb_mod_index_t
 // *@memberof xkb_keymap
 //
-fn C.xkb_keymap_mod_get_name(keymap &Xkb_keymap, idx Xkb_mod_index_t) &i8
+fn C.xkb_keymap_mod_get_name(keymap &C.xkb_keymap, idx Xkb_mod_index_t) &i8
 
-pub fn keymap_mod_get_name(keymap &Xkb_keymap, idx Xkb_mod_index_t) &i8 {
+pub fn keymap_mod_get_name(keymap &C.xkb_keymap, idx Xkb_mod_index_t) &i8 {
 	return C.xkb_keymap_mod_get_name(keymap, idx)
 }
 
@@ -813,9 +811,9 @@ pub fn keymap_mod_get_name(keymap &Xkb_keymap, idx Xkb_mod_index_t) &i8 {
 // * *@sa xkb_mod_index_t
 // *@memberof xkb_keymap
 //
-fn C.xkb_keymap_mod_get_index(keymap &Xkb_keymap, name &i8) Xkb_mod_index_t
+fn C.xkb_keymap_mod_get_index(keymap &C.xkb_keymap, name &i8) Xkb_mod_index_t
 
-pub fn keymap_mod_get_index(keymap &Xkb_keymap, name &i8) Xkb_mod_index_t {
+pub fn keymap_mod_get_index(keymap &C.xkb_keymap, name &i8) Xkb_mod_index_t {
 	return C.xkb_keymap_mod_get_index(keymap, name)
 }
 
@@ -823,9 +821,9 @@ pub fn keymap_mod_get_index(keymap &Xkb_keymap, name &i8) Xkb_mod_index_t {
 // * *@sa xkb_layout_index_t xkb_rule_names xkb_keymap_num_layouts_for_key()
 // *@memberof xkb_keymap
 //
-fn C.xkb_keymap_num_layouts(keymap &Xkb_keymap) Xkb_layout_index_t
+fn C.xkb_keymap_num_layouts(keymap &C.xkb_keymap) Xkb_layout_index_t
 
-pub fn keymap_num_layouts(keymap &Xkb_keymap) Xkb_layout_index_t {
+pub fn keymap_num_layouts(keymap &C.xkb_keymap) Xkb_layout_index_t {
 	return C.xkb_keymap_num_layouts(keymap)
 }
 
@@ -836,9 +834,9 @@ pub fn keymap_num_layouts(keymap &Xkb_keymap) Xkb_layout_index_t {
 // *    For notes on layout names.
 // *@memberof xkb_keymap
 //
-fn C.xkb_keymap_layout_get_name(keymap &Xkb_keymap, idx Xkb_layout_index_t) &i8
+fn C.xkb_keymap_layout_get_name(keymap &C.xkb_keymap, idx Xkb_layout_index_t) &i8
 
-pub fn keymap_layout_get_name(keymap &Xkb_keymap, idx Xkb_layout_index_t) &i8 {
+pub fn keymap_layout_get_name(keymap &C.xkb_keymap, idx Xkb_layout_index_t) &i8 {
 	return C.xkb_keymap_layout_get_name(keymap, idx)
 }
 
@@ -850,9 +848,9 @@ pub fn keymap_layout_get_name(keymap &Xkb_keymap, idx Xkb_layout_index_t) &i8 {
 // *    For notes on layout names.
 // *@memberof xkb_keymap
 //
-fn C.xkb_keymap_layout_get_index(keymap &Xkb_keymap, name &i8) Xkb_layout_index_t
+fn C.xkb_keymap_layout_get_index(keymap &C.xkb_keymap, name &i8) Xkb_layout_index_t
 
-pub fn keymap_layout_get_index(keymap &Xkb_keymap, name &i8) Xkb_layout_index_t {
+pub fn keymap_layout_get_index(keymap &C.xkb_keymap, name &i8) Xkb_layout_index_t {
 	return C.xkb_keymap_layout_get_index(keymap, name)
 }
 
@@ -864,9 +862,9 @@ pub fn keymap_layout_get_index(keymap &Xkb_keymap, name &i8) Xkb_layout_index_t 
 // * *@sa xkb_led_index_t
 // *@memberof xkb_keymap
 //
-fn C.xkb_keymap_num_leds(keymap &Xkb_keymap) Xkb_led_index_t
+fn C.xkb_keymap_num_leds(keymap &C.xkb_keymap) Xkb_led_index_t
 
-pub fn keymap_num_leds(keymap &Xkb_keymap) Xkb_led_index_t {
+pub fn keymap_num_leds(keymap &C.xkb_keymap) Xkb_led_index_t {
 	return C.xkb_keymap_num_leds(keymap)
 }
 
@@ -874,9 +872,9 @@ pub fn keymap_num_leds(keymap &Xkb_keymap) Xkb_led_index_t {
 // * *@returns The name.  If the index is invalid, returns NULL.
 // * *@memberof xkb_keymap
 //
-fn C.xkb_keymap_led_get_name(keymap &Xkb_keymap, idx Xkb_led_index_t) &i8
+fn C.xkb_keymap_led_get_name(keymap &C.xkb_keymap, idx Xkb_led_index_t) &i8
 
-pub fn keymap_led_get_name(keymap &Xkb_keymap, idx Xkb_led_index_t) &i8 {
+pub fn keymap_led_get_name(keymap &C.xkb_keymap, idx Xkb_led_index_t) &i8 {
 	return C.xkb_keymap_led_get_name(keymap, idx)
 }
 
@@ -885,9 +883,9 @@ pub fn keymap_led_get_name(keymap &Xkb_keymap, idx Xkb_led_index_t) &i8 {
 // *XKB_LED_INVALID.
 // * *@memberof xkb_keymap
 //
-fn C.xkb_keymap_led_get_index(keymap &Xkb_keymap, name &i8) Xkb_led_index_t
+fn C.xkb_keymap_led_get_index(keymap &C.xkb_keymap, name &i8) Xkb_led_index_t
 
-pub fn keymap_led_get_index(keymap &Xkb_keymap, name &i8) Xkb_led_index_t {
+pub fn keymap_led_get_index(keymap &C.xkb_keymap, name &i8) Xkb_led_index_t {
 	return C.xkb_keymap_led_get_index(keymap, name)
 }
 
@@ -898,9 +896,9 @@ pub fn keymap_led_get_index(keymap &Xkb_keymap, name &i8) Xkb_led_index_t {
 // * *@sa xkb_layout_index_t
 // *@memberof xkb_keymap
 //
-fn C.xkb_keymap_num_layouts_for_key(keymap &Xkb_keymap, key Xkb_keycode_t) Xkb_layout_index_t
+fn C.xkb_keymap_num_layouts_for_key(keymap &C.xkb_keymap, key Xkb_keycode_t) Xkb_layout_index_t
 
-pub fn keymap_num_layouts_for_key(keymap &Xkb_keymap, key Xkb_keycode_t) Xkb_layout_index_t {
+pub fn keymap_num_layouts_for_key(keymap &C.xkb_keymap, key Xkb_keycode_t) Xkb_layout_index_t {
 	return C.xkb_keymap_num_layouts_for_key(keymap, key)
 }
 
@@ -911,9 +909,9 @@ pub fn keymap_num_layouts_for_key(keymap &Xkb_keymap, key Xkb_keycode_t) Xkb_lay
 // * *@sa xkb_level_index_t
 // *@memberof xkb_keymap
 //
-fn C.xkb_keymap_num_levels_for_key(keymap &Xkb_keymap, key Xkb_keycode_t, layout Xkb_layout_index_t) Xkb_level_index_t
+fn C.xkb_keymap_num_levels_for_key(keymap &C.xkb_keymap, key Xkb_keycode_t, layout Xkb_layout_index_t) Xkb_level_index_t
 
-pub fn keymap_num_levels_for_key(keymap &Xkb_keymap, key Xkb_keycode_t, layout Xkb_layout_index_t) Xkb_level_index_t {
+pub fn keymap_num_levels_for_key(keymap &C.xkb_keymap, key Xkb_keycode_t, layout Xkb_layout_index_t) Xkb_level_index_t {
 	return C.xkb_keymap_num_levels_for_key(keymap, key, layout)
 }
 
@@ -946,9 +944,9 @@ pub fn keymap_num_levels_for_key(keymap &Xkb_keymap, key Xkb_keycode_t, layout X
 // *@memberof xkb_keymap
 // *@since 1.0.0
 //
-fn C.xkb_keymap_key_get_mods_for_level(keymap &Xkb_keymap, key Xkb_keycode_t, layout Xkb_layout_index_t, level Xkb_level_index_t, masks_out &Xkb_mod_mask_t, masks_size usize) usize
+fn C.xkb_keymap_key_get_mods_for_level(keymap &C.xkb_keymap, key Xkb_keycode_t, layout Xkb_layout_index_t, level Xkb_level_index_t, masks_out &Xkb_mod_mask_t, masks_size usize) usize
 
-pub fn keymap_key_get_mods_for_level(keymap &Xkb_keymap, key Xkb_keycode_t, layout Xkb_layout_index_t, level Xkb_level_index_t, masks_out &Xkb_mod_mask_t, masks_size usize) usize {
+pub fn keymap_key_get_mods_for_level(keymap &C.xkb_keymap, key Xkb_keycode_t, layout Xkb_layout_index_t, level Xkb_level_index_t, masks_out &Xkb_mod_mask_t, masks_size usize) usize {
 	return C.xkb_keymap_key_get_mods_for_level(keymap, key, layout, level, masks_out,
 		masks_size)
 }
@@ -975,9 +973,9 @@ pub fn keymap_key_get_mods_for_level(keymap &Xkb_keymap, key Xkb_keycode_t, layo
 // * *@sa xkb_state_key_get_syms()
 // *@memberof xkb_keymap
 //
-fn C.xkb_keymap_key_get_syms_by_level(keymap &Xkb_keymap, key Xkb_keycode_t, layout Xkb_layout_index_t, level Xkb_level_index_t, syms_out &&Xkb_keysym_t) int
+fn C.xkb_keymap_key_get_syms_by_level(keymap &C.xkb_keymap, key Xkb_keycode_t, layout Xkb_layout_index_t, level Xkb_level_index_t, syms_out &&Xkb_keysym_t) int
 
-pub fn keymap_key_get_syms_by_level(keymap &Xkb_keymap, key Xkb_keycode_t, layout Xkb_layout_index_t, level Xkb_level_index_t, syms_out &&Xkb_keysym_t) int {
+pub fn keymap_key_get_syms_by_level(keymap &C.xkb_keymap, key Xkb_keycode_t, layout Xkb_layout_index_t, level Xkb_level_index_t, syms_out &&Xkb_keysym_t) int {
 	return C.xkb_keymap_key_get_syms_by_level(keymap, key, layout, level, syms_out)
 }
 
@@ -992,13 +990,13 @@ pub fn keymap_key_get_syms_by_level(keymap &Xkb_keymap, key Xkb_keycode_t, layou
 // * *@returns 1 if the key should repeat, 0 otherwise.
 // * *@memberof xkb_keymap
 //
-fn C.xkb_keymap_key_repeats(keymap &Xkb_keymap, key Xkb_keycode_t) int
+fn C.xkb_keymap_key_repeats(keymap &C.xkb_keymap, key Xkb_keycode_t) int
 
-pub fn keymap_key_repeats(keymap &Xkb_keymap, key Xkb_keycode_t) int {
+pub fn keymap_key_repeats(keymap &C.xkb_keymap, key Xkb_keycode_t) int {
 	return C.xkb_keymap_key_repeats(keymap, key)
 }
 
-pub struct Xkb_state {}
+pub struct C.xkb_state {}
 
 //*@}
 //* *@defgroup state Keyboard State
@@ -1010,9 +1008,9 @@ pub struct Xkb_state {}
 // * *@returns A new keyboard state object, or NULL on failure.
 // * *@memberof xkb_state
 //
-fn C.xkb_state_new(keymap &Xkb_keymap) &Xkb_state
+fn C.xkb_state_new(keymap &C.xkb_keymap) &C.xkb_state
 
-pub fn state_new(keymap &Xkb_keymap) &Xkb_state {
+pub fn state_new(keymap &C.xkb_keymap) &C.xkb_state {
 	return C.xkb_state_new(keymap)
 }
 
@@ -1020,9 +1018,9 @@ pub fn state_new(keymap &Xkb_keymap) &Xkb_state {
 // * *@returns The passed in object.
 // * *@memberof xkb_state
 //
-fn C.xkb_state_ref(state &Xkb_state) &Xkb_state
+fn C.xkb_state_ref(state &C.xkb_state) &C.xkb_state
 
-pub fn state_ref(state &Xkb_state) &Xkb_state {
+pub fn state_ref(state &C.xkb_state) &C.xkb_state {
 	return C.xkb_state_ref(state)
 }
 
@@ -1030,9 +1028,9 @@ pub fn state_ref(state &Xkb_state) &Xkb_state {
 // * *@param state The state.  If it is NULL, this function does nothing.
 // * *@memberof xkb_state
 //
-fn C.xkb_state_unref(state &Xkb_state)
+fn C.xkb_state_unref(state &C.xkb_state)
 
-pub fn state_unref(state &Xkb_state) {
+pub fn state_unref(state &C.xkb_state) {
 	C.xkb_state_unref(state)
 }
 
@@ -1044,9 +1042,9 @@ pub fn state_unref(state &Xkb_state) {
 // *lifetime of the state.
 // * *@memberof xkb_state
 //
-fn C.xkb_state_get_keymap(state &Xkb_state) &Xkb_keymap
+fn C.xkb_state_get_keymap(state &C.xkb_state) &C.xkb_keymap
 
-pub fn state_get_keymap(state &Xkb_state) &Xkb_keymap {
+pub fn state_get_keymap(state &C.xkb_state) &C.xkb_keymap {
 	return C.xkb_state_get_keymap(state)
 }
 
@@ -1069,10 +1067,10 @@ pub fn state_get_keymap(state &Xkb_state) &Xkb_keymap {
 // * *@endparblock
 //
 //*Specifies the direction of the key (press / release).
-enum Xkb_key_direction {
-	xkb_key_up
+pub enum Xkb_key_direction {
+	up
 	//* The key was released.
-	xkb_key_down
+	down
 	//* The key was pressed.
 }
 
@@ -1083,17 +1081,17 @@ enum Xkb_key_direction {
 //
 pub enum Xkb_state_component {
 	//*Depressed modifiers, i.e. a key is physically holding them.
-	xkb_state_mods_depressed = 1 << 0
+	depressed = 1 << 0
 	//*Latched modifiers, i.e. will be unset after the next non-modifier
 	//     * key press.
-	xkb_state_mods_latched = 1 << 1
+	latched = 1 << 1
 	//*Locked modifiers, i.e. will be unset after the key provoking the
 	//     * lock has been pressed again.
-	xkb_state_mods_locked = 1 << 2
+	locked = 1 << 2
 	//*Effective modifiers, i.e. currently active and affect key
 	//     * processing (derived from the other state components).
 	//     * Use this unless you explicitly care how the state came about.
-	xkb_state_mods_effective = 1 << 3
+	effective = 1 << 3
 	//*Depressed layout, i.e. a key is physically holding it.
 	xkb_state_layout_depressed = 1 << 4
 	//*Latched layout, i.e. will be unset after the next non-modifier
@@ -1129,9 +1127,9 @@ pub enum Xkb_state_component {
 // * *@memberof xkb_state
 // * *@sa xkb_state_update_mask()
 //
-fn C.xkb_state_update_key(state &Xkb_state, key Xkb_keycode_t, direction Xkb_key_direction) Xkb_state_component
+fn C.xkb_state_update_key(state &C.xkb_state, key Xkb_keycode_t, direction Xkb_key_direction) Xkb_state_component
 
-pub fn state_update_key(state &Xkb_state, key Xkb_keycode_t, direction Xkb_key_direction) Xkb_state_component {
+pub fn state_update_key(state &C.xkb_state, key Xkb_keycode_t, direction Xkb_key_direction) Xkb_state_component {
 	return C.xkb_state_update_key(state, key, direction)
 }
 
@@ -1150,9 +1148,9 @@ pub fn state_update_key(state &Xkb_state, key Xkb_keycode_t, direction Xkb_key_d
 // * *@sa xkb_state_component
 // *@sa xkb_state_update_key
 //
-fn C.xkb_state_update_mask(state &Xkb_state, depressed_mods Xkb_mod_mask_t, latched_mods Xkb_mod_mask_t, locked_mods Xkb_mod_mask_t, depressed_layout Xkb_layout_index_t, latched_layout Xkb_layout_index_t, locked_layout Xkb_layout_index_t) Xkb_state_component
+fn C.xkb_state_update_mask(state &C.xkb_state, depressed_mods Xkb_mod_mask_t, latched_mods Xkb_mod_mask_t, locked_mods Xkb_mod_mask_t, depressed_layout Xkb_layout_index_t, latched_layout Xkb_layout_index_t, locked_layout Xkb_layout_index_t) Xkb_state_component
 
-pub fn state_update_mask(state &Xkb_state, depressed_mods Xkb_mod_mask_t, latched_mods Xkb_mod_mask_t, locked_mods Xkb_mod_mask_t, depressed_layout Xkb_layout_index_t, latched_layout Xkb_layout_index_t, locked_layout Xkb_layout_index_t) Xkb_state_component {
+pub fn state_update_mask(state &C.xkb_state, depressed_mods Xkb_mod_mask_t, latched_mods Xkb_mod_mask_t, locked_mods Xkb_mod_mask_t, depressed_layout Xkb_layout_index_t, latched_layout Xkb_layout_index_t, locked_layout Xkb_layout_index_t) Xkb_state_component {
 	return C.xkb_state_update_mask(state, depressed_mods, latched_mods, locked_mods, depressed_layout,
 		latched_layout, locked_layout)
 }
@@ -1176,9 +1174,9 @@ pub fn state_update_mask(state &Xkb_state, depressed_mods Xkb_mod_mask_t, latche
 // *syms_out to NULL.
 // * *@memberof xkb_state
 //
-fn C.xkb_state_key_get_syms(state &Xkb_state, key Xkb_keycode_t, syms_out &&Xkb_keysym_t) int
+fn C.xkb_state_key_get_syms(state &C.xkb_state, key Xkb_keycode_t, syms_out &&Xkb_keysym_t) int
 
-pub fn state_key_get_syms(state &Xkb_state, key Xkb_keycode_t, syms_out &&Xkb_keysym_t) int {
+pub fn state_key_get_syms(state &C.xkb_state, key Xkb_keycode_t, syms_out &&Xkb_keysym_t) int {
 	return C.xkb_state_key_get_syms(state, key, syms_out)
 }
 
@@ -1201,9 +1199,9 @@ pub fn state_key_get_syms(state &Xkb_state, key Xkb_keycode_t, syms_out &&Xkb_ke
 // * *@memberof xkb_state
 // *@since 0.4.1
 //
-fn C.xkb_state_key_get_utf8(state &Xkb_state, key Xkb_keycode_t, buffer &i8, size usize) int
+fn C.xkb_state_key_get_utf8(state &C.xkb_state, key Xkb_keycode_t, buffer &i8, size usize) int
 
-pub fn state_key_get_utf8(state &Xkb_state, key Xkb_keycode_t, buffer &i8, size usize) int {
+pub fn state_key_get_utf8(state &C.xkb_state, key Xkb_keycode_t, buffer &i8, size usize) int {
 	return C.xkb_state_key_get_utf8(state, key, buffer, size)
 }
 
@@ -1216,9 +1214,9 @@ pub fn state_key_get_utf8(state &Xkb_state, key Xkb_keycode_t, buffer &i8, size 
 // * *@memberof xkb_state
 // *@since 0.4.1
 //
-fn C.xkb_state_key_get_utf32(state &Xkb_state, key Xkb_keycode_t) u32
+fn C.xkb_state_key_get_utf32(state &C.xkb_state, key Xkb_keycode_t) u32
 
-pub fn state_key_get_utf32(state &Xkb_state, key Xkb_keycode_t) u32 {
+pub fn state_key_get_utf32(state &C.xkb_state, key Xkb_keycode_t) u32 {
 	return C.xkb_state_key_get_utf32(state, key)
 }
 
@@ -1234,9 +1232,9 @@ pub fn state_key_get_utf32(state &Xkb_state, key Xkb_keycode_t) u32 {
 // * *@sa xkb_state_key_get_syms()
 // *@memberof xkb_state
 //
-fn C.xkb_state_key_get_one_sym(state &Xkb_state, key Xkb_keycode_t) Xkb_keysym_t
+fn C.xkb_state_key_get_one_sym(state &C.xkb_state, key Xkb_keycode_t) Xkb_keysym_t
 
-pub fn state_key_get_one_sym(state &Xkb_state, key Xkb_keycode_t) Xkb_keysym_t {
+pub fn state_key_get_one_sym(state &C.xkb_state, key Xkb_keycode_t) Xkb_keysym_t {
 	return C.xkb_state_key_get_one_sym(state, key)
 }
 
@@ -1250,9 +1248,9 @@ pub fn state_key_get_one_sym(state &Xkb_state, key Xkb_keycode_t) Xkb_keysym_t {
 // *@endcode
 // * *@memberof xkb_state
 //
-fn C.xkb_state_key_get_layout(state &Xkb_state, key Xkb_keycode_t) Xkb_layout_index_t
+fn C.xkb_state_key_get_layout(state &C.xkb_state, key Xkb_keycode_t) Xkb_layout_index_t
 
-pub fn state_key_get_layout(state &Xkb_state, key Xkb_keycode_t) Xkb_layout_index_t {
+pub fn state_key_get_layout(state &C.xkb_state, key Xkb_keycode_t) Xkb_layout_index_t {
 	return C.xkb_state_key_get_layout(state, key)
 }
 
@@ -1273,9 +1271,9 @@ pub fn state_key_get_layout(state &Xkb_state, key Xkb_keycode_t) Xkb_layout_inde
 // *@endcode
 // * *@memberof xkb_state
 //
-fn C.xkb_state_key_get_level(state &Xkb_state, key Xkb_keycode_t, layout Xkb_layout_index_t) Xkb_level_index_t
+fn C.xkb_state_key_get_level(state &C.xkb_state, key Xkb_keycode_t, layout Xkb_layout_index_t) Xkb_level_index_t
 
-pub fn state_key_get_level(state &Xkb_state, key Xkb_keycode_t, layout Xkb_layout_index_t) Xkb_level_index_t {
+pub fn state_key_get_level(state &C.xkb_state, key Xkb_keycode_t, layout Xkb_layout_index_t) Xkb_level_index_t {
 	return C.xkb_state_key_get_level(state, key, layout)
 }
 
@@ -1286,12 +1284,12 @@ pub fn state_key_get_level(state &Xkb_state, key Xkb_keycode_t, layout Xkb_layou
 //
 pub enum Xkb_state_match {
 	//*Returns true if any of the modifiers are active.
-	xkb_state_match_any = 1 << 0
+	any = 1 << 0
 	//*Returns true if all of the modifiers are active.
-	xkb_state_match_all = 1 << 1
+	all = 1 << 1
 	//*Makes matching non-exclusive, i.e. will not return false if a
 	//     * modifier not specified in the arguments is active.
-	xkb_state_match_non_exclusive = 1 << 16
+	non_exclusive = 1 << 16
 }
 
 //* *The counterpart to xkb_state_update_mask for modifiers, to be used on
@@ -1308,9 +1306,9 @@ pub enum Xkb_state_match {
 // *modifier state.
 // * *@memberof xkb_state
 //
-fn C.xkb_state_serialize_mods(state &Xkb_state, components Xkb_state_component) Xkb_mod_mask_t
+fn C.xkb_state_serialize_mods(state &C.xkb_state, components Xkb_state_component) Xkb_mod_mask_t
 
-pub fn state_serialize_mods(state &Xkb_state, components Xkb_state_component) Xkb_mod_mask_t {
+pub fn state_serialize_mods(state &C.xkb_state, components Xkb_state_component) Xkb_mod_mask_t {
 	return C.xkb_state_serialize_mods(state, components)
 }
 
@@ -1328,9 +1326,9 @@ pub fn state_serialize_mods(state &Xkb_state, components Xkb_state_component) Xk
 // *layout state.
 // * *@memberof xkb_state
 //
-fn C.xkb_state_serialize_layout(state &Xkb_state, components Xkb_state_component) Xkb_layout_index_t
+fn C.xkb_state_serialize_layout(state &C.xkb_state, components Xkb_state_component) Xkb_layout_index_t
 
-pub fn state_serialize_layout(state &Xkb_state, components Xkb_state_component) Xkb_layout_index_t {
+pub fn state_serialize_layout(state &C.xkb_state, components Xkb_state_component) Xkb_layout_index_t {
 	return C.xkb_state_serialize_layout(state, components)
 }
 
@@ -1339,9 +1337,9 @@ pub fn state_serialize_layout(state &Xkb_state, components Xkb_state_component) 
 // *name does not exist in the keymap, returns -1.
 // * *@memberof xkb_state
 //
-fn C.xkb_state_mod_name_is_active(state &Xkb_state, name &i8, type_ Xkb_state_component) int
+fn C.xkb_state_mod_name_is_active(state &C.xkb_state, name &i8, type_ Xkb_state_component) int
 
-pub fn state_mod_name_is_active(state &Xkb_state, name &i8, type_ Xkb_state_component) int {
+pub fn state_mod_name_is_active(state &C.xkb_state, name &i8, type_ Xkb_state_component) int {
 	return C.xkb_state_mod_name_is_active(state, name, type_)
 }
 
@@ -1359,9 +1357,9 @@ pub fn state_mod_name_is_active(state &Xkb_state, name &i8, type_ Xkb_state_comp
 // * *@memberof xkb_state
 //
 @[c2v_variadic]
-fn C.xkb_state_mod_names_are_active(state &Xkb_state, type_ Xkb_state_component, match_ ...Xkb_state_match) int
+fn C.xkb_state_mod_names_are_active(state &C.xkb_state, type_ Xkb_state_component, match_ ...Xkb_state_match) int
 
-pub fn state_mod_names_are_active(state &Xkb_state, type_ Xkb_state_component, match_ Xkb_state_match) int {
+pub fn state_mod_names_are_active(state &C.xkb_state, type_ Xkb_state_component, match_ Xkb_state_match) int {
 	return C.xkb_state_mod_names_are_active(state, type_, match_)
 }
 
@@ -1370,9 +1368,9 @@ pub fn state_mod_names_are_active(state &Xkb_state, type_ Xkb_state_component, m
 // *index is invalid in the keymap, returns -1.
 // * *@memberof xkb_state
 //
-fn C.xkb_state_mod_index_is_active(state &Xkb_state, idx Xkb_mod_index_t, type_ Xkb_state_component) int
+fn C.xkb_state_mod_index_is_active(state &C.xkb_state, idx Xkb_mod_index_t, type_ Xkb_state_component) int
 
-pub fn state_mod_index_is_active(state &Xkb_state, idx Xkb_mod_index_t, type_ Xkb_state_component) int {
+pub fn state_mod_index_is_active(state &C.xkb_state, idx Xkb_mod_index_t, type_ Xkb_state_component) int {
 	return C.xkb_state_mod_index_is_active(state, idx, type_)
 }
 
@@ -1390,9 +1388,9 @@ pub fn state_mod_index_is_active(state &Xkb_state, idx Xkb_mod_index_t, type_ Xk
 // * *@memberof xkb_state
 //
 @[c2v_variadic]
-fn C.xkb_state_mod_indices_are_active(state &Xkb_state, type_ Xkb_state_component, match_ ...Xkb_state_match) int
+fn C.xkb_state_mod_indices_are_active(state &C.xkb_state, type_ Xkb_state_component, match_ ...Xkb_state_match) int
 
-pub fn state_mod_indices_are_active(state &Xkb_state, type_ Xkb_state_component, match_ Xkb_state_match) int {
+pub fn state_mod_indices_are_active(state &C.xkb_state, type_ Xkb_state_component, match_ Xkb_state_match) int {
 	return C.xkb_state_mod_indices_are_active(state, type_, match_)
 }
 
@@ -1463,7 +1461,7 @@ pub enum Xkb_consumed_mode {
 	//     *even though they are not active, since if they *ere*active they would
 	//     *have affected key translation.
 	//
-	xkb_consumed_mode_xkb
+	xkb
 	//*     *This is the mode used by the GTK+ toolkit.
 	//     *     *The mode consists of the following two independent heuristics:
 	//     *     *- The currently active set of modifiers, excluding modifiers which do
@@ -1475,7 +1473,7 @@ pub enum Xkb_consumed_mode {
 	//     *  the key when it is the only active modifier are different from the
 	//     *  keysyms produced when no modifiers are active.
 	//
-	xkb_consumed_mode_gtk
+	gtk
 }
 
 //* *Get the mask of modifiers consumed by translating a given key.
@@ -1486,9 +1484,9 @@ pub enum Xkb_consumed_mode {
 // * *@memberof xkb_state
 // *@since 0.7.0
 //
-fn C.xkb_state_key_get_consumed_mods2(state &Xkb_state, key Xkb_keycode_t, mode Xkb_consumed_mode) Xkb_mod_mask_t
+fn C.xkb_state_key_get_consumed_mods2(state &C.xkb_state, key Xkb_keycode_t, mode Xkb_consumed_mode) Xkb_mod_mask_t
 
-pub fn state_key_get_consumed_mods2(state &Xkb_state, key Xkb_keycode_t, mode Xkb_consumed_mode) Xkb_mod_mask_t {
+pub fn state_key_get_consumed_mods2(state &C.xkb_state, key Xkb_keycode_t, mode Xkb_consumed_mode) Xkb_mod_mask_t {
 	return C.xkb_state_key_get_consumed_mods2(state, key, mode)
 }
 
@@ -1496,9 +1494,9 @@ pub fn state_key_get_consumed_mods2(state &Xkb_state, key Xkb_keycode_t, mode Xk
 // * *@memberof xkb_state
 // *@since 0.4.1
 //
-fn C.xkb_state_key_get_consumed_mods(state &Xkb_state, key Xkb_keycode_t) Xkb_mod_mask_t
+fn C.xkb_state_key_get_consumed_mods(state &C.xkb_state, key Xkb_keycode_t) Xkb_mod_mask_t
 
-pub fn state_key_get_consumed_mods(state &Xkb_state, key Xkb_keycode_t) Xkb_mod_mask_t {
+pub fn state_key_get_consumed_mods(state &C.xkb_state, key Xkb_keycode_t) Xkb_mod_mask_t {
 	return C.xkb_state_key_get_consumed_mods(state, key)
 }
 
@@ -1515,9 +1513,9 @@ pub fn state_key_get_consumed_mods(state &Xkb_state, key Xkb_keycode_t) Xkb_mod_
 // *@memberof xkb_state
 // *@since 0.7.0
 //
-fn C.xkb_state_mod_index_is_consumed2(state &Xkb_state, key Xkb_keycode_t, idx Xkb_mod_index_t, mode Xkb_consumed_mode) int
+fn C.xkb_state_mod_index_is_consumed2(state &C.xkb_state, key Xkb_keycode_t, idx Xkb_mod_index_t, mode Xkb_consumed_mode) int
 
-pub fn state_mod_index_is_consumed2(state &Xkb_state, key Xkb_keycode_t, idx Xkb_mod_index_t, mode Xkb_consumed_mode) int {
+pub fn state_mod_index_is_consumed2(state &C.xkb_state, key Xkb_keycode_t, idx Xkb_mod_index_t, mode Xkb_consumed_mode) int {
 	return C.xkb_state_mod_index_is_consumed2(state, key, idx, mode)
 }
 
@@ -1525,9 +1523,9 @@ pub fn state_mod_index_is_consumed2(state &Xkb_state, key Xkb_keycode_t, idx Xkb
 // * *@memberof xkb_state
 // *@since 0.4.1
 //
-fn C.xkb_state_mod_index_is_consumed(state &Xkb_state, key Xkb_keycode_t, idx Xkb_mod_index_t) int
+fn C.xkb_state_mod_index_is_consumed(state &C.xkb_state, key Xkb_keycode_t, idx Xkb_mod_index_t) int
 
-pub fn state_mod_index_is_consumed(state &Xkb_state, key Xkb_keycode_t, idx Xkb_mod_index_t) int {
+pub fn state_mod_index_is_consumed(state &C.xkb_state, key Xkb_keycode_t, idx Xkb_mod_index_t) int {
 	return C.xkb_state_mod_index_is_consumed(state, key, idx)
 }
 
@@ -1538,9 +1536,9 @@ pub fn state_mod_index_is_consumed(state &Xkb_state, key Xkb_keycode_t, idx Xkb_
 // * *@sa xkb_state_mod_index_is_consumed()
 // *@memberof xkb_state
 //
-fn C.xkb_state_mod_mask_remove_consumed(state &Xkb_state, key Xkb_keycode_t, mask Xkb_mod_mask_t) Xkb_mod_mask_t
+fn C.xkb_state_mod_mask_remove_consumed(state &C.xkb_state, key Xkb_keycode_t, mask Xkb_mod_mask_t) Xkb_mod_mask_t
 
-pub fn state_mod_mask_remove_consumed(state &Xkb_state, key Xkb_keycode_t, mask Xkb_mod_mask_t) Xkb_mod_mask_t {
+pub fn state_mod_mask_remove_consumed(state &C.xkb_state, key Xkb_keycode_t, mask Xkb_mod_mask_t) Xkb_mod_mask_t {
 	return C.xkb_state_mod_mask_remove_consumed(state, key, mask)
 }
 
@@ -1552,9 +1550,9 @@ pub fn state_mod_mask_remove_consumed(state &Xkb_state, key Xkb_keycode_t, mask 
 // * *@sa xkb_layout_index_t
 // *@memberof xkb_state
 //
-fn C.xkb_state_layout_name_is_active(state &Xkb_state, name &i8, type_ Xkb_state_component) int
+fn C.xkb_state_layout_name_is_active(state &C.xkb_state, name &i8, type_ Xkb_state_component) int
 
-pub fn state_layout_name_is_active(state &Xkb_state, name &i8, type_ Xkb_state_component) int {
+pub fn state_layout_name_is_active(state &C.xkb_state, name &i8, type_ Xkb_state_component) int {
 	return C.xkb_state_layout_name_is_active(state, name, type_)
 }
 
@@ -1564,9 +1562,9 @@ pub fn state_layout_name_is_active(state &Xkb_state, name &i8, type_ Xkb_state_c
 // * *@sa xkb_layout_index_t
 // *@memberof xkb_state
 //
-fn C.xkb_state_layout_index_is_active(state &Xkb_state, idx Xkb_layout_index_t, type_ Xkb_state_component) int
+fn C.xkb_state_layout_index_is_active(state &C.xkb_state, idx Xkb_layout_index_t, type_ Xkb_state_component) int
 
-pub fn state_layout_index_is_active(state &Xkb_state, idx Xkb_layout_index_t, type_ Xkb_state_component) int {
+pub fn state_layout_index_is_active(state &C.xkb_state, idx Xkb_layout_index_t, type_ Xkb_state_component) int {
 	return C.xkb_state_layout_index_is_active(state, idx, type_)
 }
 
@@ -1576,9 +1574,9 @@ pub fn state_layout_index_is_active(state &Xkb_state, idx Xkb_layout_index_t, ty
 // * *@sa xkb_led_index_t
 // *@memberof xkb_state
 //
-fn C.xkb_state_led_name_is_active(state &Xkb_state, name &i8) int
+fn C.xkb_state_led_name_is_active(state &C.xkb_state, name &i8) int
 
-pub fn state_led_name_is_active(state &Xkb_state, name &i8) int {
+pub fn state_led_name_is_active(state &C.xkb_state, name &i8) int {
 	return C.xkb_state_led_name_is_active(state, name)
 }
 
@@ -1588,9 +1586,9 @@ pub fn state_led_name_is_active(state &Xkb_state, name &i8) int {
 // * *@sa xkb_led_index_t
 // *@memberof xkb_state
 //
-fn C.xkb_state_led_index_is_active(state &Xkb_state, idx Xkb_led_index_t) int
+fn C.xkb_state_led_index_is_active(state &C.xkb_state, idx Xkb_led_index_t) int
 
-pub fn state_led_index_is_active(state &Xkb_state, idx Xkb_led_index_t) int {
+pub fn state_led_index_is_active(state &C.xkb_state, idx Xkb_led_index_t) int {
 	return C.xkb_state_led_index_is_active(state, idx)
 }
 
