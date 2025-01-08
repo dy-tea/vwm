@@ -1,6 +1,7 @@
 module main
 
 import wlr
+import xkbcommon
 
 enum Comp_cursor_mode {
 	passthrough
@@ -57,7 +58,7 @@ struct Comp_output {
 	destroy       C.wl_listener
 }
 
-struct Comp_toplevel {
+pub struct Comp_toplevel {
 	link         C.wl_list
 	server       &Comp_server
 	xdg_toplevel &C.wlr_xdg_toplevel
@@ -80,11 +81,13 @@ mut:
 	destroy C.wl_listener
 }
 
+@[heap]
 struct Comp_keyboard {
-	server 	&Comp_server
-	wlr_keyboard &C.wlr_keyboard
 mut:
-	link   		C.wl_list
+	wlr_keyboard &C.wlr_keyboard
+	server       &Comp_server
+
+	link      C.wl_list
 	modifiers C.wl_listener
 	key       C.wl_listener
 	destroy   C.wl_listener
@@ -124,26 +127,79 @@ fn focus_toplevel(toplevel &Comp_toplevel) {
 	}
 }
 
+fn (mut server Comp_server) handle_keybinding(sym xkbcommon.Xkb_keysym_t) bool {
+	match sym {
+		xkbcommon.key_escape {
+			C.wl_display_terminate(server.wl_display)
+		}
+		xkbcommon.key_f1 {
+			if C.wl_list_length(&server.toplevels) >= 2 {
+				next_toplevel := wlr.wl_container_of(server.toplevels.prev, server.grabbed_toplevel,
+					__offsetof(Comp_toplevel, link))
+				focus_toplevel(next_toplevel)
+			}
+		}
+		else {
+			return false
+		}
+	}
+
+	return true
+}
+
+fn (mut keyboard Comp_keyboard) keyboad_handle_key(listener &C.wl_listener, data voidptr) {
+	event := unsafe { &C.wlr_keyboard_key_event(data) }
+	seat := keyboard.server.seat
+
+	keycode := u32(event.keycode + 8)
+	mut syms := &&xkbcommon.Xkb_keysym_t(unsafe { nil })
+	_ := C.xkb_state_key_get_syms(keyboard.wlr_keyboard.xkb_state, keycode, syms) // FIXME
+
+	mut handled := false
+	modifiers := C.wlr_keyboard_get_modifiers(keyboard.wlr_keyboard)
+
+	if modifiers & u32(wlr.Wlr_keyboard_modifier.alt) > 0 && event.state == .pressed {
+		for sym in syms {
+			handled = keyboard.server.handle_keybinding(sym)
+		}
+	}
+
+	if !handled {
+		C.wlr_seat_set_keyboard(seat, keyboard.wlr_keyboard)
+		C.wlr_seat_keyboard_notify_key(seat, event.time_msec, event.keycode, u32(event.state))
+	}
+}
+
+fn (mut keyboard Comp_keyboard) keyboard_handle_destroy(listener &C.wl_listener, data voidptr) {
+	C.wl_list_remove(&keyboard.modifiers.link)
+	C.wl_list_remove(&keyboard.key.link)
+	C.wl_list_remove(&keyboard.destroy.link)
+	C.wl_list_remove(&keyboard.destroy.link)
+	unsafe {
+		free(keyboard)
+	}
+}
+
 fn (mut server Comp_server) server_new_keyboard(device &C.wlr_input_device) {
 	wlr_keyboard := C.wlr_keyboard_from_input_device(device)
 	mut keyboard := &Comp_keyboard{
-		server: server
+		server:       server
 		wlr_keyboard: &wlr_keyboard
 	}
 
 	context := C.xkb_context_new(.no_flags)
-	keymap := C.xkb_keymap_new_from_names(context, unsafe {nil}, .no_flags)
+	keymap := C.xkb_keymap_new_from_names(context, unsafe { nil }, .no_flags)
 
 	C.wlr_keyboard_set_keymap(wlr_keyboard, keymap)
 	C.xkb_keymap_unref(keymap)
 	C.xkb_context_unref(context)
 	C.wlr_keyboard_set_repeat_info(wlr_keyboard, 25, 600)
 
-	keyboard.modifiers.notify = server_keyboard_modifiers
+	keyboard.modifiers.notify = keyboard_handle_modifiers // TODO
 	C.wl_signal_add(&wlr_keyboard.events.modifiers, &keyboard.modifiers)
 	keyboard.key.notify = keyboard_handle_key // TODO
 	C.wl_signal_add(&wlr_keyboard.events.key, &keyboard.key)
-	keyboard.destroy.notify = keyboard_handle_destroy // TODO
+	keyboard.destroy.notify = keyboard.keyboard_handle_destroy
 	C.wl_signal_add(&device.events.destroy, &keyboard.destroy)
 
 	C.wlr_seat_set_keyboard(server.seat, keyboard.wlr_keyboard)
@@ -155,8 +211,8 @@ fn (mut server Comp_server) server_new_pointer(device &C.wlr_input_device) {
 	C.wlr_cursor_attach_input_device(server.cursor, device)
 }
 
-fn (mut server Comp_server) server_new_input(listener &C.wl_listener, data voidptr)  {
-	device := unsafe {&C.wlr_input_device(data)}
+fn (mut server Comp_server) server_new_input(listener &C.wl_listener, data voidptr) {
+	device := unsafe { &C.wlr_input_device(data) }
 
 	match device.type {
 		.keyboard {
@@ -401,7 +457,7 @@ fn main() {
 
 	// Seat
 	C.wl_list_init(&server.keyboards)
-	server.new_input.notify = server_new_input
+	server.new_input.notify = server.server_new_input
 
 	println('Run completed.')
 }
