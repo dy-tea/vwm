@@ -1174,7 +1174,7 @@ pub fn state_update_mask(state &C.xkb_state, depressed_mods Xkb_mod_mask_t, latc
 // *syms_out to NULL.
 // * *@memberof xkb_state
 //
-fn C.xkb_state_key_get_syms(state &C.xkb_state, key Xkb_keycode_t, syms_out &&Xkb_keysym_t) int
+fn C.xkb_state_key_get_syms(state &C.xkb_state, key Xkb_keycode_t, const_syms_out &&Xkb_keysym_t) int
 
 pub fn state_key_get_syms(state &C.xkb_state, key Xkb_keycode_t, syms_out &&Xkb_keysym_t) int {
 	return C.xkb_state_key_get_syms(state, key, syms_out)
