@@ -22,7 +22,7 @@ mut:
 	xdg_shell        &C.wlr_xdg_shell = unsafe { nil }
 	new_xdg_toplevel C.wl_listener
 	new_xdg_popup    C.wl_listener
-	toplevels        C.wl_list
+	toplevels        []Comp_toplevel
 
 	cursor                 &C.wlr_cursor          = unsafe { nil }
 	cursor_mgr             &C.wlr_xcursor_manager = unsafe { nil }
@@ -36,7 +36,7 @@ mut:
 	new_input             C.wl_listener
 	request_cursor        C.wl_listener
 	request_set_selection C.wl_listener
-	keyboards             C.wl_list
+	keyboards             []Comp_keyboard
 	cursor_mode           Comp_cursor_mode
 	grabbed_toplevel      &Comp_toplevel = unsafe { nil }
 	grab_x                f64
@@ -50,7 +50,6 @@ mut:
 }
 
 struct Comp_output {
-	link          C.wl_list
 	server        &Comp_server
 	wlr_output    &C.wlr_output
 	frame         C.wl_listener
@@ -59,7 +58,6 @@ struct Comp_output {
 }
 
 pub struct Comp_toplevel {
-	link         C.wl_list
 	server       &Comp_server
 	xdg_toplevel &C.wlr_xdg_toplevel
 	scene_tree   &C.wlr_scene_tree
@@ -84,7 +82,6 @@ mut:
 @[heap]
 struct Comp_keyboard {
 mut:
-	link         C.wl_list
 	server       &Comp_server
 	wlr_keyboard &C.wlr_keyboard
 
@@ -98,7 +95,7 @@ fn focus_toplevel(toplevel &Comp_toplevel) {
 		return
 	}
 
-	server := toplevel.server
+	mut server := toplevel.server
 	seat := server.seat
 	prev_surface := seat.keyboard_state.focused_surface
 	surface := toplevel.xdg_toplevel.base.surface
@@ -117,8 +114,10 @@ fn focus_toplevel(toplevel &Comp_toplevel) {
 	keyboard := C.wlr_seat_get_keyboard(seat)
 
 	C.wlr_scene_node_raise_to_top(&toplevel.scene_tree.node)
-	C.wl_list_remove(&toplevel.link)
-	C.wl_list_insert(&server.toplevels, &toplevel.link)
+	server.toplevels.delete(server.toplevels.index(toplevel)) // NOTE may be incorrect
+	// C.wl_list_remove(&toplevel.link)
+	server.toplevels << toplevel
+	// C.wl_list_insert(&server.toplevels, &toplevel.link) // NOTE
 	C.wlr_xdg_toplevel_set_activated(toplevel.xdg_toplevel, true)
 
 	if keyboard != unsafe { nil } {
@@ -138,9 +137,11 @@ fn (mut server Comp_server) handle_keybinding(sym xkbcommon.Xkb_keysym_t) bool {
 			C.wl_display_terminate(server.wl_display)
 		}
 		xkbcommon.key_f1 {
-			if C.wl_list_length(&server.toplevels) >= 2 {
-				next_toplevel := wlr.wl_container_of(server.toplevels.prev, server.grabbed_toplevel,
-					__offsetof(Comp_toplevel, link)) // FIXME
+			if server.toplevels.len >= 2 {
+				// if C.wl_list_length(&server.toplevels) >= 2 { // NOTE
+				// next_toplevel := wlr.wl_container_of(server.toplevels.prev, server.grabbed_toplevel,
+				//	__offsetof(Comp_toplevel, link)) // FIXME NOTE
+				next_toplevel := server.toplevels[server.toplevels.index(server.grabbed_toplevel) - 1]
 				focus_toplevel(next_toplevel)
 			}
 		}
@@ -179,9 +180,8 @@ fn (mut keyboard Comp_keyboard) keyboard_handle_destroy(listener &C.wl_listener,
 	C.wl_list_remove(&keyboard.modifiers.link)
 	C.wl_list_remove(&keyboard.key.link)
 	C.wl_list_remove(&keyboard.destroy.link)
-	C.wl_list_remove(&keyboard.destroy.link)
 	unsafe {
-		free(keyboard)
+		free(keyboard) // FIXME: maybe delete the reference from the server
 	}
 }
 
@@ -209,7 +209,7 @@ fn (mut server Comp_server) server_new_keyboard(device &C.wlr_input_device) {
 
 	C.wlr_seat_set_keyboard(server.seat, keyboard.wlr_keyboard)
 
-	C.wl_list_insert(&server.keyboards, &keyboard.link)
+	server.keyboards << keyboard
 }
 
 fn (mut server Comp_server) server_new_pointer(device &C.wlr_input_device) {
@@ -230,7 +230,7 @@ fn (mut server Comp_server) server_new_input(listener &C.wl_listener, data voidp
 	}
 
 	mut caps := int(wlr.Wl_seat_capability.pointer)
-	if !C.wl_list_empty(&server.keyboards) {
+	if server.keyboards.len > 0 {
 		caps |= int(wlr.Wl_seat_capability.keyboard)
 	}
 	C.wlr_seat_set_capabilities(server.seat, caps)
@@ -461,7 +461,7 @@ fn main() {
 	C.wl_signal_add(&server.cursor.events.frame, &server.cursor_frame)
 
 	// Seat
-	C.wl_list_init(&server.keyboards)
+	// C.wl_list_init(&server.keyboards)
 	server.new_input.notify = server.server_new_input
 
 	println('Run completed.')
