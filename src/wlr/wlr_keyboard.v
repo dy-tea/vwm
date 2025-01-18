@@ -39,10 +39,10 @@ const wlr_keyboard_keys_cap = 32
 pub struct C.wlr_keyboard_impl {}
 
 pub struct C.wlr_keyboard_modifiers {
-	depressed xkbcommon.Xkb_mod_mask_t
-	latched   xkbcommon.Xkb_mod_mask_t
-	locked    xkbcommon.Xkb_mod_mask_t
-	group     xkbcommon.Xkb_layout_index_t
+	depressed C.xkb_mod_mask_t
+	latched   C.xkb_mod_mask_t
+	locked    C.xkb_mod_mask_t
+	group     C.xkb_layout_index_t
 }
 
 pub struct C.wlr_keyboard {
@@ -56,11 +56,14 @@ pub struct C.wlr_keyboard {
 	keymap_fd     int
 	keymap        &C.xkb_keymap
 	xkb_state     &C.xkb_state
-	led_indexes   [/*wlr_led_count*/]xkbcommon.Xkb_led_index_t
-	mod_indices   [/*wlr_modifier_count*/]xkbcommon.Xkb_mod_index_t
+	// size wlr_led_count
+	led_indexes []C.xkb_led_index_t
+	// size wlr_modifier_count
+	mod_indices []C.xkb_mod_index_t
 
-	leds         u32
-	keycodes     [/*wlr_keyboard_keys_cap*/]u32
+	leds u32
+	// size wlr_keyboard_keys_cap
+	keycodes     []u32
 	num_keycodes usize
 	modifiers    C.wlr_keyboard_modifiers
 

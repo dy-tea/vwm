@@ -114,7 +114,7 @@ fn focus_toplevel(toplevel &Comp_toplevel) {
 	keyboard := C.wlr_seat_get_keyboard(seat)
 
 	C.wlr_scene_node_raise_to_top(&toplevel.scene_tree.node)
-	server.toplevels.delete(server.toplevels.index(toplevel)) // NOTE may be incorrect
+	server.toplevels.delete(server.toplevels.index(*toplevel)) // NOTE may be incorrect
 	// C.wl_list_remove(&toplevel.link)
 	server.toplevels << toplevel
 	// C.wl_list_insert(&server.toplevels, &toplevel.link) // NOTE
@@ -131,7 +131,7 @@ fn (mut keyboard Comp_keyboard) keyboard_handle_modifiers(listener &C.wl_listene
 	C.wlr_seat_keyboard_notify_modifiers(keyboard.server.seat, &keyboard.wlr_keyboard.modifiers)
 }
 
-fn (mut server Comp_server) handle_keybinding(sym xkbcommon.Xkb_keysym_t) bool {
+fn (mut server Comp_server) handle_keybinding(sym C.xkb_keysym_t) bool {
 	match sym {
 		xkbcommon.key_escape {
 			C.wl_display_terminate(server.wl_display)
@@ -141,7 +141,7 @@ fn (mut server Comp_server) handle_keybinding(sym xkbcommon.Xkb_keysym_t) bool {
 				// if C.wl_list_length(&server.toplevels) >= 2 { // NOTE
 				// next_toplevel := wlr.wl_container_of(server.toplevels.prev, server.grabbed_toplevel,
 				//	__offsetof(Comp_toplevel, link)) // FIXME NOTE
-				next_toplevel := server.toplevels[server.toplevels.index(server.grabbed_toplevel) - 1]
+				next_toplevel := server.toplevels[server.toplevels.index(*server.grabbed_toplevel) - 1]
 				focus_toplevel(next_toplevel)
 			}
 		}
@@ -158,7 +158,7 @@ fn (mut keyboard Comp_keyboard) keyboard_handle_key(listener &C.wl_listener, dat
 	seat := keyboard.server.seat
 
 	keycode := u32(event.keycode + 8)
-	syms := &xkbcommon.Xkb_keysym_t(unsafe { nil })
+	syms := &C.xkb_keysym_t(unsafe { nil })
 	nsyms := C.xkb_state_key_get_syms(keyboard.wlr_keyboard.xkb_state, keycode, &syms)
 
 	mut handled := false
