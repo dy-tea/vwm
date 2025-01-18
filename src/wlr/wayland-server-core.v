@@ -54,10 +54,10 @@ pub fn C.wl_display_create() &C.wl_display
 pub fn C.wl_display_destroy(display &C.wl_display)
 pub fn C.wl_display_get_event_loop(display &C.wl_display) &C.wl_event_loop
 pub fn C.wl_display_add_socket(display &C.wl_display, name string) int
-pub fn C.wl_display_add_socket_auto(display &C.wl_display) int
+pub fn C.wl_display_add_socket_auto(display &C.wl_display) &char
 pub fn C.wl_display_add_socket_fd(display &C.wl_display, sock_fd int) int
 pub fn C.wl_display_terminate(display &C.wl_display)
-pub fn C.wl_dipslay_run(display &C.wl_display)
+pub fn C.wl_display_run(display &C.wl_display)
 pub fn C.wl_display_flush_clients(display &C.wl_display)
 pub fn C.wl_display_destroy_clients(display &C.wl_display)
 pub fn C.wl_display_set_default_max_buffer_size(display &C.wl_display, max_buffer_size usize)

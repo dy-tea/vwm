@@ -236,6 +236,20 @@ fn (mut server Comp_server) server_new_input(listener &C.wl_listener, data voidp
 	C.wlr_seat_set_capabilities(server.seat, caps)
 }
 
+pub fn (server Comp_server) seat_request_cursor(listener &C.wl_listener, data voidptr) {
+	event := unsafe { &C.wlr_seat_pointer_request_set_cursor_event(data) }
+	focused_client := server.seat.pointer_state.focused_client
+
+	if focused_client == event.seat_client {
+		C.wlr_cursor_set_surface(server.cursor, event.surface, event.hotspot_x, event.hotspot_y)
+	}
+}
+
+pub fn (server Comp_server) seat_request_set_selection(listener &C.wl_listener, data voidptr) {
+	event := unsafe { &C.wlr_seat_request_set_selection_event(data) }
+	C.wlr_seat_set_selection(server.seat, event.source, event.serial)
+}
+
 fn (server Comp_server) desktop_toplevel_at(lx f64, ly f64, mut surface C.wlr_surface, sx &f64, sy &f64) ?&Comp_toplevel {
 	node := C.wlr_scene_node_at(&server.scene.tree.node, lx, ly, sx, sy)
 	if node == unsafe { nil } || node.type != wlr.Scene_node_type.buffer {
@@ -463,6 +477,53 @@ fn main() {
 	// Seat
 	// C.wl_list_init(&server.keyboards)
 	server.new_input.notify = server.server_new_input
+	C.wl_signal_add(&server.backend.events.new_input, &server.new_input)
+	server.seat = C.wlr_seat_create(server.wl_display, 'seat0'.str)
+	server.request_cursor.notify = server.seat_request_cursor
+	C.wl_signal_add(&server.seat.events.request_set_cursor, &server.request_cursor)
+	server.request_set_selection.notify = server.seat_request_set_selection
+	C.wl_signal_add(&server.seat.events.request_set_selection, &server.request_set_selection)
+
+	// Socket
+	socket := C.wl_display_add_socket_auto(server.wl_display)
+	if socket == 0 {
+		C.wlr_backend_destroy(server.backend)
+		panic('Failed to add Unix socket to Wayland display')
+	}
+
+	// Start backend
+	if !C.wlr_backend_start(server.backend) {
+		C.wlr_backend_destroy(server.backend)
+		C.wl_display_destroy(server.wl_display)
+		panic('Failed to start backend')
+	}
+
+	println('Running Wayland compositor on WAYLAND_DISPLAY={socket}')
+
+	// Run
+	C.wl_display_run(server.wl_display)
+
+	// Cleanup NOTE: may be unnecessary as V should handle this
+	C.wl_display_destroy_clients(server.wl_display)
+	C.wl_list_remove(&server.new_xdg_toplevel.link)
+	C.wl_list_remove(&server.new_xdg_popup.link)
+	C.wl_list_remove(&server.cursor_motion.link)
+	C.wl_list_remove(&server.cursor_motion_absolute.link)
+	C.wl_list_remove(&server.cursor_button.link)
+	C.wl_list_remove(&server.cursor_axis.link)
+	C.wl_list_remove(&server.cursor_frame.link)
+	C.wl_list_remove(&server.new_input.link)
+	C.wl_list_remove(&server.request_cursor.link)
+	C.wl_list_remove(&server.request_set_selection.link)
+	C.wl_list_remove(&server.new_output.link)
+
+	C.wlr_scene_node_destroy(&server.scene.tree.node)
+	C.wlr_xcursor_manager_destroy(server.cursor_mgr)
+	C.wlr_cursor_destroy(server.cursor)
+	C.wlr_allocator_destroy(server.allocator)
+	C.wlr_renderer_destroy(server.renderer)
+	C.wlr_backend_destroy(server.backend)
+	C.wl_display_destroy(server.wl_display)
 
 	println('Run completed.')
 }

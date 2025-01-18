@@ -299,14 +299,14 @@ pub struct C.wlr_seat_keyboard_focus_change_event {
 	new_surface &C.wlr_surface
 }
 
-pub fn C.wlr_seat_create(display &C.wl_display, name string) &C.wlr_seat
+pub fn C.wlr_seat_create(display &C.wl_display, name &char) &C.wlr_seat
 pub fn C.wlr_seat_destroy(seat &C.wlr_seat)
 
 pub fn C.wlr_seat_for_client_for_wl_client(wlr_seat &C.wlr_seat, wl_client &C.wl_client) &C.wlr_seat_client
 
 pub fn C.wlr_seat_set_capabilities(wlr_seat &C.wlr_seat, capabilities u32)
 
-pub fn C.wlr_seat_set_name(wlr_seat &C.wlr_seat, name string)
+pub fn C.wlr_seat_set_name(wlr_seat &C.wlr_seat, name &char)
 
 pub fn C.wlr_seat_pointer_surface_has_focus(wlr_seat &C.wlr_seat, surface &C.wlr_surface) bool
 
