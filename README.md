@@ -23,8 +23,4 @@ X dependencies:
 - `libxcb-wm`
 - `libxcb-errors`
 
-Then you should be able to just run:
-```sh
-v .
-```
-Building is only supported on linux currently.
+The project does not currently build due to various isses with cgen in V.
