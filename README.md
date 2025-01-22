@@ -23,4 +23,6 @@ X dependencies:
 - `libxcb-wm`
 - `libxcb-errors`
 
-The project does not currently build due to various isses with cgen in V.
+**NOTE: The project does not currently build due to various isses with cgen in V.**
+
+If you want to try diagnosing issues, you can generate the necessary protocol file by running `v run build.vsh`, which will also attempt to compile and run the compositor.
