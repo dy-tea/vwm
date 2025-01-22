@@ -12,7 +12,7 @@ fn sh(cmd string) {
 }
 
 name := 'vompositor'
-protocol := 'xdg-shell_protocol.h'
+protocol := 'xdg-shell-protocol.h'
 
 // Generate xdg-shell-protocol.h if required
 if ls('.')!.contains(protocol) {

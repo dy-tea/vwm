@@ -6,7 +6,7 @@ vompositor
 *.so
 *.dylib
 *.dll
-xdg-shell_protocol.h
+xdg-shell-protocol.h
 
 # Ignore binary output folders
 bin/
