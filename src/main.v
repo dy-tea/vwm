@@ -2,6 +2,7 @@ module main
 
 import wlr
 import xkbcommon
+import datatypes
 
 enum Comp_cursor_mode {
 	passthrough
@@ -22,7 +23,7 @@ mut:
 	xdg_shell        &C.wlr_xdg_shell = unsafe { nil }
 	new_xdg_toplevel C.wl_listener
 	new_xdg_popup    C.wl_listener
-	toplevels        []Comp_toplevel
+	toplevels        datatypes.DoublyLinkedList[Comp_toplevel]
 
 	cursor                 &C.wlr_cursor          = unsafe { nil }
 	cursor_mgr             &C.wlr_xcursor_manager = unsafe { nil }
@@ -36,7 +37,7 @@ mut:
 	new_input             C.wl_listener
 	request_cursor        C.wl_listener
 	request_set_selection C.wl_listener
-	keyboards             []Comp_keyboard
+	keyboards             datatypes.DoublyLinkedList[Comp_keyboard]
 	cursor_mode           Comp_cursor_mode
 	grabbed_toplevel      &Comp_toplevel = unsafe { nil }
 	grab_x                f64
@@ -114,10 +115,10 @@ fn focus_toplevel(toplevel &Comp_toplevel) {
 	keyboard := C.wlr_seat_get_keyboard(seat)
 
 	C.wlr_scene_node_raise_to_top(&toplevel.scene_tree.node)
-	server.toplevels.delete(server.toplevels.index(*toplevel)) // NOTE may be incorrect
-	// C.wl_list_remove(&toplevel.link)
-	server.toplevels << toplevel
-	// C.wl_list_insert(&server.toplevels, &toplevel.link) // NOTE
+	server.toplevels.delete(server.toplevels.index(toplevel) or { 0 })
+
+	server.toplevels.push_front(toplevel)
+
 	C.wlr_xdg_toplevel_set_activated(toplevel.xdg_toplevel, true)
 
 	if keyboard != unsafe { nil } {
@@ -138,11 +139,9 @@ fn (mut server Comp_server) handle_keybinding(sym C.xkb_keysym_t) bool {
 		}
 		xkbcommon.key_f1 {
 			if server.toplevels.len >= 2 {
-				// if C.wl_list_length(&server.toplevels) >= 2 { // NOTE
-				// next_toplevel := wlr.wl_container_of(server.toplevels.prev, server.grabbed_toplevel,
-				//	__offsetof(Comp_toplevel, link)) // FIXME NOTE
-				next_toplevel := server.toplevels[server.toplevels.index(*server.grabbed_toplevel) - 1]
-				focus_toplevel(next_toplevel)
+				if next_toplevel := server.toplevels.next() {
+					focus_toplevel(next_toplevel)
+				}
 			}
 		}
 		else {
@@ -209,7 +208,7 @@ fn (mut server Comp_server) server_new_keyboard(device &C.wlr_input_device) {
 
 	C.wlr_seat_set_keyboard(server.seat, keyboard.wlr_keyboard)
 
-	server.keyboards << keyboard
+	server.keyboards.push_front(keyboard)
 }
 
 fn (mut server Comp_server) server_new_pointer(device &C.wlr_input_device) {
@@ -395,7 +394,6 @@ fn (mut server Comp_server) server_cursor_frame(listener &C.wl_listener, data vo
 
 fn xdg_popup_commit(listener &C.wl_listener, mut data voidptr) {
 	comp_popup := &Comp_popup(data)
-	// popup := wlr.wl_container_of(comp_popup, listener, __offsetof(Comp_popup, commit))
 	if comp_popup.xdg_popup.base.initial_commit {
 		C.wlr_xdg_surface_schedule_configure(comp_popup.xdg_popup.base)
 	}
@@ -403,7 +401,6 @@ fn xdg_popup_commit(listener &C.wl_listener, mut data voidptr) {
 
 fn xdg_popup_destroy(listener &C.wl_listener, mut data voidptr) {
 	comp_popup := &Comp_popup(data)
-	// popup := wlr.wl_container_of(comp_popup, listener, __offsetof(Comp_popup, destroy))
 	C.wl_list_remove(&comp_popup.commit.link)
 	C.wl_list_remove(&comp_popup.destroy.link)
 	unsafe {
@@ -430,7 +427,10 @@ fn server_new_xdg_popup(listener &C.wl_listener, mut data C.wlr_xdg_popup) {
 }
 
 fn main() {
-	mut server := Comp_server{}
+	mut server := Comp_server{
+		toplevels: datatypes.DoublyLinkedList[Comp_toplevel]{}
+		keyboards: datatypes.DoublyLinkedList[Comp_keyboard]{}
+	}
 
 	// Display
 	server.wl_display = C.wl_display_create()

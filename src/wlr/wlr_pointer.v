@@ -74,9 +74,9 @@ const wlr_pointer_axis_discrete_step = 120
 pub struct C.wlr_pointer_axis_event {
 	pointer            &C.wlr_pointer
 	time_msec          u32
-	source             C.wl_pointer_axis_source
-	orientation        C.wl_pointer_axis
-	relative_direction C.wl_pointer_axis_relative_direction
+	source             Wl_pointer_axis_source
+	orientation        Wl_pointer_axis
+	relative_direction Wl_pointer_axis_relative_direction
 	delta              f64
 	delta_discrete     int
 }

@@ -47,9 +47,9 @@ pub struct C.wlr_xdg_client {
 
 pub struct C.wlr_xdg_positioner_rules {
 	anchor_rect           C.wlr_box
-	anchor                C.xdg_positioner_anchor
-	gravity               C.xdg_positioner_gravity
-	constraint_adjustment C.xdg_positioner_constraint_adjustment
+	anchor                int // C.xdg_positioner_anchor
+	gravity               int // C.xdg_positioner_gravity
+	constraint_adjustment int // C.xdg_positioner_constraint_adjustment
 
 	reactive bool
 

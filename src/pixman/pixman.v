@@ -1148,10 +1148,10 @@ pub enum Kernel_t {
 // Create the parameter list for a SEPARABLE_CONVOLUTION filter
 // *with the given kernels and scale parameters.
 //
-fn C.pixman_filter_create_separable_convolution(n_values &int, scale_x int, scale_y int, reconstruct_x C.pixman_kernel_t, reconstruct_y C.pixman_kernel_t, sample_x C.pixman_kernel_t, sample_y C.pixman_kernel_t, subsample_bits_x int, subsample_bits_y int) &int
+fn C.filter_create_separable_convolution(n_values &int, scale_x int, scale_y int, reconstruct_x Kernel_t, reconstruct_y Kernel_t, sample_x Kernel_t, sample_y Kernel_t, subsample_bits_x int, subsample_bits_y int) &int
 
-pub fn filter_create_separable_convolution(n_values &int, scale_x int, scale_y int, reconstruct_x C.pixman_kernel_t, reconstruct_y C.pixman_kernel_t, sample_x C.pixman_kernel_t, sample_y C.pixman_kernel_t, subsample_bits_x int, subsample_bits_y int) &int {
-	return C.pixman_filter_create_separable_convolution(n_values, scale_x, scale_y, reconstruct_x,
+pub fn filter_create_separable_convolution(n_values &int, scale_x int, scale_y int, reconstruct_x Kernel_t, reconstruct_y Kernel_t, sample_x Kernel_t, sample_y Kernel_t, subsample_bits_x int, subsample_bits_y int) &int {
+	return C.filter_create_separable_convolution(n_values, scale_x, scale_y, reconstruct_x,
 		reconstruct_y, sample_x, sample_y, subsample_bits_x, subsample_bits_y)
 }
 
