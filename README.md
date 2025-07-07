@@ -6,7 +6,7 @@ Contributions are welcome, as well as suggestions on how to improve the [wlroots
 
 # Building
 This project depends on the following packages:
-- `wlroots` **0.19** (on arch this is `wlroots-git`)
+- `wlroots-0.19`
 - `wayland`
 - `wayland-protocols`
 - `libdrm`
