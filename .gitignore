@@ -1,12 +1,11 @@
 # Binaries for programs and plugins
 main
-vompositor
+vwm
 *.exe
 *.exe~
 *.so
 *.dylib
 *.dll
-xdg-shell-protocol.h
 
 # Ignore binary output folders
 bin/
