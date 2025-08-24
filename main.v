@@ -456,7 +456,7 @@ fn Server.new() &Server {
 		event := unsafe { &C.wlr_seat_pointer_request_set_cursor_event(data) }
 
 		focused_client := sr.seat.pointer_state.focused_client
-		if focused_client == event.seat_client {
+		if unsafe { i64(focused_client) - i64(event.seat_client) == 0 } {
 			C.wlr_cursor_set_surface(sr.cursor, event.surface, event.hotspot_x, event.hotspot_y)
 		}
 	}, &sr.seat.events.request_set_cursor)
