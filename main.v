@@ -1,6 +1,7 @@
 module main
 
 import os
+import flag
 import datatypes
 import wayland { Listener, Wl_seat_capability }
 import wlr
@@ -634,7 +635,7 @@ fn (mut server Server) process_cursor_motion(time u32) {
 	}
 }
 
-fn (server Server) run() int {
+fn (server Server) run(startup_cmd string) int {
 	socket := C.wl_display_add_socket_auto(server.display)
 	if socket == unsafe { nil } {
 		C.wlr_backend_destroy(server.backend)
@@ -650,7 +651,7 @@ fn (server Server) run() int {
 	os.setenv('WAYLAND_DISPLAY', unsafe { socket.vstring() }, true)
 
 	if os.fork() == 0 {
-		os.execute('foot')
+		os.execute(startup_cmd)
 	}
 
 	C.wl_display_run(server.display)
@@ -690,8 +691,22 @@ fn (server Server) destroy() {
 fn main() {
 	C.wlr_log_init(.debug, unsafe { nil })
 
+	mut fp := flag.new_flag_parser(os.args)
+	fp.application('vwm')
+	fp.version('0.0.0')
+	fp.limit_free_args(0, 0)!
+	fp.description('v wayland window manager')
+	fp.skip_executable()
+
+	startup_cmd := fp.string('startup', `s`, '', 'startup command')
+	fp.finalize() or {
+		eprintln(err)
+		println(fp.usage())
+		return
+	}
+
 	server := Server.new()
-	code := server.run()
+	code := server.run(startup_cmd)
 	if code != 0 {
 		exit(code)
 	}
