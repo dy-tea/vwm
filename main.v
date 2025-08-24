@@ -167,11 +167,8 @@ fn Server.new() &Server {
 	cursor := C.wlr_cursor_create()
 	C.wlr_cursor_attach_output_layout(cursor, output_layout)
 	xcursor_mgr := C.wlr_xcursor_manager_create(unsafe { nil }, 24)
-	C.wlr_xcursor_manager_load(xcursor_mgr, 1.0)
 
 	seat := C.wlr_seat_create(display, c'seat0')
-	C.wlr_seat_set_capabilities(seat, u32(Wl_seat_capability.pointer))
-	C.wlr_seat_pointer_clear_focus(seat)
 
 	mut sr := &Server{
 		display:       display
@@ -237,7 +234,7 @@ fn Server.new() &Server {
 		l_output := C.wlr_output_layout_add_auto(sr.output_layout, wlr_output)
 		scene_output := C.wlr_scene_output_create(sr.scene, wlr_output)
 		C.wlr_scene_output_layout_add_output(sr.scene_layout, l_output, scene_output)
-	}, &backend.events.new_output)
+	}, &sr.backend.events.new_output)
 
 	sr.new_input = Listener.new(fn [mut sr] (listener &C.wl_listener, data voidptr) {
 		device := unsafe { &C.wlr_input_device(data) }
@@ -314,7 +311,7 @@ fn Server.new() &Server {
 		}
 
 		C.wlr_seat_set_capabilities(sr.seat, caps)
-	}, &backend.events.new_input)
+	}, &sr.backend.events.new_input)
 
 	// xdg_shell listeners
 	sr.new_xdg_toplevel = Listener.new(fn [mut sr] (listener &C.wl_listener, data voidptr) {
@@ -611,10 +608,22 @@ fn (mut server Server) process_cursor_motion(time u32) {
 				}
 
 				geo_box := &toplevel.xdg_toplevel.base.geometry
-				C.wlr_scene_node_set_position(&toplevel.scene_tree.node, new_left - geo_box.x,
-					new_top - geo_box.y)
-				C.wlr_xdg_toplevel_set_size(toplevel.xdg_toplevel, new_right - new_left,
-					new_bottom - new_top)
+				new_width := new_right - new_left
+				new_height := new_bottom - new_top
+
+				new_x := if Wlr_edges.left.matches(server.resize_edges) {
+					(new_left - geo_box.x) - (geo_box.width - new_width)
+				} else {
+					new_left - geo_box.x
+				}
+				new_y := if Wlr_edges.top.matches(server.resize_edges) {
+					(new_top - geo_box.y) - (geo_box.height - new_height)
+				} else {
+					new_top - geo_box.y
+				}
+
+				C.wlr_scene_node_set_position(&toplevel.scene_tree.node, new_x, new_y)
+				C.wlr_xdg_toplevel_set_size(toplevel.xdg_toplevel, new_width, new_height)
 			}
 		}
 		else {
