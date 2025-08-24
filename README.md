@@ -1,6 +1,6 @@
-# wlroots compositor written in V (WIP)
+# wlroots compositor written in V
 
-Currently implementing a basic compositor based off [tinywl](https://gitlab.freedesktop.org/wlroots/wlroots/-/blob/master/tinywl/tinywl.c?ref_type=heads).
+Current implementation is a clone of tinywl but in V.
 
 Contributions are welcome, as well as suggestions on how to improve the [wlroots bindings](src/wlr).
 
