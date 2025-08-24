@@ -15,6 +15,7 @@ enum CursorMode {
 	resize
 }
 
+@[heap]
 pub struct Keyboard {
 pub:
 	wlr_keyboard &C.wlr_keyboard
@@ -88,6 +89,7 @@ fn (mut toplevel Toplevel) focus() {
 	}
 }
 
+@[heap]
 pub struct Popup {
 pub:
 	xdg_popup &C.wlr_xdg_popup
@@ -353,36 +355,64 @@ fn Server.new() &Server {
 			}
 		}, &xdg_toplevel.base.surface.events.commit)
 
-		tlr.destroy = Listener.new(fn [mut tlr] (listener &C.wl_listener, data voidptr) {
+		tlr.destroy = Listener.new(fn [mut sr, mut tlr] (listener &C.wl_listener, data voidptr) {
 			tlr.map.destroy()
 			tlr.unmap.destroy()
 			tlr.commit.destroy()
+			tlr.destroy.destroy()
 			tlr.request_move.destroy()
 			tlr.request_resize.destroy()
 			tlr.request_maximize.destroy()
 			tlr.request_fullscreen.destroy()
-			tlr.destroy.destroy()
 		}, &xdg_toplevel.base.surface.events.destroy)
 
-		tlr.request_move = Listener.new(fn [mut tlr] (listener &C.wl_listener, data voidptr) {
-			panic('request_move is unimplemented')
+		tlr.request_move = Listener.new(fn [mut sr, mut tlr] (listener &C.wl_listener, data voidptr) {
+			sr.begin_interactive(tlr, .move, 0)
 		}, &xdg_toplevel.events.request_move)
 
-		tlr.request_resize = Listener.new(fn [mut tlr] (listener &C.wl_listener, data voidptr) {
-			panic('request_resize is unimplemented')
+		tlr.request_resize = Listener.new(fn [mut sr, mut tlr] (listener &C.wl_listener, data voidptr) {
+			event := unsafe { &C.wlr_xdg_toplevel_resize_event(data) }
+			sr.begin_interactive(tlr, .resize, event.edges)
 		}, &xdg_toplevel.events.request_resize)
 
 		tlr.request_maximize = Listener.new(fn [mut tlr] (listener &C.wl_listener, data voidptr) {
-			panic('request_maximize is unimplemented')
+			if tlr.xdg_toplevel.base.initialized {
+				C.wlr_xdg_surface_schedule_configure(tlr.xdg_toplevel.base)
+			}
 		}, &xdg_toplevel.events.request_maximize)
 
 		tlr.request_fullscreen = Listener.new(fn [mut tlr] (listener &C.wl_listener, data voidptr) {
-			panic('request_fullscreen is unimplemented')
+			if tlr.xdg_toplevel.base.initialized {
+				C.wlr_xdg_surface_schedule_configure(tlr.xdg_toplevel.base)
+			}
 		}, &xdg_toplevel.events.request_fullscreen)
 	}, &xdg_shell.events.new_toplevel)
 
 	sr.new_xdg_popup = Listener.new(fn [mut sr] (listener &C.wl_listener, data voidptr) {
-		panic('new_xdg_popup is unimplemented')
+		mut xdg_popup := unsafe { &C.wlr_xdg_popup(data) }
+
+		parent := C.wlr_xdg_surface_try_from_wlr_surface(xdg_popup.parent)
+		if parent == unsafe { nil } {
+			panic('popup parent is nil')
+		}
+
+		parent_tree := unsafe { &C.wlr_scene_tree(parent.data) }
+		xdg_popup.base.data = C.wlr_scene_xdg_surface_create(parent_tree, xdg_popup.base)
+
+		mut pr := &Popup{
+			xdg_popup: xdg_popup
+		}
+
+		pr.commit = Listener.new(fn [mut pr] (listener &C.wl_listener, data voidptr) {
+			if pr.xdg_popup.base.initial_commit {
+				C.wlr_xdg_surface_schedule_configure(pr.xdg_popup.base)
+			}
+		}, &xdg_popup.base.surface.events.commit)
+
+		pr.destroy = Listener.new(fn [mut pr] (listener &C.wl_listener, data voidptr) {
+			pr.commit.destroy()
+			pr.destroy.destroy()
+		}, &xdg_popup.events.destroy)
 	}, &xdg_shell.events.new_popup)
 
 	// cursor listeners
@@ -449,6 +479,31 @@ fn Server.new() &Server {
 	}, &sr.seat.events.request_set_selection)
 
 	return sr
+}
+
+fn (mut server Server) begin_interactive(toplevel &Toplevel, cursor_mode CursorMode, resize_edges u32) {
+	server.grabbed_toplevel = toplevel
+	server.cursor_mode = cursor_mode
+	if cursor_mode == .move {
+		server.grab_x = server.cursor.x - toplevel.scene_tree.node.x
+		server.grab_y = server.cursor.y - toplevel.scene_tree.node.y
+	} else {
+		geo_box := toplevel.xdg_toplevel.base.geometry
+
+		ox := if Wlr_edges.right.matches(resize_edges) { geo_box.width } else { 0 }
+		border_x := toplevel.scene_tree.node.x + geo_box.x + ox
+
+		oy := if Wlr_edges.bottom.matches(resize_edges) { geo_box.height } else { 0 }
+		border_y := toplevel.scene_tree.node.y + geo_box.y + oy
+
+		server.grab_x = server.cursor.x - border_x
+		server.grab_y = server.cursor.y - border_y
+
+		server.grab_geobox = geo_box
+		server.grab_geobox.x += toplevel.scene_tree.node.x
+		server.grab_geobox.y += toplevel.scene_tree.node.y
+		server.resize_edges = resize_edges
+	}
 }
 
 fn (mut server Server) handle_keybinding(sym xkb.Keysym) bool {

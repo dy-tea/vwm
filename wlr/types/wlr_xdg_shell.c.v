@@ -195,7 +195,6 @@ pub:
 
 pub struct C.wlr_xdg_popup {
 pub:
-	base &C.wlr_xdg_surface
 	link C.wl_list
 
 	resource &C.wl_resource
@@ -213,6 +212,8 @@ pub:
 	}
 
 	grab_link C.wl_list
+pub mut:
+	base &C.wlr_xdg_surface
 }
 
 pub struct C.wlr_xdg_popup_grab {
