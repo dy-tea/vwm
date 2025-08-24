@@ -54,7 +54,7 @@ pub mut:
 	request_fullscreen Listener
 }
 
-fn (mut toplevel Toplevel) focus() {
+fn (toplevel &Toplevel) focus() {
 	mut sr := toplevel.sr
 
 	prev_surface := sr.seat.keyboard_state.focused_surface
@@ -117,11 +117,11 @@ pub:
 
 	seat &C.wlr_seat
 pub mut:
-	outputs    datatypes.DoublyLinkedList[Output] = datatypes.DoublyLinkedList[Output]{}
+	outputs    datatypes.DoublyLinkedList[&Output] = datatypes.DoublyLinkedList[&Output]{}
 	new_output Listener
 	new_input  Listener
 
-	toplevels        datatypes.DoublyLinkedList[Toplevel] = datatypes.DoublyLinkedList[Toplevel]{}
+	toplevels        datatypes.DoublyLinkedList[&Toplevel] = datatypes.DoublyLinkedList[&Toplevel]{}
 	new_xdg_toplevel Listener
 	new_xdg_popup    Listener
 
@@ -142,7 +142,7 @@ pub mut:
 	grab_geobox           C.wlr_box
 	resize_edges          u32
 
-	keyboards datatypes.DoublyLinkedList[Keyboard] = datatypes.DoublyLinkedList[Keyboard]{}
+	keyboards datatypes.DoublyLinkedList[&Keyboard] = datatypes.DoublyLinkedList[&Keyboard]{}
 }
 
 fn Server.new() &Server {
@@ -204,12 +204,11 @@ fn Server.new() &Server {
 		C.wlr_output_commit_state(wlr_output, &state)
 		C.wlr_output_state_finish(&state)
 
-		mut output := Output{ wlr_output: wlr_output, sr: sr }
-		mut outr := &output
-		sr.outputs.push_back(output)
+		mut outr := &Output{ wlr_output: wlr_output, sr: sr }
+		sr.outputs.push_back(outr)
 
 		// xdg_output listeners
-		output.frame = Listener.new(fn [sr, wlr_output] (listener &C.wl_listener, data voidptr) {
+		outr.frame = Listener.new(fn [sr, wlr_output] (listener &C.wl_listener, data voidptr) {
 			scene_output := C.wlr_scene_get_scene_output(sr.scene, wlr_output)
 
 			C.wlr_scene_output_commit(scene_output, unsafe { nil })
@@ -219,17 +218,17 @@ fn Server.new() &Server {
 			C.wlr_scene_output_send_frame_done(scene_output, &now)
 		}, &wlr_output.events.frame)
 
-		output.request_state = Listener.new(fn [wlr_output] (listener &C.wl_listener, data voidptr) {
+		outr.request_state = Listener.new(fn [wlr_output] (listener &C.wl_listener, data voidptr) {
 			event := unsafe { &C.wlr_output_event_request_state(data) }
 			C.wlr_output_commit_state(wlr_output, event.state)
 		}, &wlr_output.events.request_state)
 
-		output.destroy = Listener.new(fn [outr, mut sr] (listener &C.wl_listener, data voidptr) {
+		outr.destroy = Listener.new(fn [outr, mut sr] (listener &C.wl_listener, data voidptr) {
 			outr.frame.destroy()
 			outr.request_state.destroy()
 			outr.destroy.destroy()
 
-			if ix := sr.outputs.index(*outr) {
+			if ix := sr.outputs.index(outr) {
 				sr.outputs.delete(ix)
 			}
 		}, &wlr_output.events.destroy)
@@ -245,12 +244,10 @@ fn Server.new() &Server {
 			.keyboard {
 				wlr_keyboard := C.wlr_keyboard_from_input_device(device)
 
-				mut keyboard := Keyboard{
+				mut kr := &Keyboard{
 					wlr_keyboard: wlr_keyboard
 					sr:           sr
 				}
-
-				mut kr := &keyboard
 
 				// setup keymap for keyboard
 				mut context := C.xkb_context_new(.no_flags)
@@ -262,12 +259,12 @@ fn Server.new() &Server {
 				C.wlr_keyboard_set_repeat_info(wlr_keyboard, 25, 600)
 
 				// keyboard listeners
-				keyboard.modifiers = Listener.new(fn [mut sr, mut kr] (listener &C.wl_listener, data voidptr) {
+				kr.modifiers = Listener.new(fn [sr, kr] (listener &C.wl_listener, data voidptr) {
 					C.wlr_seat_set_keyboard(sr.seat, kr.wlr_keyboard)
 					C.wlr_seat_keyboard_notify_modifiers(sr.seat, &kr.wlr_keyboard.modifiers)
-				}, &keyboard.wlr_keyboard.events.modifiers)
+				}, &wlr_keyboard.events.modifiers)
 
-				keyboard.key = Listener.new(fn [mut sr, mut kr] (listener &C.wl_listener, data voidptr) {
+				kr.key = Listener.new(fn [mut sr, kr] (listener &C.wl_listener, data voidptr) {
 					mut event := unsafe { &C.wlr_keyboard_key_event(data) }
 
 					keycode := event.keycode + 8
@@ -289,19 +286,19 @@ fn Server.new() &Server {
 						C.wlr_seat_keyboard_notify_key(sr.seat, event.time_msec, event.keycode,
 							u32(event.state))
 					}
-				}, &keyboard.wlr_keyboard.events.key)
+				}, &wlr_keyboard.events.key)
 
-				keyboard.destroy = Listener.new(fn [mut sr, mut kr] (listener &C.wl_listener, data voidptr) {
+				kr.destroy = Listener.new(fn [mut sr, mut kr] (listener &C.wl_listener, data voidptr) {
 					kr.modifiers.destroy()
 					kr.key.destroy()
 					kr.destroy.destroy()
 
-					if ix := sr.keyboards.index(*kr) {
+					if ix := sr.keyboards.index(kr) {
 						sr.keyboards.delete(ix)
 					}
-				}, &keyboard.wlr_keyboard.base.events.destroy)
+				}, &wlr_keyboard.base.events.destroy)
 
-				sr.keyboards.push_back(keyboard)
+				sr.keyboards.push_back(kr)
 			}
 			.pointer {
 				C.wlr_cursor_attach_input_device(sr.cursor, device)
@@ -332,7 +329,7 @@ fn Server.new() &Server {
 
 		// toplevel listeners
 		tlr.map = Listener.new(fn [mut sr, mut tlr] (listener &C.wl_listener, data voidptr) {
-			sr.toplevels.push_back(*tlr)
+			sr.toplevels.push_back(tlr)
 
 			tlr.focus()
 		}, &xdg_toplevel.base.surface.events.map)
@@ -344,7 +341,7 @@ fn Server.new() &Server {
 				}
 			}
 
-			if ix := sr.toplevels.index(*tlr) {
+			if ix := sr.toplevels.index(tlr) {
 				sr.toplevels.delete(ix)
 			}
 		}, &xdg_toplevel.base.surface.events.unmap)
@@ -364,7 +361,8 @@ fn Server.new() &Server {
 			tlr.request_resize.destroy()
 			tlr.request_maximize.destroy()
 			tlr.request_fullscreen.destroy()
-		}, &xdg_toplevel.base.surface.events.destroy)
+			free(tlr)
+		}, &xdg_toplevel.events.destroy)
 
 		tlr.request_move = Listener.new(fn [mut sr, mut tlr] (listener &C.wl_listener, data voidptr) {
 			sr.begin_interactive(tlr, .move, 0)
