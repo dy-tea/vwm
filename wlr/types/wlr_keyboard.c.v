@@ -28,6 +28,18 @@ pub enum Wlr_keyboard_modifier {
 	mod5  = 1 << 7
 }
 
+pub fn (modifier Wlr_keyboard_modifier) matches(modifiers u32) bool {
+	return u32(modifier) & modifiers != 0
+}
+
+pub struct C.wlr_keyboard_modifiers {
+pub:
+	depressed u32
+	latched   u32
+	locked    u32
+	group     u32
+}
+
 pub struct C.wlr_keyboard_modifiers {
 pub:
 	depressed u32
@@ -91,5 +103,5 @@ fn C.wlr_keyboard_keysym_to_pointer_button(keysym u32) u32
 fn C.wlr_keyboard_keysym_to_pointer_motion(keysym u32, dx &i32, dy &i32)
 
 fn C.wlr_keyboard_set_repeat_info(kb &C.wlr_keyboard, rate_hz i32, delay_ms i32)
-fn C.wlr_keyboard_led_update(keyboard &C.wl_keyboard, leds u32)
-fn C.wlr_keyboard_get_modifiers(keyboard &C.wl_keyboard) u32
+fn C.wlr_keyboard_led_update(keyboard &C.wlr_keyboard, leds u32)
+fn C.wlr_keyboard_get_modifiers(keyboard &C.wlr_keyboard) u32

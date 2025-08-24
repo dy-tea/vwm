@@ -1,6 +1,7 @@
 module xkb
 
 #flag linux -I/usr/include/
+#flag linux -lxkbcommon
 #include <xkbcommon/xkbcommon.h>
 
 pub struct C.xkb_context {
@@ -9,7 +10,8 @@ pub struct C.xkb_context {
 pub struct C.xkb_keymap {
 }
 
-pub struct C.xkb_state {}
+pub struct C.xkb_state {
+}
 
 pub struct C.xkb_rule_names {
 pub:
@@ -34,6 +36,10 @@ pub enum Xkb_keysym_flags {
 	case_insensitive = 1 << 0
 }
 
+fn C.xkb_context_new(flags Xkb_context_flags) &C.xkb_context
+fn C.xkb_context_ref(context &C.xkb_context) &C.xkb_context
+fn C.xkb_context_unref(context &C.xkb_context)
+
 pub enum Xkb_context_flags {
 	no_flags                     = 0
 	no_default_includes          = 1 << 0
@@ -49,7 +55,7 @@ pub enum Xkb_log_level {
 	debug    = 50
 }
 
-pub enum Xkb_Keymap_compile_flags {
+pub enum Xkb_keymap_compile_flags {
 	no_flags = 0
 }
 
@@ -57,6 +63,11 @@ pub enum Xkb_keymap_format {
 	text_v1 = 1
 	text_v2 = 2
 }
+
+fn C.xkb_keymap_new_from_names(context &C.xkb_context, names &C.xkb_rule_names, flags Xkb_keymap_compile_flags) &C.xkb_keymap
+
+fn C.xkb_keymap_ref(keymap &C.xkb_keymap) &C.xkb_keymap
+fn C.xkb_keymap_unref(keymap &C.xkb_keymap)
 
 pub enum Xkb_key_direction {
 	up
@@ -85,3 +96,5 @@ pub enum Xkb_consumed_mode {
 	xkb
 	gtk
 }
+
+fn C.xkb_state_key_get_syms(state &C.xkb_state, key u32, syms_out &&u32) int
