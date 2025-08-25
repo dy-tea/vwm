@@ -16,4 +16,5 @@ pub enum Wlr_log_importance {
 
 type Wlr_log_func_t = fn (importance Wlr_log_importance, fmt ...&char)
 
-fn C.wlr_log_init(verbosity Wlr_log_importance, log_func Wlr_log_func_t)
+fn C.wlr_log_init(verbosity Wlr_log_importance, callback Wlr_log_func_t)
+fn C.wlr_log_get_verbosity() Wlr_log_importance

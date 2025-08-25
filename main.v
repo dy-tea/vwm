@@ -646,22 +646,30 @@ fn (mut server Server) process_cursor_motion(time u32) {
 fn (server Server) run(startup_cmd string) int {
 	socket := C.wl_display_add_socket_auto(server.display)
 	if socket == unsafe { nil } {
+		eprintln('failed to add socket')
 		C.wlr_backend_destroy(server.backend)
 		return 1
 	}
+	socket_str := unsafe { socket.vstring() }
 
 	if !C.wlr_backend_start(server.backend) {
+		eprintln('failed to start backend')
 		C.wlr_backend_destroy(server.backend)
 		C.wl_display_destroy(server.display)
 		return 1
 	}
 
-	os.setenv('WAYLAND_DISPLAY', unsafe { socket.vstring() }, true)
+	os.setenv('WAYLAND_DISPLAY', socket_str, true)
 
 	if os.fork() == 0 {
-		os.execute(startup_cmd)
+		if startup_cmd.len > 0 {
+			println('running startup command: ${startup_cmd}')
+			os.execute(startup_cmd)
+		}
+		exit(0)
 	}
 
+	println('running wayland compositor on WAYLAND_DISPLAY=${socket_str}')
 	C.wl_display_run(server.display)
 	return 0
 }
