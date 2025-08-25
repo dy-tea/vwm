@@ -36,25 +36,25 @@ pub:
 	seat &C.wlr_seat
 pub mut:
 	outputs    datatypes.DoublyLinkedList[&Output] = datatypes.DoublyLinkedList[&Output]{}
-	new_output wl.Listener
-	new_input  wl.Listener
+	new_output Listener
+	new_input  Listener
 
 	toplevels        datatypes.DoublyLinkedList[&Toplevel] = datatypes.DoublyLinkedList[&Toplevel]{}
-	new_xdg_toplevel wl.Listener
-	new_xdg_popup    wl.Listener
+	new_xdg_toplevel Listener
+	new_xdg_popup    Listener
 
 	grabbed_toplevel ?&Toplevel
 
 	cursor_mode            CursorMode = .passthrough
-	cursor_motion          wl.Listener
-	cursor_motion_absolute wl.Listener
-	cursor_button          wl.Listener
-	cursor_axis            wl.Listener
-	cursor_frame           wl.Listener
+	cursor_motion          Listener
+	cursor_motion_absolute Listener
+	cursor_button          Listener
+	cursor_axis            Listener
+	cursor_frame           Listener
 
-	request_cursor        wl.Listener
-	pointer_focus_change  wl.Listener
-	request_set_selection wl.Listener
+	request_cursor        Listener
+	pointer_focus_change  Listener
+	request_set_selection Listener
 	grab_x                f64
 	grab_y                f64
 	grab_geobox           C.wlr_box
@@ -74,6 +74,7 @@ pub fn Server.new() &Server {
 	C.wlr_compositor_create(display, 5, renderer)
 	C.wlr_subcompositor_create(display)
 	C.wlr_data_device_manager_create(display)
+	C.wlr_viewporter_create(display)
 
 	mut output_layout := C.wlr_output_layout_create(display)
 	scene := C.wlr_scene_create()
