@@ -1,4 +1,4 @@
-module wayland
+module wl
 
 #flag linux -I/usr/include
 #flag linux -lwayland-server

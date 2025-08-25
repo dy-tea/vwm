@@ -1,7 +1,7 @@
 module types
 
 import xkb
-import wayland
+import wl
 
 #flag linux -DWLR_USE_UNSTABLE
 #flag linux -I/usr/include/
@@ -92,7 +92,7 @@ pub:
 	time_msec    u32
 	keycode      u32
 	update_state bool
-	state        wayland.Wl_keyboard_key_state
+	state        wl.Wl_keyboard_key_state
 }
 
 fn C.wlr_keyboard_from_input_device(input_device &C.wlr_input_device) &C.wlr_keyboard

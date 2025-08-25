@@ -1,6 +1,6 @@
 module types
 
-import wayland
+import wl
 
 #flag linux -DWLR_USE_UNSTABLE
 #flag linux -I/usr/include/
@@ -67,16 +67,16 @@ pub:
 	pointer   &C.wlr_pointer
 	time_msec u32
 	button    u32
-	state     wayland.Wl_pointer_button_state
+	state     wl.Wl_pointer_button_state
 }
 
 pub struct C.wlr_pointer_axis_event {
 pub:
 	pointer            &C.wlr_pointer
 	time_msec          u32
-	source             wayland.Wl_pointer_axis_source
-	orientation        wayland.Wl_pointer_axis
-	relative_direction wayland.Wl_pointer_axis_relative_direction
+	source             wl.Wl_pointer_axis_source
+	orientation        wl.Wl_pointer_axis
+	relative_direction wl.Wl_pointer_axis_relative_direction
 	delta              f64
 	delta_discrete     i32
 }

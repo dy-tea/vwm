@@ -1,6 +1,6 @@
 module types
 
-import wayland
+import wl
 
 #flag linux -DWLR_USE_UNSTABLE
 #flag linux -I/usr/include/
@@ -107,7 +107,7 @@ pub:
 	default_grab &C.wlr_seat_pointer_grab
 
 	sent_axis_source   bool
-	cached_axis_source wayland.Wl_pointer_axis_source
+	cached_axis_source wl.Wl_pointer_axis_source
 
 	buttons      [16]C.wlr_seat_pointer_button
 	button_count usize
@@ -269,15 +269,15 @@ fn C.wlr_seat_pointer_surface_has_focus(wlr_seat &C.wlr_seat, surface &C.wlr_sur
 fn C.wlr_seat_pointer_enter(wlr_seat &C.wlr_seat, surface &C.wlr_surface, sx f64, sy f64)
 fn C.wlr_seat_pointer_clear_focus(wlr_seat &C.wlr_seat)
 fn C.wlr_seat_pointer_send_motion(wlr_seat &C.wlr_seat, time_msec u32, sx f64, sy f64)
-fn C.wlr_seat_pointer_send_button(wlr_seat &C.wlr_seat, time_msec u32, button u32, state wayland.Wl_pointer_button_state) u32
-fn C.wlr_seat_pointer_send_axis(wlr_seat &C.wlr_seat, time_msec u32, orientation wayland.Wl_pointer_axis, value f64, value_discrete i32, source wayland.Wl_pointer_source, relative_direction wayland.Wl_pointer_axis_relative_direction)
+fn C.wlr_seat_pointer_send_button(wlr_seat &C.wlr_seat, time_msec u32, button u32, state wl.Wl_pointer_button_state) u32
+fn C.wlr_seat_pointer_send_axis(wlr_seat &C.wlr_seat, time_msec u32, orientation wl.Wl_pointer_axis, value f64, value_discrete i32, source wl.Wl_pointer_source, relative_direction wl.Wl_pointer_axis_relative_direction)
 fn C.wlr_seat_pointer_send_frame(wlr_seat &C.wlr_seat)
 fn C.wlr_seat_pointer_notify_enter(wlr_seat &C.wlr_seat, surface &C.wlr_surface, sx f64, sy f64)
 fn C.wlr_seat_pointer_notify_clear_focus(wlr_seat &C.wlr_seat)
 fn C.wlr_seat_pointer_warp(wlr_seat &C.wlr_seat, sx f64, sy f64)
 fn C.wlr_seat_pointer_notify_motion(wlr_seat &C.wlr_seat, time_msec u32, sx f64, sy f64)
-fn C.wlr_seat_pointer_notify_button(wlr_seat &C.wlr_seat, time_msec u32, button u32, state wayland.Wl_pointer_button_state) u32
-fn C.wlr_seat_pointer_notify_axis(wlr_seat &C.wlr_seat, time_msec u32, orientation wayland.Wl_pointer_axis, value f64, value_discrete i32, source wayland.Wl_pointer_axis_source, relative_direction wayland.Wl_pointer_axis_relative_direction)
+fn C.wlr_seat_pointer_notify_button(wlr_seat &C.wlr_seat, time_msec u32, button u32, state wl.Wl_pointer_button_state) u32
+fn C.wlr_seat_pointer_notify_axis(wlr_seat &C.wlr_seat, time_msec u32, orientation wl.Wl_pointer_axis, value f64, value_discrete i32, source wl.Wl_pointer_axis_source, relative_direction wl.Wl_pointer_axis_relative_direction)
 fn C.wlr_seat_pointer_notify_frame(wlr_seat &C.wlr_seat)
 fn C.wlr_seat_pointer_start_grab(wlr_seat &C.wlr_seat, grab &C.wlr_pointer_grab)
 fn C.wlr_seat_pointer_end_grab(wlr_seat &C.wlr_seat)

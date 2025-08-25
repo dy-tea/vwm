@@ -1,6 +1,6 @@
 module wlr
 
-import wayland
+import wl
 
 #flag linux -DWLR_USE_UNSTABLE
 #flag linux -I/usr/include/

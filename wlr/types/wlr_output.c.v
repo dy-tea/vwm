@@ -1,6 +1,6 @@
 module types
 
-import wayland
+import wl
 
 #flag linux -DWLR_USE_UNSTABLE
 #flag linux -I/usr/include/
@@ -21,10 +21,10 @@ pub struct C.wlr_output_state {
 
 	enabled               bool
 	scale                 f32
-	transform             wayland.Wl_output_transform
+	transform             wl.Wl_output_transform
 	adaptive_sync_enabled bool
 	render_format         u32
-	subpixel              wayland.Wl_output_subpixel
+	subpixel              wl.Wl_output_subpixel
 
 	tearing_page_flip bool
 }

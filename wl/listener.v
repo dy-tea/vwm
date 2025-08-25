@@ -1,4 +1,4 @@
-module wayland
+module wl
 
 @[heap]
 pub struct Listener {

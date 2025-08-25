@@ -1,6 +1,6 @@
 module types
 
-import wayland
+import wl
 
 #flag linux -DWLR_USE_UNSTABLE
 #flag linux -I/usr/include/
@@ -34,7 +34,7 @@ pub:
 	link    C.wl_list
 
 	actions          u32
-	preferred_action wayland.Wl_data_device_manager_dnd_action
+	preferred_action wl.Wl_data_device_manager_dnd_action
 	in_ask           bool
 }
 
@@ -46,7 +46,7 @@ pub:
 
 	dnd_drop   fn (source &C.wlr_data_source)
 	dnd_finish fn (source &C.wlr_data_source)
-	dnd_action fn (source &C.wlr_data_source, action wayland.Wl_data_device_manager_dnd_action)
+	dnd_action fn (source &C.wlr_data_source, action wl.Wl_data_device_manager_dnd_action)
 }
 
 pub struct C.wlr_data_source {
@@ -58,7 +58,7 @@ pub:
 
 	accepted bool
 
-	current_dnd_action wayland.Wl_data_device_manager_dnd_action
+	current_dnd_action wl.Wl_data_device_manager_dnd_action
 	compositor_action  u32
 
 	events struct {
@@ -152,4 +152,4 @@ fn C.wlr_data_source_destroy(source &C.wlr_data_source)
 
 fn C.wlr_data_source_dnd_drop(source &C.wlr_data_source)
 fn C.wlr_data_source_dnd_finish(source &C.wlr_data_source)
-fn C.wlr_data_source_dnd_action(source &C.wlr_data_source, action wayland.Wl_data_device_manager_dnd_action)
+fn C.wlr_data_source_dnd_action(source &C.wlr_data_source, action wl.Wl_data_device_manager_dnd_action)
