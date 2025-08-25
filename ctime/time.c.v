@@ -1,7 +1,9 @@
+module ctime
+
 #flag linux -I/usr/include/
 #include <time.h>
 
-enum ClockID {
+pub enum ClockID {
 	realtime
 	monotonic
 	process_cputime_id

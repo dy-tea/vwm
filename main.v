@@ -1,6 +1,7 @@
 module main
 
 import os
+import ctime
 import flag
 import datatypes
 import wayland { Listener, Wl_seat_capability }
