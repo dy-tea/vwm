@@ -121,6 +121,7 @@ pub fn Server.new() &Server {
 		C.wlr_output_state_finish(&state)
 
 		mut outr := &Output{ wlr_output: wlr_output, sr: sr }
+		outr.wlr_output.data = outr
 		sr.outputs.push_back(outr)
 
 		// xdg_output listeners
@@ -280,18 +281,16 @@ pub fn Server.new() &Server {
 		}, &xdg_toplevel.events.destroy)
 
 		tlr.request_move = Listener.new(fn [mut sr, mut tlr] (listener &C.wl_listener, data voidptr) {
-			sr.begin_interactive(tlr, .move, 0)
+			sr.begin_interactive(mut tlr, .move, 0)
 		}, &xdg_toplevel.events.request_move)
 
 		tlr.request_resize = Listener.new(fn [mut sr, mut tlr] (listener &C.wl_listener, data voidptr) {
 			event := unsafe { &C.wlr_xdg_toplevel_resize_event(data) }
-			sr.begin_interactive(tlr, .resize, event.edges)
+			sr.begin_interactive(mut tlr, .resize, event.edges)
 		}, &xdg_toplevel.events.request_resize)
 
 		tlr.request_maximize = Listener.new(fn [mut tlr] (listener &C.wl_listener, data voidptr) {
-			if tlr.xdg_toplevel.base.initialized {
-				C.wlr_xdg_surface_schedule_configure(tlr.xdg_toplevel.base)
-			}
+			tlr.maximize(tlr.xdg_toplevel.requested.maximized)
 		}, &xdg_toplevel.events.request_maximize)
 
 		tlr.request_fullscreen = Listener.new(fn [mut tlr] (listener &C.wl_listener, data voidptr) {
@@ -394,10 +393,16 @@ pub fn Server.new() &Server {
 	return sr
 }
 
-fn (mut server Server) begin_interactive(toplevel &Toplevel, cursor_mode CursorMode, resize_edges u32) {
+fn (mut server Server) begin_interactive(mut toplevel Toplevel, cursor_mode CursorMode, resize_edges u32) {
 	server.grabbed_toplevel = toplevel
 	server.cursor_mode = cursor_mode
 	if cursor_mode == .move {
+		if toplevel.maximized {
+			toplevel.saved_geometry.y = int(server.cursor.y)
+			toplevel.saved_geometry.x = int(server.cursor.x - (f32(toplevel.saved_geometry.width) / 2.0))
+			toplevel.maximize(false)
+		}
+
 		server.grab_x = server.cursor.x - toplevel.scene_tree.node.x
 		server.grab_y = server.cursor.y - toplevel.scene_tree.node.y
 	} else {
@@ -559,6 +564,19 @@ fn (mut server Server) process_cursor_motion(time u32) {
 			C.wlr_seat_pointer_clear_focus(server.seat)
 		}
 	}
+}
+
+fn (server Server) output_at(x f64, y f64) ?&Output {
+	wlr_output := C.wlr_output_layout_output_at(server.output_layout, x, y)
+	if wlr_output == unsafe { nil } {
+		return none
+	}
+
+	return unsafe { &Output(wlr_output.data) }
+}
+
+fn (server Server) focused_output() ?&Output {
+	return server.output_at(server.cursor.x, server.cursor.y)
 }
 
 pub fn (server Server) run(startup_cmd string) int {

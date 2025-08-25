@@ -8,8 +8,9 @@ struct Toplevel {
 pub:
 	xdg_toplevel &C.wlr_xdg_toplevel
 pub mut:
-	sr                 &Server
-	scene_tree         &C.wlr_scene_tree
+	sr         &Server
+	scene_tree &C.wlr_scene_tree
+
 	map                wl.Listener
 	unmap              wl.Listener
 	commit             wl.Listener
@@ -18,6 +19,9 @@ pub mut:
 	request_resize     wl.Listener
 	request_maximize   wl.Listener
 	request_fullscreen wl.Listener
+
+	maximized      bool
+	saved_geometry C.wlr_box = C.wlr_box{}
 }
 
 fn (toplevel &Toplevel) focus() {
@@ -52,5 +56,48 @@ fn (toplevel &Toplevel) focus() {
 	if keyboard != unsafe { nil } {
 		C.wlr_seat_keyboard_notify_enter(sr.seat, surface, keyboard.keycodes, keyboard.num_keycodes,
 			&keyboard.modifiers)
+	}
+}
+
+fn (mut toplevel Toplevel) save_geometry() {
+	toplevel.saved_geometry = C.wlr_box{
+		x:      toplevel.scene_tree.node.x
+		y:      toplevel.scene_tree.node.y
+		width:  toplevel.xdg_toplevel.base.geometry.width
+		height: toplevel.xdg_toplevel.base.geometry.height
+	}
+}
+
+fn (mut toplevel Toplevel) set_position_size(x f64, y f64, width int, height int) {
+	C.wlr_scene_node_set_position(&toplevel.scene_tree.node, x, y)
+	C.wlr_xdg_toplevel_set_size(toplevel.xdg_toplevel, width, height)
+	C.wlr_xdg_surface_schedule_configure(toplevel.xdg_toplevel.base)
+}
+
+fn (mut toplevel Toplevel) maximize(maximized bool) {
+	if toplevel.maximized == maximized {
+		return
+	}
+
+	toplevel.maximized = maximized
+	C.wlr_xdg_toplevel_set_maximized(toplevel.xdg_toplevel, maximized)
+
+	if focused_output := toplevel.sr.focused_output() {
+		geo := focused_output.get_geometry()
+
+		if maximized {
+			toplevel.save_geometry()
+			toplevel.set_position_size(geo.x, geo.y, geo.width, geo.height)
+		} else {
+			if toplevel.saved_geometry.width > 0 && toplevel.saved_geometry.height > 0 {
+				toplevel.set_position_size(toplevel.saved_geometry.x, toplevel.saved_geometry.y,
+					toplevel.saved_geometry.width, toplevel.saved_geometry.height)
+			} else {
+				toplevel.set_position_size(toplevel.scene_tree.node.x, toplevel.scene_tree.node.y,
+					toplevel.xdg_toplevel.base.geometry.width / 2, toplevel.xdg_toplevel.base.geometry.height / 2)
+			}
+		}
+	} else {
+		eprintln('no focused output')
 	}
 }

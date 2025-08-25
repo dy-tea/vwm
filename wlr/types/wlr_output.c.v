@@ -66,6 +66,16 @@ pub:
 		request_state C.wl_signal
 		destroy       C.wl_signal
 	}
+
+	idle_frame &C.wl_event_source
+	idle_done  &C.wl_event_source
+
+	attach_render_locks int
+
+	cursors C.wl_list
+	// hardware_cursor &C.wlr_output_cursor
+pub mut:
+	data voidptr
 }
 
 pub struct C.wlr_output_event_request_state {
