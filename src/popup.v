@@ -4,7 +4,7 @@ import wl
 import wlr.types
 
 @[heap]
-pub struct Popup {
+struct Popup {
 pub:
 	xdg_popup &C.wlr_xdg_popup
 pub mut:

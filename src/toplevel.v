@@ -4,7 +4,7 @@ import wl
 import wlr.types
 
 @[heap]
-pub struct Toplevel {
+struct Toplevel {
 pub:
 	xdg_toplevel &C.wlr_xdg_toplevel
 pub mut:

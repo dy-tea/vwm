@@ -3,7 +3,7 @@ module src
 import wl
 
 @[heap]
-pub struct Keyboard {
+struct Keyboard {
 pub:
 	wlr_keyboard &C.wlr_keyboard
 pub mut:

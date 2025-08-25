@@ -4,7 +4,7 @@ import wl
 import wlr.types
 
 @[heap]
-pub struct Output {
+struct Output {
 pub:
 	wlr_output &C.wlr_output
 pub mut:
