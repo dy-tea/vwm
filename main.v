@@ -359,7 +359,6 @@ fn Server.new() &Server {
 			tlr.request_resize.destroy()
 			tlr.request_maximize.destroy()
 			tlr.request_fullscreen.destroy()
-			free(tlr)
 		}, &xdg_toplevel.events.destroy)
 
 		tlr.request_move = Listener.new(fn [mut sr, mut tlr] (listener &C.wl_listener, data voidptr) {
