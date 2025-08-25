@@ -54,7 +54,7 @@ pub:
 
 pub struct C.wlr_scene_rect {
 pub:
-	node   C.wlr_scene_ndoe
+	node   C.wlr_scene_node
 	width  int
 	height int
 	color  [4]f32

@@ -350,7 +350,7 @@ fn Server.new() &Server {
 			}
 		}, &xdg_toplevel.base.surface.events.commit)
 
-		tlr.destroy = Listener.new(fn [mut sr, mut tlr] (listener &C.wl_listener, data voidptr) {
+		tlr.destroy = Listener.new(fn [mut tlr] (listener &C.wl_listener, data voidptr) {
 			tlr.map.destroy()
 			tlr.unmap.destroy()
 			tlr.commit.destroy()
@@ -383,7 +383,7 @@ fn Server.new() &Server {
 		}, &xdg_toplevel.events.request_fullscreen)
 	}, &xdg_shell.events.new_toplevel)
 
-	sr.new_xdg_popup = Listener.new(fn [mut sr] (listener &C.wl_listener, data voidptr) {
+	sr.new_xdg_popup = Listener.new(fn (listener &C.wl_listener, data voidptr) {
 		mut xdg_popup := unsafe { &C.wlr_xdg_popup(data) }
 
 		parent := C.wlr_xdg_surface_try_from_wlr_surface(xdg_popup.parent)
@@ -433,7 +433,7 @@ fn Server.new() &Server {
 			sr.reset_cursor_mode()
 		} else {
 			if node, _, _ := sr.scene_node_at(sr.cursor.x, sr.cursor.y) {
-				if mut toplevel := sr.scene_node_get_toplevel(node) {
+				if toplevel := sr.scene_node_get_toplevel(node) {
 					toplevel.focus()
 				}
 			}

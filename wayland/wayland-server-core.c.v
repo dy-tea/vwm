@@ -158,18 +158,18 @@ fn C.wl_resource_get_interface(resource &C.wl_resource) &C.wl_interface
 fn C.wl_resource_add_destroy_listener(resource &C.wl_resource, listener &C.wl_listener)
 fn C.wl_resource_get_destroy_listener(resource &C.wl_resource, notify Wl_notify_func_t) &C.wl_listener
 
-fn C.wl_shm_buffer_get(resource &C.wl_resource) &C.wl_shm_buffer
-fn C.wl_shm_buffer_begin_access(buffer &C.wl_shm_buffer)
-fn C.wl_shm_buffer_end_access(buffer &C.wl_shm_buffer)
-fn C.wl_shm_buffer_get_data(buffer &C.wl_shm_buffer) voidptr
-fn C.wl_shm_buffer_get_stride(buffer &C.wl_shm_buffer) i32
-fn C.wl_shm_buffer_get_format(buffer &C.wl_shm_buffer) u32
-fn C.wl_shm_buffer_get_width(buffer &C.wl_shm_buffer) i32
-fn C.wl_shm_buffer_get_height(buffer &C.wl_shm_buffer) i32
-fn C.wl_shm_buffer_ref(buffer &C.wl_shm_buffer) &C.wl_shm_buffer
-fn C.wl_shm_buffer_unref(buffer &C.wl_shm_buffer)
-fn C.wl_shm_buffer_ref_pool(buffer &C.wl_shm_buffer) &C.wl_shm_pool
-fn C.wl_shm_pool_unref(pool &C.wl_shm_pool)
+// fn C.wl_shm_buffer_get(resource &C.wl_resource) &C.wl_shm_buffer
+// n C.wl_shm_buffer_begin_access(buffer &C.wl_shm_buffer)
+// n C.wl_shm_buffer_end_access(buffer &C.wl_shm_buffer)
+// n C.wl_shm_buffer_get_data(buffer &C.wl_shm_buffer) voidptr
+// n C.wl_shm_buffer_get_stride(buffer &C.wl_shm_buffer) i32
+// n C.wl_shm_buffer_get_format(buffer &C.wl_shm_buffer) u32
+// n C.wl_shm_buffer_get_width(buffer &C.wl_shm_buffer) i32
+// n C.wl_shm_buffer_get_height(buffer &C.wl_shm_buffer) i32
+// n C.wl_shm_buffer_ref(buffer &C.wl_shm_buffer) &C.wl_shm_buffer
+// n C.wl_shm_buffer_unref(buffer &C.wl_shm_buffer)
+// n C.wl_shm_buffer_ref_pool(buffer &C.wl_shm_buffer) &C.wl_shm_pool
+// n C.wl_shm_pool_unref(pool &C.wl_shm_pool)
 
 fn C.wl_display_init_shm(display &C.wl_display) int
 fn C.wl_display_add_shm_format(display &C.wl_display, format u32) &u32

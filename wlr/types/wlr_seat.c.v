@@ -25,7 +25,7 @@ pub struct C.wlr_seat_client {
 pub:
 	client &C.wl_client
 	seat   &C.wlr_seat
-	//	link   C.wl_list
+	link   C.wl_list
 
 	resources    C.wl_list
 	pointers     C.wl_list
