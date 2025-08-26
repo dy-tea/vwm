@@ -382,14 +382,14 @@ fn (server Server) focused_output() ?&Output {
 pub fn (server Server) run(startup_cmd string) int {
 	socket := C.wl_display_add_socket_auto(server.display)
 	if is_nullptr(socket) {
-		eprintln('failed to add socket')
+		util.log(.error, 'failed to add socket')
 		C.wlr_backend_destroy(server.backend)
 		return 1
 	}
 	socket_str := unsafe { socket.vstring() }
 
 	if !C.wlr_backend_start(server.backend) {
-		eprintln('failed to start backend')
+		util.log(.error, 'failed to start backend')
 		C.wlr_backend_destroy(server.backend)
 		C.wl_display_destroy(server.display)
 		return 1
@@ -399,13 +399,13 @@ pub fn (server Server) run(startup_cmd string) int {
 
 	if os.fork() == 0 {
 		if startup_cmd.len > 0 {
-			println('running startup command: ${startup_cmd}')
+			util.log(.info, 'running startup command: ${startup_cmd}')
 			os.execute(startup_cmd)
 		}
 		exit(0)
 	}
 
-	println('running wayland compositor on WAYLAND_DISPLAY=${socket_str}')
+	util.log(.info, 'running wayland compositor on WAYLAND_DISPLAY=${socket_str}')
 	C.wl_display_run(server.display)
 	return 0
 }

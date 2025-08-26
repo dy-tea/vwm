@@ -2,6 +2,7 @@ module src
 
 import wl { Listener }
 import wlr.types
+import wlr.util
 
 @[heap]
 struct Toplevel {
@@ -163,6 +164,6 @@ fn (mut toplevel Toplevel) maximize(maximized bool) {
 			}
 		}
 	} else {
-		eprintln('no focused output')
+		util.log(.error, 'no focused output')
 	}
 }
