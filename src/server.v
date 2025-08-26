@@ -74,7 +74,9 @@ pub fn Server.new() &Server {
 	C.wlr_compositor_create(display, 5, renderer)
 	C.wlr_subcompositor_create(display)
 	C.wlr_data_device_manager_create(display)
+
 	C.wlr_viewporter_create(display)
+	C.wlr_single_pixel_buffer_manager_v1_create(display)
 
 	mut output_layout := C.wlr_output_layout_create(display)
 	scene := C.wlr_scene_create()
@@ -227,7 +229,7 @@ pub fn Server.new() &Server {
 	}, &sr.backend.events.new_input)
 
 	// xdg_shell listeners
-	sr.new_xdg_toplevel = Listener.new(fn [mut sr] (_ &C.wl_listener, mut xdg_toplevel &C.wlr_xdg_toplevel) {
+	sr.new_xdg_toplevel = Listener.new(fn [mut sr] (_ &C.wl_listener, mut xdg_toplevel C.wlr_xdg_toplevel) {
 		mut tlr := &Toplevel{
 			sr:           sr
 			xdg_toplevel: xdg_toplevel
@@ -291,7 +293,7 @@ pub fn Server.new() &Server {
 		}, &xdg_toplevel.events.request_fullscreen)
 	}, &xdg_shell.events.new_toplevel)
 
-	sr.new_xdg_popup = Listener.new(fn (_ &C.wl_listener, mut xdg_popup &C.wlr_xdg_popup) {
+	sr.new_xdg_popup = Listener.new(fn (_ &C.wl_listener, mut xdg_popup C.wlr_xdg_popup) {
 		parent := C.wlr_xdg_surface_try_from_wlr_surface(xdg_popup.parent)
 		if is_nullptr(parent) {
 			panic('popup parent is nil')
