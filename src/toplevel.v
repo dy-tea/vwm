@@ -29,11 +29,10 @@ fn (toplevel &Toplevel) focus() {
 
 	prev_surface := sr.seat.keyboard_state.focused_surface
 	surface := toplevel.xdg_toplevel.base.surface
-	unsafe { // v does not have a pointer compare so I need to do this
-		if i64(prev_surface) - i64(surface) == 0 {
-			return
-		}
+	if ptr_eq(prev_surface, surface) {
+		return
 	}
+
 	// deactivate previous surface
 	if prev_surface != unsafe { nil } {
 		prev_toplevel := C.wlr_xdg_toplevel_try_from_wlr_surface(prev_surface)

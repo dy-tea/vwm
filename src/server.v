@@ -103,9 +103,7 @@ pub fn Server.new() &Server {
 	}
 
 	// backend listeners
-	sr.new_output = Listener.new(fn [mut sr] (listener &C.wl_listener, data voidptr) {
-		wlr_output := unsafe { &C.wlr_output(data) }
-
+	sr.new_output = Listener.new(fn [mut sr] (_ &C.wl_listener, wlr_output &C.wlr_output) {
 		C.wlr_output_init_render(wlr_output, sr.allocator, sr.renderer)
 
 		mut state := C.wlr_output_state{}
@@ -113,7 +111,7 @@ pub fn Server.new() &Server {
 		C.wlr_output_state_set_enabled(&state, true)
 
 		mode := C.wlr_output_preferred_mode(wlr_output)
-		if mode != unsafe { nil } {
+		if !is_nullptr(mode) {
 			C.wlr_output_state_set_mode(&state, mode)
 		}
 
@@ -125,7 +123,7 @@ pub fn Server.new() &Server {
 		sr.outputs.push_back(outr)
 
 		// xdg_output listeners
-		outr.frame = Listener.new(fn [sr, wlr_output] (listener &C.wl_listener, data voidptr) {
+		outr.frame = Listener.new(fn [sr, wlr_output] (_ &C.wl_listener, _ voidptr) {
 			scene_output := C.wlr_scene_get_scene_output(sr.scene, wlr_output)
 
 			C.wlr_scene_output_commit(scene_output, unsafe { nil })
@@ -135,12 +133,11 @@ pub fn Server.new() &Server {
 			C.wlr_scene_output_send_frame_done(scene_output, &now)
 		}, &wlr_output.events.frame)
 
-		outr.request_state = Listener.new(fn [wlr_output] (listener &C.wl_listener, data voidptr) {
-			event := unsafe { &C.wlr_output_event_request_state(data) }
+		outr.request_state = Listener.new(fn [wlr_output] (_ &C.wl_listener, event &C.wlr_output_event_request_state) {
 			C.wlr_output_commit_state(wlr_output, event.state)
 		}, &wlr_output.events.request_state)
 
-		outr.destroy = Listener.new(fn [outr, mut sr] (listener &C.wl_listener, data voidptr) {
+		outr.destroy = Listener.new(fn [outr, mut sr] (_ &C.wl_listener, _ voidptr) {
 			outr.frame.destroy()
 			outr.request_state.destroy()
 			outr.destroy.destroy()
@@ -155,8 +152,7 @@ pub fn Server.new() &Server {
 		C.wlr_scene_output_layout_add_output(sr.scene_layout, l_output, scene_output)
 	}, &sr.backend.events.new_output)
 
-	sr.new_input = Listener.new(fn [mut sr] (listener &C.wl_listener, data voidptr) {
-		device := unsafe { &C.wlr_input_device(data) }
+	sr.new_input = Listener.new(fn [mut sr] (_ &C.wl_listener, device &C.wlr_input_device) {
 		match device.type {
 			.keyboard {
 				wlr_keyboard := C.wlr_keyboard_from_input_device(device)
@@ -176,14 +172,12 @@ pub fn Server.new() &Server {
 				C.wlr_keyboard_set_repeat_info(wlr_keyboard, 25, 600)
 
 				// keyboard listeners
-				kr.modifiers = Listener.new(fn [sr, kr] (listener &C.wl_listener, data voidptr) {
+				kr.modifiers = Listener.new(fn [sr, kr] (_ &C.wl_listener, _ voidptr) {
 					C.wlr_seat_set_keyboard(sr.seat, kr.wlr_keyboard)
 					C.wlr_seat_keyboard_notify_modifiers(sr.seat, &kr.wlr_keyboard.modifiers)
 				}, &wlr_keyboard.events.modifiers)
 
-				kr.key = Listener.new(fn [mut sr, kr] (listener &C.wl_listener, data voidptr) {
-					mut event := unsafe { &C.wlr_keyboard_key_event(data) }
-
+				kr.key = Listener.new(fn [mut sr, kr] (_ &C.wl_listener, event &C.wlr_keyboard_key_event) {
 					keycode := event.keycode + 8
 					syms := &u32(unsafe { nil })
 					nsyms := C.xkb_state_key_get_syms(kr.wlr_keyboard.xkb_state, keycode,
@@ -205,7 +199,7 @@ pub fn Server.new() &Server {
 					}
 				}, &wlr_keyboard.events.key)
 
-				kr.destroy = Listener.new(fn [mut sr, mut kr] (listener &C.wl_listener, data voidptr) {
+				kr.destroy = Listener.new(fn [mut sr, mut kr] (_ &C.wl_listener, _ voidptr) {
 					kr.modifiers.destroy()
 					kr.key.destroy()
 					kr.destroy.destroy()
@@ -233,9 +227,7 @@ pub fn Server.new() &Server {
 	}, &sr.backend.events.new_input)
 
 	// xdg_shell listeners
-	sr.new_xdg_toplevel = Listener.new(fn [mut sr] (listener &C.wl_listener, data voidptr) {
-		mut xdg_toplevel := unsafe { &C.wlr_xdg_toplevel(data) }
-
+	sr.new_xdg_toplevel = Listener.new(fn [mut sr] (_ &C.wl_listener, mut xdg_toplevel &C.wlr_xdg_toplevel) {
 		mut tlr := &Toplevel{
 			sr:           sr
 			xdg_toplevel: xdg_toplevel
@@ -245,13 +237,13 @@ pub fn Server.new() &Server {
 		xdg_toplevel.base.data = tlr.scene_tree
 
 		// toplevel listeners
-		tlr.map = Listener.new(fn [mut sr, mut tlr] (listener &C.wl_listener, data voidptr) {
+		tlr.map = Listener.new(fn [mut sr, mut tlr] (_ &C.wl_listener, _ voidptr) {
 			sr.toplevels.push_back(tlr)
 
 			tlr.focus()
 		}, &xdg_toplevel.base.surface.events.map)
 
-		tlr.unmap = Listener.new(fn [mut sr, mut tlr] (listener &C.wl_listener, data voidptr) {
+		tlr.unmap = Listener.new(fn [mut sr, mut tlr] (_ &C.wl_listener, _ voidptr) {
 			if grabbed := sr.grabbed_toplevel {
 				if tlr == grabbed {
 					sr.reset_cursor_mode()
@@ -263,13 +255,13 @@ pub fn Server.new() &Server {
 			}
 		}, &xdg_toplevel.base.surface.events.unmap)
 
-		tlr.commit = Listener.new(fn [mut tlr] (listener &C.wl_listener, data voidptr) {
+		tlr.commit = Listener.new(fn [mut tlr] (_ &C.wl_listener, _ voidptr) {
 			if tlr.xdg_toplevel.base.initial_commit {
 				C.wlr_xdg_toplevel_set_size(tlr.xdg_toplevel, 0, 0)
 			}
 		}, &xdg_toplevel.base.surface.events.commit)
 
-		tlr.destroy = Listener.new(fn [mut tlr] (listener &C.wl_listener, data voidptr) {
+		tlr.destroy = Listener.new(fn [mut tlr] (_ &C.wl_listener, _ voidptr) {
 			tlr.map.destroy()
 			tlr.unmap.destroy()
 			tlr.commit.destroy()
@@ -280,31 +272,28 @@ pub fn Server.new() &Server {
 			tlr.request_fullscreen.destroy()
 		}, &xdg_toplevel.events.destroy)
 
-		tlr.request_move = Listener.new(fn [mut sr, mut tlr] (listener &C.wl_listener, data voidptr) {
+		tlr.request_move = Listener.new(fn [mut sr, mut tlr] (_ &C.wl_listener, _ voidptr) {
 			sr.begin_interactive(mut tlr, .move, 0)
 		}, &xdg_toplevel.events.request_move)
 
-		tlr.request_resize = Listener.new(fn [mut sr, mut tlr] (listener &C.wl_listener, data voidptr) {
-			event := unsafe { &C.wlr_xdg_toplevel_resize_event(data) }
+		tlr.request_resize = Listener.new(fn [mut sr, mut tlr] (_ &C.wl_listener, event &C.wlr_xdg_toplevel_resize_event) {
 			sr.begin_interactive(mut tlr, .resize, event.edges)
 		}, &xdg_toplevel.events.request_resize)
 
-		tlr.request_maximize = Listener.new(fn [mut tlr] (listener &C.wl_listener, data voidptr) {
+		tlr.request_maximize = Listener.new(fn [mut tlr] (_ &C.wl_listener, _ voidptr) {
 			tlr.maximize(tlr.xdg_toplevel.requested.maximized)
 		}, &xdg_toplevel.events.request_maximize)
 
-		tlr.request_fullscreen = Listener.new(fn [mut tlr] (listener &C.wl_listener, data voidptr) {
+		tlr.request_fullscreen = Listener.new(fn [mut tlr] (_ &C.wl_listener, _ voidptr) {
 			if tlr.xdg_toplevel.base.initialized {
 				C.wlr_xdg_surface_schedule_configure(tlr.xdg_toplevel.base)
 			}
 		}, &xdg_toplevel.events.request_fullscreen)
 	}, &xdg_shell.events.new_toplevel)
 
-	sr.new_xdg_popup = Listener.new(fn (listener &C.wl_listener, data voidptr) {
-		mut xdg_popup := unsafe { &C.wlr_xdg_popup(data) }
-
+	sr.new_xdg_popup = Listener.new(fn (_ &C.wl_listener, mut xdg_popup &C.wlr_xdg_popup) {
 		parent := C.wlr_xdg_surface_try_from_wlr_surface(xdg_popup.parent)
-		if parent == unsafe { nil } {
+		if is_nullptr(parent) {
 			panic('popup parent is nil')
 		}
 
@@ -315,36 +304,30 @@ pub fn Server.new() &Server {
 			xdg_popup: xdg_popup
 		}
 
-		pr.commit = Listener.new(fn [mut pr] (listener &C.wl_listener, data voidptr) {
+		pr.commit = Listener.new(fn [mut pr] (_ &C.wl_listener, _ voidptr) {
 			if pr.xdg_popup.base.initial_commit {
 				C.wlr_xdg_surface_schedule_configure(pr.xdg_popup.base)
 			}
 		}, &xdg_popup.base.surface.events.commit)
 
-		pr.destroy = Listener.new(fn [mut pr] (listener &C.wl_listener, data voidptr) {
+		pr.destroy = Listener.new(fn [mut pr] (_ &C.wl_listener, _ voidptr) {
 			pr.commit.destroy()
 			pr.destroy.destroy()
 		}, &xdg_popup.events.destroy)
 	}, &xdg_shell.events.new_popup)
 
 	// cursor listeners
-	sr.cursor_motion = Listener.new(fn [mut sr] (listener &C.wl_listener, data voidptr) {
-		event := unsafe { &C.wlr_pointer_motion_event(data) }
-
+	sr.cursor_motion = Listener.new(fn [mut sr] (_ &C.wl_listener, event &C.wlr_pointer_motion_event) {
 		C.wlr_cursor_move(sr.cursor, &event.pointer.base, event.delta_x, event.delta_y)
 		sr.process_cursor_motion(event.time_msec)
 	}, &sr.cursor.events.motion)
 
-	sr.cursor_motion_absolute = Listener.new(fn [mut sr] (listener &C.wl_listener, data voidptr) {
-		event := unsafe { &C.wlr_pointer_motion_absolute_event(data) }
-
+	sr.cursor_motion_absolute = Listener.new(fn [mut sr] (_ &C.wl_listener, event &C.wlr_pointer_motion_absolute_event) {
 		C.wlr_cursor_warp_absolute(sr.cursor, &event.pointer.base, event.x, event.y)
 		sr.process_cursor_motion(event.time_msec)
 	}, &sr.cursor.events.motion_absolute)
 
-	sr.cursor_button = Listener.new(fn [mut sr] (listener &C.wl_listener, data voidptr) {
-		event := unsafe { &C.wlr_pointer_button_event(data) }
-
+	sr.cursor_button = Listener.new(fn [mut sr] (_ &C.wl_listener, event &C.wlr_pointer_button_event) {
 		C.wlr_seat_pointer_notify_button(sr.seat, event.time_msec, event.button, event.state)
 		if event.state == .released {
 			sr.reset_cursor_mode()
@@ -357,36 +340,30 @@ pub fn Server.new() &Server {
 		}
 	}, &sr.cursor.events.button)
 
-	sr.cursor_axis = Listener.new(fn [mut sr] (listener &C.wl_listener, data voidptr) {
-		event := unsafe { &C.wlr_pointer_axis_event(data) }
+	sr.cursor_axis = Listener.new(fn [mut sr] (_ &C.wl_listener, event &C.wlr_pointer_axis_event) {
 		C.wlr_seat_pointer_notify_axis(sr.seat, event.time_msec, event.orientation, event.delta,
 			event.delta_discrete, event.source, event.relative_direction)
 	}, &sr.cursor.events.axis)
 
-	sr.cursor_frame = Listener.new(fn [mut sr] (listener &C.wl_listener, data voidptr) {
+	sr.cursor_frame = Listener.new(fn [mut sr] (_ &C.wl_listener, _ voidptr) {
 		C.wlr_seat_pointer_notify_frame(sr.seat)
 	}, &sr.cursor.events.frame)
 
 	// seat listeners
-	sr.request_cursor = Listener.new(fn [mut sr] (listener &C.wl_listener, data voidptr) {
-		event := unsafe { &C.wlr_seat_pointer_request_set_cursor_event(data) }
-
+	sr.request_cursor = Listener.new(fn [mut sr] (_ &C.wl_listener, event &C.wlr_seat_pointer_request_set_cursor_event) {
 		focused_client := sr.seat.pointer_state.focused_client
-		if unsafe { i64(focused_client) - i64(event.seat_client) == 0 } {
+		if ptr_eq(focused_client, event.seat_client) {
 			C.wlr_cursor_set_surface(sr.cursor, event.surface, event.hotspot_x, event.hotspot_y)
 		}
 	}, &sr.seat.events.request_set_cursor)
 
-	sr.pointer_focus_change = Listener.new(fn [mut sr] (listener &C.wl_listener, data voidptr) {
-		event := unsafe { &C.wlr_seat_pointer_focus_change_event(data) }
-		if event.new_surface == unsafe { nil } {
+	sr.pointer_focus_change = Listener.new(fn [mut sr] (_ &C.wl_listener, event &C.wlr_seat_pointer_focus_change_event) {
+		if is_nullptr(event.new_surface) {
 			C.wlr_cursor_set_xcursor(sr.cursor, sr.cursor_mgr, c'default')
 		}
 	}, &sr.seat.pointer_state.events.focus_change)
 
-	sr.request_set_selection = Listener.new(fn [mut sr] (listener &C.wl_listener, data voidptr) {
-		event := unsafe { &C.wlr_seat_request_set_selection_event(data) }
-
+	sr.request_set_selection = Listener.new(fn [mut sr] (_ &C.wl_listener, event &C.wlr_seat_request_set_selection_event) {
 		C.wlr_seat_set_selection(sr.seat, event.source, event.serial)
 	}, &sr.seat.events.request_set_selection)
 
@@ -445,7 +422,7 @@ fn (server Server) scene_node_at(lx f64, ly f64) ?(&C.wlr_scene_node, f64, f64) 
 	mut sx := f64(0)
 	mut sy := f64(0)
 	node := C.wlr_scene_node_at(&server.scene.tree.node, lx, ly, &sx, &sy)
-	if node == unsafe { nil } || node.type != .buffer {
+	if is_nullptr(node) || node.type != .buffer {
 		return none
 	}
 	return node, sx, sy
@@ -457,13 +434,13 @@ fn (server Server) scene_node_get_surface(node &C.wlr_scene_node) ?&C.wlr_surfac
 	}
 	scene_buffer := C.wlr_scene_buffer_from_node(node)
 	scene_surface := C.wlr_scene_surface_try_from_buffer(scene_buffer)
-	if scene_surface == unsafe { nil } {
+	if is_nullptr(scene_surface) {
 		return none
 	}
 
 	surface := scene_surface.surface
 
-	if surface.resource == unsafe { nil } {
+	if is_nullptr(surface.resource) {
 		return none
 	}
 
@@ -472,11 +449,11 @@ fn (server Server) scene_node_get_surface(node &C.wlr_scene_node) ?&C.wlr_surfac
 
 fn (server Server) scene_node_get_toplevel(node &C.wlr_scene_node) ?&Toplevel {
 	mut tree := node.parent
-	for tree != unsafe { nil } && tree.node.data == unsafe { nil } {
+	for !is_nullptr(tree) && is_nullptr(tree.node.data) {
 		tree = tree.node.parent
 	}
 
-	if tree.node.data == unsafe { nil } {
+	if is_nullptr(tree.node.data) {
 		return none
 	}
 
@@ -568,7 +545,7 @@ fn (mut server Server) process_cursor_motion(time u32) {
 
 fn (server Server) output_at(x f64, y f64) ?&Output {
 	wlr_output := C.wlr_output_layout_output_at(server.output_layout, x, y)
-	if wlr_output == unsafe { nil } {
+	if is_nullptr(wlr_output) {
 		return none
 	}
 
@@ -581,7 +558,7 @@ fn (server Server) focused_output() ?&Output {
 
 pub fn (server Server) run(startup_cmd string) int {
 	socket := C.wl_display_add_socket_auto(server.display)
-	if socket == unsafe { nil } {
+	if is_nullptr(socket) {
 		eprintln('failed to add socket')
 		C.wlr_backend_destroy(server.backend)
 		return 1
