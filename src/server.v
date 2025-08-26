@@ -7,7 +7,7 @@ import wl { Listener, Wl_seat_capability }
 import wlr
 import wlr.util { Wlr_edges }
 import wlr.render
-import wlr.types { Wlr_keyboard_modifier }
+import wlr.types
 import xkb
 
 enum CursorMode {
@@ -106,112 +106,14 @@ pub fn Server.new() &Server {
 
 	// backend listeners
 	sr.new_output = Listener.new(fn [mut sr] (_ &C.wl_listener, wlr_output &C.wlr_output) {
-		C.wlr_output_init_render(wlr_output, sr.allocator, sr.renderer)
-
-		mut state := C.wlr_output_state{}
-		C.wlr_output_state_init(&state)
-		C.wlr_output_state_set_enabled(&state, true)
-
-		mode := C.wlr_output_preferred_mode(wlr_output)
-		if !is_nullptr(mode) {
-			C.wlr_output_state_set_mode(&state, mode)
-		}
-
-		C.wlr_output_commit_state(wlr_output, &state)
-		C.wlr_output_state_finish(&state)
-
-		mut outr := &Output{ wlr_output: wlr_output, sr: sr }
-		outr.wlr_output.data = outr
-		sr.outputs.push_back(outr)
-
-		// xdg_output listeners
-		outr.frame = Listener.new(fn [sr, wlr_output] (_ &C.wl_listener, _ voidptr) {
-			scene_output := C.wlr_scene_get_scene_output(sr.scene, wlr_output)
-
-			C.wlr_scene_output_commit(scene_output, unsafe { nil })
-
-			now := C.timespec{}
-			C.clock_gettime(.monotonic, &now)
-			C.wlr_scene_output_send_frame_done(scene_output, &now)
-		}, &wlr_output.events.frame)
-
-		outr.request_state = Listener.new(fn [wlr_output] (_ &C.wl_listener, event &C.wlr_output_event_request_state) {
-			C.wlr_output_commit_state(wlr_output, event.state)
-		}, &wlr_output.events.request_state)
-
-		outr.destroy = Listener.new(fn [outr, mut sr] (_ &C.wl_listener, _ voidptr) {
-			outr.frame.destroy()
-			outr.request_state.destroy()
-			outr.destroy.destroy()
-
-			if ix := sr.outputs.index(outr) {
-				sr.outputs.delete(ix)
-			}
-		}, &wlr_output.events.destroy)
-
-		l_output := C.wlr_output_layout_add_auto(sr.output_layout, wlr_output)
-		scene_output := C.wlr_scene_output_create(sr.scene, wlr_output)
-		C.wlr_scene_output_layout_add_output(sr.scene_layout, l_output, scene_output)
+		Output.new(mut sr, wlr_output)
 	}, &sr.backend.events.new_output)
 
 	sr.new_input = Listener.new(fn [mut sr] (_ &C.wl_listener, device &C.wlr_input_device) {
 		match device.type {
 			.keyboard {
 				wlr_keyboard := C.wlr_keyboard_from_input_device(device)
-
-				mut kr := &Keyboard{
-					wlr_keyboard: wlr_keyboard
-					sr:           sr
-				}
-
-				// setup keymap for keyboard
-				mut context := C.xkb_context_new(.no_flags)
-				keymap := C.xkb_keymap_new_from_names(context, unsafe { nil }, .no_flags)
-
-				C.wlr_keyboard_set_keymap(wlr_keyboard, keymap)
-				C.xkb_keymap_unref(keymap)
-				C.xkb_context_unref(context)
-				C.wlr_keyboard_set_repeat_info(wlr_keyboard, 25, 600)
-
-				// keyboard listeners
-				kr.modifiers = Listener.new(fn [sr, kr] (_ &C.wl_listener, _ voidptr) {
-					C.wlr_seat_set_keyboard(sr.seat, kr.wlr_keyboard)
-					C.wlr_seat_keyboard_notify_modifiers(sr.seat, &kr.wlr_keyboard.modifiers)
-				}, &wlr_keyboard.events.modifiers)
-
-				kr.key = Listener.new(fn [mut sr, kr] (_ &C.wl_listener, event &C.wlr_keyboard_key_event) {
-					keycode := event.keycode + 8
-					syms := &u32(unsafe { nil })
-					nsyms := C.xkb_state_key_get_syms(kr.wlr_keyboard.xkb_state, keycode,
-						&syms)
-
-					mut handled := false
-
-					modifiers := C.wlr_keyboard_get_modifiers(kr.wlr_keyboard)
-					if Wlr_keyboard_modifier.alt.matches(modifiers) && event.state == .pressed {
-						for i := 0; i < nsyms; i++ {
-							handled = sr.handle_keybinding(unsafe { xkb.Keysym(syms[i]) })
-						}
-					}
-
-					if !handled {
-						C.wlr_seat_set_keyboard(sr.seat, kr.wlr_keyboard)
-						C.wlr_seat_keyboard_notify_key(sr.seat, event.time_msec, event.keycode,
-							u32(event.state))
-					}
-				}, &wlr_keyboard.events.key)
-
-				kr.destroy = Listener.new(fn [mut sr, mut kr] (_ &C.wl_listener, _ voidptr) {
-					kr.modifiers.destroy()
-					kr.key.destroy()
-					kr.destroy.destroy()
-
-					if ix := sr.keyboards.index(kr) {
-						sr.keyboards.delete(ix)
-					}
-				}, &wlr_keyboard.base.events.destroy)
-
-				sr.keyboards.push_back(kr)
+				Keyboard.new(mut sr, wlr_keyboard)
 			}
 			.pointer {
 				C.wlr_cursor_attach_input_device(sr.cursor, device)
@@ -230,92 +132,11 @@ pub fn Server.new() &Server {
 
 	// xdg_shell listeners
 	sr.new_xdg_toplevel = Listener.new(fn [mut sr] (_ &C.wl_listener, mut xdg_toplevel C.wlr_xdg_toplevel) {
-		mut tlr := &Toplevel{
-			sr:           sr
-			xdg_toplevel: xdg_toplevel
-			scene_tree:   C.wlr_scene_xdg_surface_create(&sr.scene.tree, xdg_toplevel.base)
-		}
-		tlr.scene_tree.node.data = tlr
-		xdg_toplevel.base.data = tlr.scene_tree
-
-		// toplevel listeners
-		tlr.map = Listener.new(fn [mut sr, mut tlr] (_ &C.wl_listener, _ voidptr) {
-			sr.toplevels.push_back(tlr)
-
-			tlr.focus()
-		}, &xdg_toplevel.base.surface.events.map)
-
-		tlr.unmap = Listener.new(fn [mut sr, mut tlr] (_ &C.wl_listener, _ voidptr) {
-			if grabbed := sr.grabbed_toplevel {
-				if tlr == grabbed {
-					sr.reset_cursor_mode()
-				}
-			}
-
-			if ix := sr.toplevels.index(tlr) {
-				sr.toplevels.delete(ix)
-			}
-		}, &xdg_toplevel.base.surface.events.unmap)
-
-		tlr.commit = Listener.new(fn [mut tlr] (_ &C.wl_listener, _ voidptr) {
-			if tlr.xdg_toplevel.base.initial_commit {
-				C.wlr_xdg_toplevel_set_size(tlr.xdg_toplevel, 0, 0)
-			}
-		}, &xdg_toplevel.base.surface.events.commit)
-
-		tlr.destroy = Listener.new(fn [mut tlr] (_ &C.wl_listener, _ voidptr) {
-			tlr.map.destroy()
-			tlr.unmap.destroy()
-			tlr.commit.destroy()
-			tlr.destroy.destroy()
-			tlr.request_move.destroy()
-			tlr.request_resize.destroy()
-			tlr.request_maximize.destroy()
-			tlr.request_fullscreen.destroy()
-		}, &xdg_toplevel.events.destroy)
-
-		tlr.request_move = Listener.new(fn [mut sr, mut tlr] (_ &C.wl_listener, _ voidptr) {
-			sr.begin_interactive(mut tlr, .move, 0)
-		}, &xdg_toplevel.events.request_move)
-
-		tlr.request_resize = Listener.new(fn [mut sr, mut tlr] (_ &C.wl_listener, event &C.wlr_xdg_toplevel_resize_event) {
-			sr.begin_interactive(mut tlr, .resize, event.edges)
-		}, &xdg_toplevel.events.request_resize)
-
-		tlr.request_maximize = Listener.new(fn [mut tlr] (_ &C.wl_listener, _ voidptr) {
-			tlr.maximize(tlr.xdg_toplevel.requested.maximized)
-		}, &xdg_toplevel.events.request_maximize)
-
-		tlr.request_fullscreen = Listener.new(fn [mut tlr] (_ &C.wl_listener, _ voidptr) {
-			if tlr.xdg_toplevel.base.initialized {
-				C.wlr_xdg_surface_schedule_configure(tlr.xdg_toplevel.base)
-			}
-		}, &xdg_toplevel.events.request_fullscreen)
+		Toplevel.new(mut sr, mut xdg_toplevel)
 	}, &xdg_shell.events.new_toplevel)
 
 	sr.new_xdg_popup = Listener.new(fn (_ &C.wl_listener, mut xdg_popup C.wlr_xdg_popup) {
-		parent := C.wlr_xdg_surface_try_from_wlr_surface(xdg_popup.parent)
-		if is_nullptr(parent) {
-			panic('popup parent is nil')
-		}
-
-		parent_tree := unsafe { &C.wlr_scene_tree(parent.data) }
-		xdg_popup.base.data = C.wlr_scene_xdg_surface_create(parent_tree, xdg_popup.base)
-
-		mut pr := &Popup{
-			xdg_popup: xdg_popup
-		}
-
-		pr.commit = Listener.new(fn [mut pr] (_ &C.wl_listener, _ voidptr) {
-			if pr.xdg_popup.base.initial_commit {
-				C.wlr_xdg_surface_schedule_configure(pr.xdg_popup.base)
-			}
-		}, &xdg_popup.base.surface.events.commit)
-
-		pr.destroy = Listener.new(fn [mut pr] (_ &C.wl_listener, _ voidptr) {
-			pr.commit.destroy()
-			pr.destroy.destroy()
-		}, &xdg_popup.events.destroy)
+		Popup.new(mut xdg_popup)
 	}, &xdg_shell.events.new_popup)
 
 	// cursor listeners

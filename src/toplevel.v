@@ -1,6 +1,6 @@
 module src
 
-import wl
+import wl { Listener }
 import wlr.types
 
 @[heap]
@@ -11,17 +11,83 @@ pub mut:
 	sr         &Server
 	scene_tree &C.wlr_scene_tree
 
-	map                wl.Listener
-	unmap              wl.Listener
-	commit             wl.Listener
-	destroy            wl.Listener
-	request_move       wl.Listener
-	request_resize     wl.Listener
-	request_maximize   wl.Listener
-	request_fullscreen wl.Listener
+	map                Listener
+	unmap              Listener
+	commit             Listener
+	destroy            Listener
+	request_move       Listener
+	request_resize     Listener
+	request_maximize   Listener
+	request_fullscreen Listener
 
 	maximized      bool
 	saved_geometry C.wlr_box = C.wlr_box{}
+}
+
+fn Toplevel.new(mut sr Server, mut xdg_toplevel C.wlr_xdg_toplevel) &Toplevel {
+	mut tlr := &Toplevel{
+		sr:           sr
+		xdg_toplevel: xdg_toplevel
+		scene_tree:   C.wlr_scene_xdg_surface_create(&sr.scene.tree, xdg_toplevel.base)
+	}
+	tlr.scene_tree.node.data = tlr
+	xdg_toplevel.base.data = tlr.scene_tree
+
+	// toplevel listeners
+	tlr.map = Listener.new(fn [mut sr, mut tlr] (_ &C.wl_listener, _ voidptr) {
+		sr.toplevels.push_back(tlr)
+
+		tlr.focus()
+	}, &xdg_toplevel.base.surface.events.map)
+
+	tlr.unmap = Listener.new(fn [mut sr, mut tlr] (_ &C.wl_listener, _ voidptr) {
+		if grabbed := sr.grabbed_toplevel {
+			if tlr == grabbed {
+				sr.reset_cursor_mode()
+			}
+		}
+
+		if ix := sr.toplevels.index(tlr) {
+			sr.toplevels.delete(ix)
+		}
+	}, &xdg_toplevel.base.surface.events.unmap)
+
+	tlr.commit = Listener.new(fn [mut tlr] (_ &C.wl_listener, _ voidptr) {
+		if tlr.xdg_toplevel.base.initial_commit {
+			C.wlr_xdg_toplevel_set_size(tlr.xdg_toplevel, 0, 0)
+		}
+	}, &xdg_toplevel.base.surface.events.commit)
+
+	tlr.destroy = Listener.new(fn [mut tlr] (_ &C.wl_listener, _ voidptr) {
+		tlr.map.destroy()
+		tlr.unmap.destroy()
+		tlr.commit.destroy()
+		tlr.destroy.destroy()
+		tlr.request_move.destroy()
+		tlr.request_resize.destroy()
+		tlr.request_maximize.destroy()
+		tlr.request_fullscreen.destroy()
+	}, &xdg_toplevel.events.destroy)
+
+	tlr.request_move = Listener.new(fn [mut sr, mut tlr] (_ &C.wl_listener, _ voidptr) {
+		sr.begin_interactive(mut tlr, .move, 0)
+	}, &xdg_toplevel.events.request_move)
+
+	tlr.request_resize = Listener.new(fn [mut sr, mut tlr] (_ &C.wl_listener, event &C.wlr_xdg_toplevel_resize_event) {
+		sr.begin_interactive(mut tlr, .resize, event.edges)
+	}, &xdg_toplevel.events.request_resize)
+
+	tlr.request_maximize = Listener.new(fn [mut tlr] (_ &C.wl_listener, _ voidptr) {
+		tlr.maximize(tlr.xdg_toplevel.requested.maximized)
+	}, &xdg_toplevel.events.request_maximize)
+
+	tlr.request_fullscreen = Listener.new(fn [mut tlr] (_ &C.wl_listener, _ voidptr) {
+		if tlr.xdg_toplevel.base.initialized {
+			C.wlr_xdg_surface_schedule_configure(tlr.xdg_toplevel.base)
+		}
+	}, &xdg_toplevel.events.request_fullscreen)
+
+	return tlr
 }
 
 fn (toplevel &Toplevel) focus() {
