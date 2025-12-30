@@ -1,7 +1,6 @@
 module xkb
 
-#flag linux -I/usr/include/
-#flag linux -lxkbcommon
+#pkgconfig xkbcommon
 #include <xkbcommon/xkbcommon.h>
 
 pub struct C.xkb_context {

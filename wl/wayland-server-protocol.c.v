@@ -1,7 +1,6 @@
 module wl
 
-#flag linux -I/usr/include
-#flag linux -lwayland-server
+#pkgconfig wayland-server
 #include <wayland-server-protocol.h>
 
 // enums only

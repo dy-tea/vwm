@@ -1,7 +1,6 @@
 module wl
 
-#flag linux -I/usr/include
-#flag linux -lwayland-server
+#pkgconfig wayland-server
 #include <wayland-server-core.h>
 
 pub enum Wl_event {

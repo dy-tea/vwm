@@ -1,11 +1,7 @@
 module wlr
 
-import wl
-
 #flag linux -DWLR_USE_UNSTABLE
-#flag linux -I/usr/include/
-#flag linux -I/usr/include/wlroots-0.20
-#flag linux -lwlroots-0.20
+#pkgconfig wlroots-0.20
 #include <wlr/backend.h>
 
 pub struct C.wlr_backend {

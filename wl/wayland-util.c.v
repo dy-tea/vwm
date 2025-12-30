@@ -1,7 +1,6 @@
 module wl
 
-#flag linux -I/usr/include
-#flag linux -lwayland-server
+#pkgconfig wayland-server
 #include <wayland-util.h>
 
 pub struct C.wl_message {

@@ -1,7 +1,6 @@
 module src
 
 import wl { Listener }
-import wlr.types
 import wlr.util
 
 @[heap]

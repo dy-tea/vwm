@@ -1,13 +1,13 @@
 module src
 
 import os
-import ctime
 import datatypes
 import wl { Listener, Wl_seat_capability }
+import ctime
 import wlr
-import wlr.util { Wlr_edges }
 import wlr.render
 import wlr.types
+import wlr.util { Wlr_edges }
 import xkb
 
 enum CursorMode {
