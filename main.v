@@ -2,9 +2,9 @@ module main
 
 import os
 import flag
-
 import src { Server }
 import wlr.util
+import wl
 
 fn main() {
 	C.wlr_log_init(.debug, unsafe { nil })

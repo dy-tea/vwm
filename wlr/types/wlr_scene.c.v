@@ -31,6 +31,12 @@ pub mut:
 	data voidptr
 }
 
+pub enum Wlr_scene_debug_damage_option {
+	none
+	renderer
+	highlight
+}
+
 pub struct C.wlr_scene_tree {
 pub:
 	children C.wl_list
@@ -61,6 +67,15 @@ pub:
 pub struct C.wlr_scene_buffer {}
 
 pub struct C.wlr_scene_output {}
+
+pub struct C.wlr_scene_timer {}
+
+pub struct C.wlr_scene_layer_surface_v1 {
+pub:
+	layer_surface &C.wlr_layer_surface_v1
+pub mut:
+	tree &C.wlr_scene_tree
+}
 
 fn C.wlr_scene_node_destroy(node &C.wlr_scene_node)
 fn C.wlr_scene_node_set_enabled(node &C.wlr_scene_node, enabled bool)
@@ -104,3 +119,5 @@ fn C.wlr_scene_subsurface_tree_create(parent &C.wlr_scene_tree, surface &C.wlr_s
 fn C.wlr_scene_subsurface_tree_set_clip(parent &C.wlr_scene_tree, clip &C.wlr_box)
 
 fn C.wlr_scene_xdg_surface_create(parent &C.wlr_scene_tree, xdg_surface &C.wlr_xdg_surface) &C.wlr_scene_tree
+fn C.wlr_scene_layer_surface_v1_create(parent &C.wlr_scene_tree, layer_surface &C.wlr_layer_surface_v1) &C.wlr_scene_layer_surface_v1
+fn C.wlr_scene_layer_surface_v1_configure(scene_layer_surface &C.wlr_scene_layer_surface_v1, full_area &C.wlr_box, usable_area &C.wlr_box)

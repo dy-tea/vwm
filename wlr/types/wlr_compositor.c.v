@@ -115,4 +115,34 @@ pub:
 	}
 }
 
+fn C.wlr_surface_set_role(surface &C.wlr_surface, role &C.wlr_surface_role, error_resource &C.wl_resource, error_code u32) bool
+fn C.wlr_surface_set_role_object(surface &C.wlr_surface, role_resource &C.wl_resource)
+
+fn C.wlr_surface_map(surface &C.wlr_surface)
+fn C.wlr_surface_unmap(surface &C.wlr_surface)
+
+//...
+
+fn C.wlr_surface_get_root_surface(surface &C.wlr_surface) &C.wlr_surface
+fn C.wlr_surface_point_accepts_input(surface &C.wlr_surface, dx f64, sy f64) bool
+fn C.wlr_surface_surface_at(surface &C.wlr_surface, sx f64, sy f64, sub_x &f64, sub_y &f64) &C.wlr_surface
+
+fn C.wlr_surface_send_enter(surface &C.wlr_surface, output &C.wlr_output)
+fn C.wlr_surface_send_leave(surface &C.wlr_surface, output &C.wlr_output)
+
+fn C.wlr_surface_send_frame_done(surface &C.wlr_surface, when &C.timespec)
+
+fn C.wlr_surface_get_extents(surface &C.wlr_surface, box &C.wlr_box)
+
+//...
+
+fn C.wlr_surface_get_buffer_source_box(surface &C.wlr_surface, box &C.wlr_fbox)
+
+fn C.wlr_surface_lock_pending(surface &C.wlr_surface) u32
+fn C.wlr_surface_unlock_cached(surface &C.wlr_surface, seq u32)
+
+fn C.wlr_surface_set_preferred_buffer_scale(surface &C.wlr_surface, scale i32)
+
+//...
+
 fn C.wlr_compositor_create(display &C.wl_display, version u32, renderer &C.wlr_renderer) &C.wlr_compositor

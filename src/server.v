@@ -9,6 +9,7 @@ import wlr.render
 import wlr.types
 import wlr.util { Wlr_edges }
 import xkb
+import utils { cstr_eq, is_nullptr, ptr_eq }
 
 enum CursorMode {
 	passthrough
@@ -16,7 +17,7 @@ enum CursorMode {
 	resize
 }
 
-@[heap; noinit]
+@[heap]
 pub struct Server {
 pub:
 	display      &C.wl_display
@@ -30,6 +31,16 @@ pub:
 
 	xdg_shell &C.wlr_xdg_shell
 
+	layer_shell &C.wlr_layer_shell_v1
+	layers      struct {
+	pub:
+		background &C.wlr_scene_tree
+		bottom     &C.wlr_scene_tree
+		floating   &C.wlr_scene_tree
+		top        &C.wlr_scene_tree
+		overlay    &C.wlr_scene_tree
+	}
+
 	cursor     &C.wlr_cursor
 	cursor_mgr &C.wlr_xcursor_manager
 
@@ -42,8 +53,10 @@ pub mut:
 	toplevels        datatypes.DoublyLinkedList[&Toplevel] = datatypes.DoublyLinkedList[&Toplevel]{}
 	new_xdg_toplevel Listener
 	new_xdg_popup    Listener
-
 	grabbed_toplevel ?&Toplevel
+
+	layer_surfaces    datatypes.DoublyLinkedList[&LayerSurface] = datatypes.DoublyLinkedList[&LayerSurface]{}
+	new_shell_surface Listener
 
 	cursor_mode            CursorMode = .passthrough
 	cursor_motion          Listener
@@ -83,6 +96,7 @@ pub fn Server.new() &Server {
 	scene_layout := C.wlr_scene_attach_output_layout(scene, output_layout)
 
 	xdg_shell := C.wlr_xdg_shell_create(display, 3)
+	layer_shell := C.wlr_layer_shell_v1_create(display, 5)
 
 	cursor := C.wlr_cursor_create()
 	C.wlr_cursor_attach_output_layout(cursor, output_layout)
@@ -99,6 +113,14 @@ pub fn Server.new() &Server {
 		scene:         scene
 		scene_layout:  scene_layout
 		xdg_shell:     xdg_shell
+		layer_shell:   layer_shell
+		layers:        struct {
+			background: C.wlr_scene_tree_create(&scene.tree)
+			bottom:     C.wlr_scene_tree_create(&scene.tree)
+			floating:   C.wlr_scene_tree_create(&scene.tree)
+			top:        C.wlr_scene_tree_create(&scene.tree)
+			overlay:    C.wlr_scene_tree_create(&scene.tree)
+		}
 		cursor:        cursor
 		cursor_mgr:    xcursor_mgr
 		seat:          seat
@@ -139,6 +161,13 @@ pub fn Server.new() &Server {
 		Popup.new(mut xdg_popup)
 	}, &xdg_shell.events.new_popup)
 
+	// layer_shell listeners
+	sr.new_shell_surface = Listener.new(fn [mut sr] (listener &C.wl_listener, mut layer_surface C.wlr_layer_surface_v1) {
+		if mut output := sr.focused_output() {
+			LayerSurface.new(mut sr, mut output, mut layer_surface)
+		}
+	}, &layer_shell.events.new_surface)
+
 	// cursor listeners
 	sr.cursor_motion = Listener.new(fn [mut sr] (_ &C.wl_listener, event &C.wlr_pointer_motion_event) {
 		C.wlr_cursor_move(sr.cursor, &event.pointer.base, event.delta_x, event.delta_y)
@@ -156,8 +185,19 @@ pub fn Server.new() &Server {
 			sr.reset_cursor_mode()
 		} else {
 			if node, _, _ := sr.scene_node_at(sr.cursor.x, sr.cursor.y) {
-				if toplevel := sr.scene_node_get_toplevel(node) {
-					toplevel.focus()
+				if surface := scene_node_get_surface(node) {
+					if is_nullptr(surface) {
+						return
+					}
+					if cstr_eq(surface.role.name, c'zwlr_layer_surface_v1') {
+						if layer_surface := scene_node_get_surface_data[LayerSurface](node) {
+							layer_surface.focus()
+						}
+					} else {
+						if toplevel := scene_node_get_surface_data[Toplevel](node) {
+							toplevel.focus()
+						}
+					}
 				}
 			}
 		}
@@ -251,7 +291,7 @@ fn (server Server) scene_node_at(lx f64, ly f64) ?(&C.wlr_scene_node, f64, f64) 
 	return node, sx, sy
 }
 
-fn (server Server) scene_node_get_surface(node &C.wlr_scene_node) ?&C.wlr_surface {
+fn scene_node_get_surface(node &C.wlr_scene_node) ?&C.wlr_surface {
 	if node.type != .buffer {
 		return none
 	}
@@ -270,7 +310,7 @@ fn (server Server) scene_node_get_surface(node &C.wlr_scene_node) ?&C.wlr_surfac
 	return surface
 }
 
-fn (server Server) scene_node_get_toplevel(node &C.wlr_scene_node) ?&Toplevel {
+fn scene_node_get_surface_data[T](node &C.wlr_scene_node) ?&T {
 	mut tree := node.parent
 	for !is_nullptr(tree) && is_nullptr(tree.node.data) {
 		tree = tree.node.parent
@@ -285,7 +325,27 @@ fn (server Server) scene_node_get_toplevel(node &C.wlr_scene_node) ?&Toplevel {
 		return none
 	}
 
-	return unsafe { &Toplevel(data_ptr) }
+	return unsafe { &T(data_ptr) }
+}
+
+fn scene_node_get_toplevel(node &C.wlr_scene_node, surface &C.wlr_surface) ?&Toplevel {
+	toplevel := scene_node_get_surface_data[Toplevel](node)
+
+	if !is_nullptr(toplevel) && !is_nullptr(surface)
+		&& !cstr_eq(surface.role.name, c'zwlr_layer_surface_v1') {
+		return toplevel
+	}
+	return none
+}
+
+fn scene_node_get_layer_surface(node &C.wlr_scene_node, surface &C.wlr_surface) ?&LayerSurface {
+	layer_surface := scene_node_get_surface_data[LayerSurface](node)
+
+	if !is_nullptr(layer_surface) && !is_nullptr(surface)
+		&& cstr_eq(surface.role.name, c'zwlr_layer_surface_v1') {
+		return layer_surface
+	}
+	return none
 }
 
 fn (mut server Server) process_cursor_motion(time u32) {
@@ -350,14 +410,14 @@ fn (mut server Server) process_cursor_motion(time u32) {
 		}
 		else {
 			if node, sx, sy := server.scene_node_at(server.cursor.x, server.cursor.y) {
-				if server.scene_node_get_toplevel(node) == none {
-					C.wlr_cursor_set_xcursor(server.cursor, server.cursor_mgr, c'default')
-				}
-
-				if surface := server.scene_node_get_surface(node) {
-					C.wlr_seat_pointer_notify_enter(server.seat, surface, sx, sy)
-					C.wlr_seat_pointer_notify_motion(server.seat, time, sx, sy)
-					return
+				if surface := scene_node_get_surface(node) {
+					if scene_node_get_toplevel(node, surface) == none {
+						C.wlr_cursor_set_xcursor(server.cursor, server.cursor_mgr, c'default')
+					} else {
+						C.wlr_seat_pointer_notify_enter(server.seat, surface, sx, sy)
+						C.wlr_seat_pointer_notify_motion(server.seat, time, sx, sy)
+						return
+					}
 				}
 			}
 
@@ -415,6 +475,8 @@ pub fn (server Server) destroy() {
 
 	server.new_xdg_toplevel.destroy()
 	server.new_xdg_popup.destroy()
+
+	server.new_shell_surface.destroy()
 
 	server.cursor_motion.destroy()
 	server.cursor_motion_absolute.destroy()

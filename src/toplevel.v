@@ -2,6 +2,7 @@ module src
 
 import wl { Listener }
 import wlr.util
+import utils { ptr_eq }
 
 @[heap]
 struct Toplevel {
@@ -28,7 +29,7 @@ fn Toplevel.new(mut sr Server, mut xdg_toplevel C.wlr_xdg_toplevel) &Toplevel {
 	mut tlr := &Toplevel{
 		sr:           sr
 		xdg_toplevel: xdg_toplevel
-		scene_tree:   C.wlr_scene_xdg_surface_create(&sr.scene.tree, xdg_toplevel.base)
+		scene_tree:   C.wlr_scene_xdg_surface_create(sr.layers.floating, xdg_toplevel.base)
 	}
 	tlr.scene_tree.node.data = tlr
 	xdg_toplevel.base.data = tlr.scene_tree

@@ -2,6 +2,7 @@ module src
 
 import wl { Listener }
 import wlr.types
+import utils { is_nullptr }
 
 @[heap]
 struct Popup {

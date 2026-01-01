@@ -6,11 +6,22 @@ import wl
 #pkgconfig wlroots-0.20
 #include <wlr/types/wlr_output.h>
 
+pub enum Wlr_output_mode_aspect_ratio {
+	none
+	_4_3
+	_16_9
+	_64_27
+	_256_135
+}
+
 pub struct C.wlr_output_mode {
 pub:
-	width     u32
-	height    u32
-	preferred bool
+	width                i32
+	height               i32
+	refresh              i32
+	preferred            bool
+	picture_aspect_ratio Wlr_output_mode_aspect_ratio
+	link                 C.wl_list
 }
 
 pub struct C.wlr_output_state {
@@ -85,7 +96,20 @@ pub:
 fn C.wlr_output_init_render(output &C.wlr_output, allocator &C.wlr_allocator, renderer &C.wlr_renderer) bool
 fn C.wlr_output_preferred_mode(output &C.wlr_output) &C.wlr_output_mode
 
+fn C.wlr_output_set_name(output &C.wlr_output, name &char)
+fn C.wlr_output_set_description(output &C.wlr_output, desc &char)
+
+fn C.wlr_output_schedule_done(output &C.wlr_output)
+fn C.wlr_output_destroy(output &C.wlr_output)
+
+fn C.wlr_output_transformed_resolution(output &C.wlr_output, width &int, height &int)
+fn C.wlr_output_effective_resolution(output &C.wlr_output, width &int, height &int)
+
+fn C.wlr_output_test_state(output &C.wlr_output, state &C.wlr_output_state) bool
 fn C.wlr_output_commit_state(output &C.wlr_output, state &C.wlr_output_state)
+
+fn C.wlr_output_schedule_frame(output &C.wlr_output)
+fn C.wlr_output_get_gamma_size(output &C.wlr_output) usize
 
 fn C.wlr_output_state_init(state &C.wlr_output_state)
 fn C.wlr_output_state_finish(state &C.wlr_output_state)
