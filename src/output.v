@@ -124,6 +124,7 @@ fn (mut output Output) arrange_layers() {
 			}
 
 			topmost = surface
+			_ = topmost
 		})
 		if !is_nullptr(topmost) {
 			break

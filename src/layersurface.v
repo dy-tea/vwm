@@ -68,7 +68,7 @@ fn LayerSurface.new(mut sr Server, mut output Output, mut layer_surface C.wlr_la
 		}
 	}, &layer_surface.surface.events.commit)
 
-	lsr.new_popup = Listener.new(fn [mut lsr] (_ &C.wl_listener, mut popup C.wlr_xdg_popup) {
+	lsr.new_popup = Listener.new(fn (_ &C.wl_listener, mut popup C.wlr_xdg_popup) {
 		Popup.new(mut popup)
 	}, &layer_surface.events.new_popup)
 
