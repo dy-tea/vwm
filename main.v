@@ -25,8 +25,8 @@ fn main() {
 
 	server := Server.new()
 	code := server.run(startup_cmd)
+	server.destroy()
 	if code != 0 {
 		exit(code)
 	}
-	server.destroy()
 }
